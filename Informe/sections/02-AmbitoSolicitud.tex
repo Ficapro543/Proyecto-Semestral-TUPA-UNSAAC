@@ -1,43 +1,61 @@
-% ── Ámbito de Aplicación o Influencia ─────────────────────────────────────────
 \section{Ámbito de Aplicación o Influencia}
-
+ 
+\subsection{Descripción del ámbito}
+ 
+El proyecto está orientado al entorno administrativo y académico de la \textbf{Universidad Nacional de San Antonio Abad del Cusco (UNSAAC)}, específicamente en los procesos relacionados con la gestión de los procedimientos establecidos en el Texto Único de Procedimientos Administrativos (TUPA).
+ 
+La propuesta se desarrolla dentro del contexto de la \textbf{transformación digital universitaria}, buscando modernizar los servicios administrativos mediante el uso de tecnologías web que permitan automatizar procesos, mejorar la atención a los usuarios y optimizar el control y seguimiento de expedientes administrativos.
+ 
 \subsection{Ámbito institucional}
-
-La plataforma propuesta se circunscribe al entorno institucional de la UNSAAC,
-una de las universidades públicas más antiguas del Perú, fundada en 1692, con sede
-principal en la ciudad del Cusco. La institución atiende a miles de estudiantes de
-pregrado y posgrado, distribuidos en diversas facultades y escuelas profesionales, así
-como a personal docente y administrativo.
-
-La plataforma incidirá directamente en los procesos de gestión administrativa
-vinculados al TUPA, abarcando a los siguientes actores:
-
-\begin{itemize}
-  \item \textbf{Estudiantes de pregrado y posgrado:} usuarios que consultan
-        procedimientos, registran solicitudes y realizan el seguimiento de sus trámites.
-  \item \textbf{Personal administrativo:} funcionarios de las oficinas responsables de
-        recibir, procesar, validar y resolver los procedimientos contemplados en el TUPA.
-  \item \textbf{Autoridades y gestores académicos:} dependencias que requieren reportes
-        y estadísticas de la gestión administrativa para la toma de decisiones.
+ 
+El proyecto tiene como ámbito de aplicación directo la UNSAAC, con sede principal en Cusco y filiales en:
+ 
+\begin{itemize}[noitemsep]
+    \item Cusco (Sede Central)
+    \item Sicuani
+    \item Espinar
+    \item Puerto Maldonado
+    \item Santo Tomás
+    \item Yanaoca
+    \item Andahuaylas
 \end{itemize}
-
-\subsection{Ámbito tecnológico}
-
-Desde la perspectiva tecnológica, el sistema operará como una aplicación web de acceso
-público para consultas generales, y de acceso restringido por roles para la gestión
-administrativa interna. Será accesible desde navegadores modernos en dispositivos de
-escritorio y móviles, sin requerir la instalación de software adicional por parte del
-usuario final.
-
-\subsection{Alcance del proyecto semestral}
-
-En el contexto del semestre académico 2026-I, el alcance comprende:
-
+ 
+El sistema PLADDES (\textit{tramite.unsaac.edu.pe}) es la plataforma oficial de trámite documentario virtual de la institución y es el objeto de mejora de este proyecto.
+ 
+\subsection{Área de influencia}
+ 
+Entre las principales unidades involucradas se encuentran:
+ 
+\begin{itemize}[noitemsep]
+    \item Rectorado
+    \item Vicerrectorado Académico
+    \item Decanatos de Facultad
+    \item Escuela de Posgrado
+    \item Centro de Cómputo
+    \item Oficina de Admisión
+    \item Mesa de Partes Virtual
+    \item Unidades de Trámite Documentario
+\end{itemize}
+ 
+\subsection{Usuarios objetivo / Beneficiarios}
+ 
+\begin{itemize}
+    \item \textbf{Estudiantes de pregrado y posgrado:} principal grupo que registra solicitudes en PLADDES para trámites como certificados, constancias, homologaciones, grado y título, entre otros.
+    \item \textbf{Docentes y personal cesante/administrativo:} usuarios que gestionan trámites propios de su condición laboral a través del sistema.
+    \item \textbf{Dependencias administrativas:} Unidad de Trámite Documentario, Decanatos, Escuelas Profesionales, VRAC, DIGA, UTH, SG y demás oficinas que reciben y resuelven los expedientes ingresados en PLADDES.
+    \item \textbf{Público en general e instituciones:} personas externas a la comunidad universitaria que acceden a servicios puntuales del TUPA.
+    \item \textbf{La institución universitaria en general,} que se verá favorecida con el fortalecimiento de la modernización administrativa y la mejora en la calidad del servicio.
+\end{itemize}
+ 
+\subsection{Alcance funcional}
+ 
+El proyecto rediseña y optimiza los flujos existentes en PLADDES, abarcando:
+ 
 \begin{enumerate}
-  \item La formulación completa del plan de proyecto y la especificación de
-        requerimientos de software.
-  \item El diseño de la arquitectura del sistema y la maquetación de interfaces (GUIs).
-  \item El desarrollo de los módulos principales de la plataforma web.
-  \item El despliegue en un entorno de pruebas en la nube.
-  \item La documentación técnica completa y la demostración funcional del sistema.
+    \item \textbf{Registro de solicitudes:} el wizard de 4 pasos actual será reemplazado por un flujo moderno, guiado e intuitivo.
+    \item \textbf{Catálogo de trámites TUPA:} presentación clara de los 80+ procedimientos con requisitos, costos, plazos y canales de atención, integrada al flujo de registro.
+    \item \textbf{Seguimiento de expedientes:} mejora del módulo de consulta de estado de trámite con vista de línea de tiempo y notificaciones.
+    \item \textbf{Gestión de pagos:} integración mejorada del proceso de verificación de voucher de pago, actualmente manual.
+    \item \textbf{Panel administrativo:} rediseño del panel de las dependencias para gestión eficiente de la bandeja de expedientes.
+    \item \textbf{Reportes y estadísticas:} módulo nuevo para generación de reportes de trámites procesados por dependencia y período.
 \end{enumerate}

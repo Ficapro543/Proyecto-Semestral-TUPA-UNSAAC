@@ -1,37 +1,29 @@
-% ── Objetivos de la Propuesta ─────────────────────────────────────────────────
 \section{Objetivos de la Propuesta}
-
+ 
 \subsection{Objetivo General}
-
-Desarrollar una plataforma web de gestión del TUPA de la UNSAAC que permita mejorar
-la administración de trámites, facilitar el acceso a la información institucional y
-optimizar el seguimiento de los procedimientos administrativos para toda la comunidad
-universitaria.
-
+ 
+\begin{quote}
+\textit{Rediseñar y optimizar el Sistema PLADDES de Trámite Documentario Virtual de la UNSAAC (\textit{tramite.unsaac.edu.pe}), migrando su arquitectura tecnológica a un stack moderno y mejorando la experiencia de usuario, la integración con el catálogo TUPA, el seguimiento de expedientes y la gestión administrativa; mediante el desarrollo de una plataforma web transaccional que automatice los procedimientos establecidos en el TUPA institucional, mejorando la eficiencia, transparencia y seguimiento de los trámites universitarios.}
+\end{quote}
+ 
 \subsection{Objetivos Específicos}
-
+ 
 \begin{enumerate}
-  \item Mejorar la interfaz y la experiencia de usuario de la plataforma actual,
-        aplicando principios de diseño centrado en el usuario (UX/UI).
-
-  \item Facilitar la consulta en línea de procedimientos, requisitos, costos y plazos
-        establecidos en el TUPA.
-
-  \item Optimizar el registro digital y el seguimiento en tiempo real de los trámites
-        administrativos.
-
-  \item Implementar un sistema de notificaciones que mantenga informados a los usuarios
-        sobre el estado y avance de sus procedimientos.
-
-  \item Mejorar la gestión y validación de documentos digitales asociados a cada
-        trámite.
-
-  \item Implementar un panel de control administrativo que permita a las oficinas
-        responsables gestionar de manera eficiente los procedimientos asignados.
-
-  \item Generar reportes y estadísticas sobre los trámites procesados, como soporte
-        para la toma de decisiones institucionales.
-
-  \item Garantizar la accesibilidad y disponibilidad continua de la plataforma web,
-        conforme a buenas prácticas de desarrollo y despliegue en la nube.
+    \item \textbf{Migrar el frontend} de AdminLTE 2/Bootstrap 3/jQuery a \textbf{React.js + Tailwind CSS}, eliminando la deuda tecnológica y mejorando el rendimiento y mantenibilidad del sistema. \textit{(Atiende P1)}
+ 
+    \item \textbf{Rediseñar el flujo de registro de solicitudes} con validación en tiempo real, mensajes de error claros y confirmación de envío explícita para el usuario. \textit{(Atiende P2)}
+ 
+    \item \textbf{Implementar un panel de seguimiento de expedientes} con vista de línea de tiempo, historial de estados y dependencia responsable visible en cada etapa. \textit{(Atiende P3)}
+ 
+    \item \textbf{Desarrollar un módulo de verificación de pagos} que permita al sistema cruzar el código de pago con los registros de caja, reduciendo la validación manual. \textit{(Atiende P4)}
+ 
+    \item \textbf{Implementar notificaciones automáticas por correo electrónico} al registrar una solicitud y en cada cambio de estado del expediente. \textit{(Atiende P5)}
+ 
+    \item \textbf{Establecer un mecanismo formal de gestión de mantenimientos programados} con avisos anticipados y página de estado del servicio. \textit{(Atiende P6)}
+ 
+    \item \textbf{Integrar el catálogo digital del TUPA} (procedimientos, requisitos, costos y plazos) directamente en el flujo de registro, de forma contextual según el tipo de trámite seleccionado. \textit{(Atiende P7)}
+ 
+    \item \textbf{Implementar guía de documentos requeridos} por tipo de trámite, indicando al usuario exactamente qué archivos adjuntar antes de enviar su solicitud. \textit{(Atiende P8)}
+ 
+    \item \textbf{Desarrollar un panel administrativo} para las dependencias (Decanatos, VRAC, DIGA, UTH, etc.) con bandeja de expedientes, asignación de responsables, reportes y estadísticas de productividad. \textit{(Atiende P9)}
 \end{enumerate}

@@ -1,49 +1,49 @@
-% ── Descripción de la Problemática ────────────────────────────────────────────
 \section{Descripción de la Problemática}
-
+ 
 \subsection{Situación actual}
-
-La UNSAAC cuenta con un sistema de gestión de procedimientos administrativos asociado
-al TUPA; sin embargo, dicho sistema presenta limitaciones significativas que afectan
-tanto a los estudiantes como al personal administrativo. Entre los problemas más
-evidentes se identifican los siguientes:
-
+ 
+Actualmente, la gestión de los procedimientos administrativos establecidos en el TUPA de la UNSAAC presenta diversas limitaciones. El sistema PLADDES fue desarrollado con tecnologías de generación anterior: \textbf{AdminLTE 2 + Bootstrap 3 + jQuery}, frameworks que ya no reciben actualizaciones activas de seguridad ni mejoras de rendimiento.
+ 
+Muchos procesos aún dependen de mecanismos manuales, documentación física y procedimientos descentralizados que dificultan la eficiencia institucional. Los estudiantes, egresados y demás administrados enfrentan constantemente problemas como largas colas, desconocimiento de requisitos, retrasos en la validación documentaria, falta de seguimiento en tiempo real de sus expedientes y poca transparencia respecto al estado de sus trámites.
+ 
+\subsection{Formulación del problema}
+ 
+\textbf{Problema general:} ¿De qué manera una plataforma web transaccional puede optimizar la gestión de los procedimientos administrativos del TUPA de la UNSAAC, mejorando la eficiencia, transparencia y seguimiento de los trámites universitarios?
+ 
+\textbf{Problemas específicos:}
 \begin{itemize}
-  \item \textbf{Accesibilidad deficiente:} la información sobre procedimientos,
-        requisitos, costos y plazos no se presenta de manera centralizada ni de fácil
-        acceso, lo que obliga a los usuarios a acudir de forma presencial a las
-        dependencias correspondientes para obtenerla.
-
-  \item \textbf{Ausencia de seguimiento en línea:} los usuarios no disponen de un
-        mecanismo digital que les permita verificar el estado actualizado de sus
-        trámites, generando incertidumbre y la necesidad de realizar consultas
-        reiteradas de manera presencial o telefónica.
-
-  \item \textbf{Validaciones y procesos manuales:} algunos procedimientos dependen aún
-        de revisiones realizadas manualmente, sin integración adecuada entre las
-        distintas oficinas responsables, lo que incrementa los tiempos de atención y
-        eleva la probabilidad de errores.
-
-  \item \textbf{Experiencia de usuario limitada:} la interfaz actual no responde a
-        estándares modernos de usabilidad, dificultando la navegación y la comprensión
-        de la información por parte de los usuarios.
-
-  \item \textbf{Sobrecarga administrativa:} la ausencia de herramientas digitales
-        eficientes genera una concentración de trabajo en las ventanillas de atención
-        presencial, afectando la productividad del personal y la calidad del servicio.
+    \item ¿Cómo reducir el tiempo de atención y procesamiento de los trámites administrativos?
+    \item ¿Cómo centralizar la información relacionada con requisitos, costos, plazos y estados de los procedimientos del TUPA?
+    \item ¿Cómo mejorar el seguimiento y la trazabilidad de los expedientes en tiempo real?
+    \item ¿Cómo optimizar la gestión documental y el flujo de trabajo entre las diferentes oficinas?
+    \item ¿Cómo implementar mecanismos digitales que disminuyan errores manuales y mejoren la transparencia administrativa?
 \end{itemize}
-
+ 
+\subsection{Problemas identificados en PLADDES}
+ 
+\begin{longtable}{>{\bfseries}p{1.2cm} p{12cm}}
+\toprule
+\textbf{Cód.} & \textbf{Problema} \\
+\midrule
+\endhead
+P1 & \textbf{Deuda tecnológica acumulada:} el frontend está construido sobre AdminLTE 2 con Bootstrap 3 y jQuery, tecnologías obsoletas desde 2019. Esto dificulta el mantenimiento, la incorporación de nuevas funcionalidades y la corrección de vulnerabilidades de seguridad. \\[0.3cm]
+P2 & \textbf{Experiencia de usuario deficiente en el formulario de solicitud:} el proceso de registro se presenta como un wizard de 4 pasos con una interfaz poco intuitiva, sin validación en tiempo real ni mensajes de error claros. \\[0.3cm]
+P3 & \textbf{Seguimiento de trámites limitado:} la opción ``Verifique AQUÍ su trámite'' no ofrece vista de línea de tiempo, historial de estados ni información sobre la dependencia responsable en cada momento. \\[0.3cm]
+P4 & \textbf{Verificación de pagos manual y sin integración:} el sistema exige adjuntar el voucher de pago, pero no existe verificación automática con los sistemas de caja de la UNSAAC. \\[0.3cm]
+P5 & \textbf{Ausencia de notificaciones activas:} el único mecanismo de comunicación es el correo electrónico ingresado manualmente, sin confirmaciones automáticas al registrar ni alertas al cambiar el estado del trámite. \\[0.3cm]
+P6 & \textbf{Problemas de disponibilidad:} el sistema muestra avisos del tipo ``NO REALICE NINGÚN TRÁMITE, ESTAMOS EN MANTENIMIENTO'' directamente en la página principal, generando desconfianza. \\[0.3cm]
+P7 & \textbf{Catálogo de trámites no integrado:} los requisitos, costos y plazos del TUPA están disponibles únicamente como documento PDF externo, desvinculado del sistema. \\[0.3cm]
+P8 & \textbf{Gestión documental sin estándar claro:} el sistema acepta múltiples formatos pero no guía al usuario sobre qué documentos específicos debe adjuntar según el tipo de trámite seleccionado. \\[0.3cm]
+P9 & \textbf{Sin panel administrativo de gestión:} las dependencias no cuentan con un panel dedicado para monitorear su bandeja de expedientes pendientes, asignar responsables ni generar reportes de productividad. \\
+\bottomrule
+\end{longtable}
+ 
 \subsection{Impacto del problema}
-
-La situación descrita tiene consecuencias concretas en la comunidad universitaria:
-retrasos en la resolución de trámites, desorganización en la gestión documental,
-percepción negativa del servicio administrativo e ineficiencia en el uso de los
-recursos humanos disponibles. Todo ello afecta la imagen institucional y la calidad
-de los servicios que la UNSAAC presta a sus usuarios.
-
-\subsection{Justificación de la solución}
-
-Ante esta problemática, resulta pertinente el desarrollo de una plataforma web moderna,
-intuitiva y centralizada que optimice la gestión de los procedimientos del TUPA, reduzca
-la carga de atención presencial, mejore la experiencia del usuario y proporcione
-herramientas de análisis y control a las oficinas administrativas.
+ 
+\begin{itemize}
+    \item \textbf{Retrasos en la atención:} trámites observados por documentación incompleta que pudo prevenirse con guía contextual en el formulario.
+    \item \textbf{Sobrecarga del personal} de la Unidad de Trámite Documentario por validaciones manuales de pagos y consultas telefónicas de seguimiento.
+    \item \textbf{Insatisfacción de la comunidad universitaria,} especialmente de estudiantes de las filiales que dependen exclusivamente del canal virtual.
+    \item \textbf{Riesgo de incumplimiento del silencio administrativo positivo} establecido en el TUPA (plazos de 5 a 30 días hábiles según el procedimiento).
+    \item \textbf{Imposibilidad de auditar} el desempeño administrativo por ausencia de estadísticas y reportes automatizados.
+\end{itemize}
