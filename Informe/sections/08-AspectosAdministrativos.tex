@@ -3,9 +3,24 @@
 
 \subsection{Cronograma}
 
-El cronograma abarca el semestre académico 2026-I, con una duración aproximada de
-dieciséis semanas. Las actividades principales se organizan en torno a los tres
-sprints y los tres entregables semestrales formales.
+El cronograma del proyecto se estructura en tres sprints que abarcan las 16 semanas
+del semestre académico 2026-I, siguiendo el marco de trabajo Scrum adaptado descrito
+en la sección de metodología. Cada sprint está alineado con un entregable formal del
+curso, lo que permite una evaluación progresiva del avance del proyecto.
+
+El equipo sostiene reuniones de coordinación tres veces por semana (martes, jueves y
+sábado), con una dedicación estimada de dos horas por sesión. Durante estas reuniones
+se realiza el seguimiento de tareas, la planificación del trabajo inmediato y la
+resolución de bloqueos, complementando las reuniones formales de sprint planning y
+sprint review propias de Scrum.
+
+El trabajo dio inicio el \textbf{martes 19 de mayo}. El \textbf{Sprint 1}, enfocado
+en la planificación y el levantamiento de requerimientos, tuvo una duración
+intensiva de una semana, culminando con la entrega del plan de proyecto, la
+especificación de requerimientos y el prototipado dinámico. El primer entregable
+formal debió completarse el \textbf{martes 26 de mayo}. Los sprints 2 y 3 continúan
+con el diseño, desarrollo, pruebas y despliegue del sistema durante el resto del
+semestre.
 
 \begin{figure}[H]
 \centering
@@ -28,32 +43,32 @@ sprints y los tres entregables semestrales formales.
   group/.style={draw=unsaacRed,fill=unsaacRed!15},
   group peaks height=0.15,
   milestone/.style={fill=unsaacRed,shape=diamond,inner sep=2pt},
-  today=10,
+  today=1,
   today rule/.style={draw=unsaacRed!80,dashed,line width=0.7pt},
   today label={\scriptsize Hoy},
   today label node/.append style={below=2pt,font=\tiny,color=unsaacRed},
 ]{1}{16}
 %--- Encabezados ---
 \gantttitle{Semestre 2026-I (16 semanas)}{16} \\
-\gantttitle{Marzo}{4}\gantttitle{Abril}{4}
-\gantttitle{Mayo}{4}\gantttitle{Junio}{4} \\
+\gantttitle{Mayo}{3}\gantttitle{Junio}{4}\gantttitle{Julio}{4}
+\gantttitle{Agosto}{4}\gantttitle{Set.}{1} \\
 \gantttitlelist{1,...,16}{1} \\
 
 %--- Sprint 1 ---
-\ganttgroup{Sprint 1 --- Planificación y Requerimientos}{1}{5} \\
-\ganttbar{Análisis del TUPA vigente}{1}{2} \\
-\ganttbar{Levantamiento de requerimientos}{2}{4} \\
-\ganttbar{Redacción del plan de proyecto}{3}{5} \\
-\ganttbar{Prototipado dinámico (Figma)}{4}{5} \\
-\ganttmilestone{Entregable 1 --- 28/05/2026}{5} \\[grid]
+\ganttgroup{Sprint 1 --- Planificación y Requerimientos}{1}{1} \\
+\ganttbar{Análisis del TUPA vigente}{1}{1} \\
+\ganttbar{Levantamiento de requerimientos}{1}{1} \\
+\ganttbar{Redacción del plan de proyecto}{1}{1} \\
+\ganttbar{Prototipado dinámico (Figma)}{1}{1} \\
+\ganttmilestone{Entregable 1 --- 26/05/2026}{1} \\[grid]
 
 %--- Sprint 2 ---
-\ganttgroup{Sprint 2 --- Diseño del Sistema}{6}{10} \\
-\ganttbar{Diseño de arquitectura del sistema}{6}{7} \\
-\ganttbar{Diseño del modelo de datos (BD)}{7}{8} \\
-\ganttbar{Diseño de GUIs en Figma}{6}{9} \\
-\ganttbar{Implementación de interfaces}{8}{10} \\
-\ganttbar{Configuración del repositorio GitHub}{6}{6} \\
+\ganttgroup{Sprint 2 --- Diseño del Sistema}{2}{10} \\
+\ganttbar{Diseño de arquitectura del sistema}{2}{5} \\
+\ganttbar{Diseño del modelo de datos (BD)}{5}{8} \\
+\ganttbar{Diseño de GUIs en Figma}{2}{8} \\
+\ganttbar{Implementación de interfaces}{7}{10} \\
+\ganttbar{Configuración del repositorio GitHub}{2}{2} \\
 \ganttmilestone{Entregable 2 (GUIs y BD)}{10} \\[grid]
 
 %--- Sprint 3 ---
@@ -70,10 +85,14 @@ sprints y los tres entregables semestrales formales.
 
 \subsection{Presupuesto}
 
-El presupuesto refleja los recursos necesarios para el desarrollo del sistema web
-durante el semestre 2026-I con un equipo de dos a tres integrantes. Los costos se
-agrupan en recursos humanos (valorizados referencialmente), infraestructura y
-servicios, y materiales.
+El presupuesto estimado considera los recursos necesarios para el desarrollo del
+sistema web durante el semestre 2026-I con un equipo de cuatro integrantes. Los
+costos se agrupan en cinco categorías: recursos humanos (valorizados a una tarifa
+referencial de mercado), equipamiento informático, software y licencias, servicios
+de hosting y dominio, y materiales de oficina e imprevistos. La estimación sigue
+criterios conservadores, priorizando herramientas con planes gratuitos o de bajo
+costo, dado que se trata de un proyecto académico autofinanciado por los
+integrantes del grupo.
 
 \begin{table}[H]
 \centering
@@ -88,53 +107,61 @@ servicios, y materiales.
 \color{white}\textbf{Cantidad} &
 \color{white}\textbf{Costo (S/.)} \\
 \midrule
-\multicolumn{5}{l}{\textbf{A. Recursos Humanos} (valorización académica referencial)} \\
+\multicolumn{5}{l}{\textbf{A. Recursos Humanos}} \\
 \midrule
-1 & Desarrollador Frontend (esfuerzo semestral)
-    & Horas & 80 & \num{0,00} \\
-2 & Desarrollador Backend (esfuerzo semestral)
-    & Horas & 80 & \num{0,00} \\
-3 & Diseñador UX / Documentador
-    & Horas & 60 & \num{0,00} \\
-\multicolumn{4}{r}{\textit{Subtotal A}} & \textbf{\num{0,00}} \\
+1 & Programador iniciante (4 integrantes)
+    & Horas & 384 & \num{7680,00} \\
+\multicolumn{4}{r}{\textit{Subtotal A}} & \textbf{\num{7680,00}} \\
 \midrule
-\multicolumn{5}{l}{\textbf{B. Infraestructura y Servicios}} \\
+\multicolumn{5}{l}{\textbf{B. Equipamiento}} \\
 \midrule
-4 & Acceso a internet (4 meses $\times$ 3 integrantes)
-    & Mes & 12 & \num{360,00} \\
-5 & Registro de dominio web (.com / .pe) --- 1 año
+2 & Computadoras portátiles (costo de uso semestral, 4 unid.)
+    & Global & 4 & \num{800,00} \\
+3 & Servidor de desarrollo (VPS, 4 meses)
+    & Mes & 4 & \num{120,00} \\
+4 & Periféricos (mouse, teclado, hub USB)
+    & Global & 1 & \num{80,00} \\
+\multicolumn{4}{r}{\textit{Subtotal B}} & \textbf{\num{1000,00}} \\
+\midrule
+\multicolumn{5}{l}{\textbf{C. Software y Licencias}} \\
+\midrule
+5 & Claude Pro (plan más barato, 4 meses)
+    & Mes & 4 & \num{300,00} \\
+6 & Cuenta GitHub (plan gratuito)
+    & --- & --- & \num{0,00} \\
+7 & Cuenta Figma (plan gratuito)
+    & --- & --- & \num{0,00} \\
+\multicolumn{4}{r}{\textit{Subtotal C}} & \textbf{\num{300,00}} \\
+\midrule
+\multicolumn{5}{l}{\textbf{D. Hosting y Dominio}} \\
+\midrule
+8 & Registro de dominio (.com / .pe, 1 año)
     & Año & 1 & \num{50,00} \\
-6 & Hosting en la nube (Railway / Render --- nivel gratuito)
+9 & Hosting en la nube (Railway / Render --- gratuito)
     & --- & --- & \num{0,00} \\
-7 & Herramienta de diseño Figma (plan gratuito)
-    & --- & --- & \num{0,00} \\
-8 & GitHub (plan gratuito)
-    & --- & --- & \num{0,00} \\
-9 & Servicio de correo / notificaciones (SendGrid gratuito)
-    & --- & --- & \num{0,00} \\
-\multicolumn{4}{r}{\textit{Subtotal B}} & \textbf{\num{410,00}} \\
+\multicolumn{4}{r}{\textit{Subtotal D}} & \textbf{\num{50,00}} \\
 \midrule
-\multicolumn{5}{l}{\textbf{C. Materiales y Otros}} \\
+\multicolumn{5}{l}{\textbf{E. Materiales de Oficina e Imprevistos}} \\
 \midrule
-10 & Impresión de entregables y documentos
-    & Hojas & 120 & \num{18,00} \\
-11 & Material de escritorio (lapiceros, folders, etc.)
-    & Global & 1 & \num{20,00} \\
-12 & Contingencias (5\,\% del total de B + C)
-    & --- & --- & \num{22,40} \\
-\multicolumn{4}{r}{\textit{Subtotal C}} & \textbf{\num{60,40}} \\
+10 & Materiales de oficina (lapiceros, folders, etc.)
+    & Global & 1 & \num{30,00} \\
+11 & Imprevistos (5\,\% del subtotal de B + C + D)
+    & --- & --- & \num{67,50} \\
+\multicolumn{4}{r}{\textit{Subtotal E}} & \textbf{\num{97,50}} \\
 \midrule
 \rowcolor{lightGray}
-\multicolumn{4}{r}{\textbf{TOTAL GENERAL}} & \textbf{S/.\,\num{470,40}} \\
+\multicolumn{4}{r}{\textbf{TOTAL GENERAL}} & \textbf{S/.\,\num{9127,50}} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{supuesto}
-\small\textbf{Nota sobre recursos humanos:} los costos de la categoría A se
-reportan en cero (S/.\,\num{0,00}) dado que corresponden al trabajo académico de los
-integrantes del equipo, quienes no perciben remuneración por el desarrollo de
-este proyecto universitario. El gasto de internet se incluye como costo operativo
-existente durante el semestre. El total asciende a \textbf{S/.\,\num{470,40}},
-financiados íntegramente por los integrantes del grupo.
+\small\textbf{Nota:} Los costos de recursos humanos (A) se valorizan a una tarifa
+referencial de S/.\,20,00 por hora para programadores iniciantes, considerando
+2 horas diarias, 3 días por semana (martes, jueves y sábado), durante las
+16 semanas del semestre (384 horas totales). El equipamiento (B) considera el
+costo de uso y desgaste semestral de las laptops personales de los integrantes.
+El software (C) incluye una suscripción compartida de Claude Pro. El total
+asciende a \textbf{S/.\,\num{9127,50}}, financiado íntegramente por los
+integrantes del grupo.
 \end{supuesto}
