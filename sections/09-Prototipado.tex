@@ -1,0 +1,161 @@
+% ── Prototipado ──────────────────────────────────────────────────────────────
+\section{Prototipado}
+
+\subsection{Prototipado Dinámico}
+
+\subsubsection{Descripción y propósito}
+
+El prototipado dinámico constituye una representación interactiva del sistema a
+desarrollar, elaborada antes de la implementación definitiva del código. Su propósito
+principal es visualizar el flujo de navegación, la distribución de los elementos de
+la interfaz y la experiencia general del usuario, permitiendo detectar inconsistencias
+de diseño y validar los requerimientos funcionales en una etapa temprana del proyecto.
+
+A diferencia de los mockups estáticos, el prototipo dinámico permite simular la
+interacción del usuario con la plataforma ---clics en botones, transiciones entre
+vistas, formularios de registro y flujos de consulta--- sin necesidad de código
+funcional. Esto facilita la retroalimentación del docente y de los usuarios potenciales
+antes de comprometer esfuerzo de desarrollo, reduciendo el riesgo de construir
+interfaces que no satisfagan las necesidades reales de los actores del sistema.
+
+\subsubsection{Herramienta utilizada}
+
+El prototipo dinámico se elaborará utilizando \textbf{Figma}, herramienta estándar del
+sector para diseño de interfaces y prototipado interactivo. Figma permite crear
+componentes reutilizables, establecer enlaces de navegación entre pantallas y compartir
+el prototipo mediante un enlace web para su revisión, sin instalación de software
+adicional por parte del evaluador.
+
+\subsubsection{Vistas y flujos prototipados}
+
+El prototipo dinámico contempla las siguientes pantallas y flujos de interacción
+principales:
+
+\begin{table}[H]
+\centering
+\small
+\caption{Vistas contempladas en el prototipo dinámico}
+\begin{tabular}{C{0.5cm} L{3.8cm} L{8.8cm}}
+\toprule
+\rowcolor{unsaacRed}
+\color{white}\textbf{N.º} &
+\color{white}\textbf{Vista / Módulo} &
+\color{white}\textbf{Descripción} \\
+\midrule
+1 & Página de inicio &
+Portal principal de la plataforma con acceso a la consulta del TUPA,
+inicio de sesión y novedades institucionales. \\
+\addlinespace[3pt]
+2 & Consulta del TUPA &
+Buscador y listado de procedimientos con filtros por tipo, área
+responsable y costo; detalle de cada procedimiento con requisitos y
+plazos. \\
+\addlinespace[3pt]
+3 & Registro / Inicio de sesión &
+Formulario de acceso para estudiantes y personal administrativo, con
+opción de recuperación de contraseña. \\
+\addlinespace[3pt]
+4 & Registro de solicitud &
+Formulario paso a paso para iniciar un trámite, incluyendo la carga
+de documentos digitales adjuntos. \\
+\addlinespace[3pt]
+5 & Seguimiento de trámites &
+Panel del usuario con historial de solicitudes, estado actual
+(recibido, en proceso, observado, resuelto) y línea de tiempo del
+trámite. \\
+\addlinespace[3pt]
+6 & Centro de notificaciones &
+Vista de alertas sobre cambios de estado en los trámites del usuario,
+con marcadores de leído/no leído. \\
+\addlinespace[3pt]
+7 & Panel administrativo &
+Bandeja de trámites recibidos para el personal de oficina, con
+herramientas de validación documental y cambio de estado. \\
+\addlinespace[3pt]
+8 & Módulo de reportes &
+Gráficas y tablas con estadísticas de trámites procesados, filtrables
+por período, tipo y estado de resolución. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Flujos de interacción prototipados}
+
+El prototipo dinámico representará los dos flujos principales del sistema:
+
+\medskip
+\textbf{Flujo del usuario estudiante:}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.0cm,
+  box/.style={
+    draw=unsaacRed, fill=unsaacRed!8, rounded corners=3pt,
+    text width=2.3cm, align=center, font=\tiny, minimum height=0.7cm
+  },
+  arr/.style={->, >=stealth, draw=unsaacGray, thick}
+]
+  \node[box] (A) {Inicio de sesión};
+  \node[box, right=of A] (B) {Búsqueda de procedimiento};
+  \node[box, right=of B] (C) {Consulta de requisitos};
+  \node[box, right=of C] (D) {Registro de solicitud};
+  \node[box, right=of D] (E) {Seguimiento del trámite};
+  \draw[arr] (A)--(B);
+  \draw[arr] (B)--(C);
+  \draw[arr] (C)--(D);
+  \draw[arr] (D)--(E);
+\end{tikzpicture}
+\end{center}
+
+\medskip
+\textbf{Flujo del administrador:}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.0cm,
+  box/.style={
+    draw=unsaacGray, fill=lightGray, rounded corners=3pt,
+    text width=2.4cm, align=center, font=\tiny, minimum height=0.7cm
+  },
+  arr/.style={->, >=stealth, draw=unsaacGray, thick}
+]
+  \node[box] (A) {Acceso al panel};
+  \node[box, right=of A] (B) {Revisión de solicitudes};
+  \node[box, right=of B] (C) {Validación de documentos};
+  \node[box, right=of C] (D) {Cambio de estado};
+  \node[box, right=of D] (E) {Cierre del trámite};
+  \draw[arr] (A)--(B);
+  \draw[arr] (B)--(C);
+  \draw[arr] (C)--(D);
+  \draw[arr] (D)--(E);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Alcance dentro del primer entregable}
+
+En el marco del presente primer entregable, el prototipo dinámico se presenta como
+una propuesta inicial de diseño que acompaña al plan de proyecto. Su alcance incluye:
+
+\begin{itemize}
+  \item La definición de la paleta de colores, tipografía y guía de estilo visual de
+        la plataforma, con identidad afín a los colores institucionales de la UNSAAC.
+  \item El diseño de las vistas descritas en la tabla anterior, con navegación funcional
+        entre pantallas mediante los prototipos interactivos de Figma.
+  \item La representación del flujo principal del usuario estudiante y del flujo del
+        administrador, tal como se detallan en los diagramas anteriores.
+\end{itemize}
+
+El prototipo no constituye la implementación final de la plataforma; su función es
+servir como artefacto de comunicación y validación entre el equipo de desarrollo, el
+docente y los usuarios potenciales, sentando las bases para el diseño definitivo que
+se elaborará en el segundo entregable semestral.
+
+\subsubsection{Enlace al prototipo}
+
+\begin{supuesto}
+\small\textbf{Propuesta inicial:} El enlace al prototipo interactivo en Figma será
+incluido aquí una vez concluido su diseño. Se recomienda publicarlo en modalidad
+\emph{View Only} para facilitar la revisión por parte del docente y los usuarios
+de prueba:\\[4pt]
+\texttt{[Enlace al prototipo Figma --- por completar antes de la entrega formal]}
+\end{supuesto}

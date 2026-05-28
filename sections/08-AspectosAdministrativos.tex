@@ -1,0 +1,140 @@
+% ── Aspectos Administrativos ──────────────────────────────────────────────────
+\section{Aspectos Administrativos}
+
+\subsection{Cronograma}
+
+El cronograma abarca el semestre académico 2026-I, con una duración aproximada de
+dieciséis semanas. Las actividades principales se organizan en torno a los tres
+sprints y los tres entregables semestrales formales.
+
+\begin{figure}[H]
+\centering
+\caption{Diagrama de Gantt --- Semestre 2026-I}
+\vspace{0.4cm}
+\begin{ganttchart}[
+  hgrid,
+  vgrid={*{1}{draw=gray!25}},
+  x unit=0.43cm,
+  y unit title=0.55cm,
+  y unit chart=0.50cm,
+  title height=1,
+  title label font=\scriptsize\bfseries,
+  bar label font=\tiny\raggedleft,
+  bar label node/.append style={align=right},
+  group label font=\small\bfseries\color{unsaacRed},
+  milestone label font=\tiny\itshape,
+  bar/.style={fill=unsaacRed!65,rounded corners=1.5pt},
+  bar incomplete/.style={fill=unsaacRed!25,rounded corners=1.5pt},
+  group/.style={draw=unsaacRed,fill=unsaacRed!15},
+  group peaks height=0.15,
+  milestone/.style={fill=unsaacRed,shape=diamond,inner sep=2pt},
+  today=10,
+  today rule/.style={draw=unsaacRed!80,dashed,line width=0.7pt},
+  today label={\scriptsize Hoy},
+  today label node/.append style={below=2pt,font=\tiny,color=unsaacRed},
+]{1}{16}
+%--- Encabezados ---
+\gantttitle{Semestre 2026-I (16 semanas)}{16} \\
+\gantttitle{Marzo}{4}\gantttitle{Abril}{4}
+\gantttitle{Mayo}{4}\gantttitle{Junio}{4} \\
+\gantttitlelist{1,...,16}{1} \\
+
+%--- Sprint 1 ---
+\ganttgroup{Sprint 1 --- Planificación y Requerimientos}{1}{5} \\
+\ganttbar{Análisis del TUPA vigente}{1}{2} \\
+\ganttbar{Levantamiento de requerimientos}{2}{4} \\
+\ganttbar{Redacción del plan de proyecto}{3}{5} \\
+\ganttbar{Prototipado dinámico (Figma)}{4}{5} \\
+\ganttmilestone{Entregable 1 --- 28/05/2026}{5} \\[grid]
+
+%--- Sprint 2 ---
+\ganttgroup{Sprint 2 --- Diseño del Sistema}{6}{10} \\
+\ganttbar{Diseño de arquitectura del sistema}{6}{7} \\
+\ganttbar{Diseño del modelo de datos (BD)}{7}{8} \\
+\ganttbar{Diseño de GUIs en Figma}{6}{9} \\
+\ganttbar{Implementación de interfaces}{8}{10} \\
+\ganttbar{Configuración del repositorio GitHub}{6}{6} \\
+\ganttmilestone{Entregable 2 (GUIs y BD)}{10} \\[grid]
+
+%--- Sprint 3 ---
+\ganttgroup{Sprint 3 --- Desarrollo, Pruebas y Cierre}{11}{16} \\
+\ganttbar{Implementación de módulos principales}{11}{14} \\
+\ganttbar{Panel administrativo y reportes}{12}{14} \\
+\ganttbar{Sistema de notificaciones}{13}{15} \\
+\ganttbar{Pruebas funcionales y depuración}{14}{15} \\
+\ganttbar{Despliegue en la nube}{15}{16} \\
+\ganttbar{Documentación técnica final}{15}{16} \\
+\ganttmilestone{Entregable 3 --- Versión final}{16}
+\end{ganttchart}
+\end{figure}
+
+\subsection{Presupuesto}
+
+El presupuesto refleja los recursos necesarios para el desarrollo del sistema web
+durante el semestre 2026-I con un equipo de dos a tres integrantes. Los costos se
+agrupan en recursos humanos (valorizados referencialmente), infraestructura y
+servicios, y materiales.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Presupuesto estimado del proyecto (en Soles peruanos --- S/.)}
+\begin{tabular}{C{0.5cm} L{5.2cm} C{1.8cm} C{1.6cm} R{2.0cm}}
+\toprule
+\rowcolor{unsaacRed}
+\color{white}\textbf{N.º} &
+\color{white}\textbf{Concepto} &
+\color{white}\textbf{Unidad} &
+\color{white}\textbf{Cantidad} &
+\color{white}\textbf{Costo (S/.)} \\
+\midrule
+\multicolumn{5}{l}{\textbf{A. Recursos Humanos} (valorización académica referencial)} \\
+\midrule
+1 & Desarrollador Frontend (esfuerzo semestral)
+    & Horas & 80 & \num{0,00} \\
+2 & Desarrollador Backend (esfuerzo semestral)
+    & Horas & 80 & \num{0,00} \\
+3 & Diseñador UX / Documentador
+    & Horas & 60 & \num{0,00} \\
+\multicolumn{4}{r}{\textit{Subtotal A}} & \textbf{\num{0,00}} \\
+\midrule
+\multicolumn{5}{l}{\textbf{B. Infraestructura y Servicios}} \\
+\midrule
+4 & Acceso a internet (4 meses $\times$ 3 integrantes)
+    & Mes & 12 & \num{360,00} \\
+5 & Registro de dominio web (.com / .pe) --- 1 año
+    & Año & 1 & \num{50,00} \\
+6 & Hosting en la nube (Railway / Render --- nivel gratuito)
+    & --- & --- & \num{0,00} \\
+7 & Herramienta de diseño Figma (plan gratuito)
+    & --- & --- & \num{0,00} \\
+8 & GitHub (plan gratuito)
+    & --- & --- & \num{0,00} \\
+9 & Servicio de correo / notificaciones (SendGrid gratuito)
+    & --- & --- & \num{0,00} \\
+\multicolumn{4}{r}{\textit{Subtotal B}} & \textbf{\num{410,00}} \\
+\midrule
+\multicolumn{5}{l}{\textbf{C. Materiales y Otros}} \\
+\midrule
+10 & Impresión de entregables y documentos
+    & Hojas & 120 & \num{18,00} \\
+11 & Material de escritorio (lapiceros, folders, etc.)
+    & Global & 1 & \num{20,00} \\
+12 & Contingencias (5\,\% del total de B + C)
+    & --- & --- & \num{22,40} \\
+\multicolumn{4}{r}{\textit{Subtotal C}} & \textbf{\num{60,40}} \\
+\midrule
+\rowcolor{lightGray}
+\multicolumn{4}{r}{\textbf{TOTAL GENERAL}} & \textbf{S/.\,\num{470,40}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{supuesto}
+\small\textbf{Nota sobre recursos humanos:} los costos de la categoría A se
+reportan en cero (S/.\,\num{0,00}) dado que corresponden al trabajo académico de los
+integrantes del equipo, quienes no perciben remuneración por el desarrollo de
+este proyecto universitario. El gasto de internet se incluye como costo operativo
+existente durante el semestre. El total asciende a \textbf{S/.\,\num{470,40}},
+financiados íntegramente por los integrantes del grupo.
+\end{supuesto}

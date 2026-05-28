@@ -1,0 +1,94 @@
+\documentclass[12pt,a4paper]{article}
+
+%% Desactivar shorthands de babel español para evitar conflictos con TikZ
+\PassOptionsToPackage{es-noshorthands}{babel}
+\usepackage{formato}
+
+%% Paquetes adicionales para el contenido
+\usepackage{pgfgantt}
+\usepackage{mdframed}
+\usepackage{siunitx}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+%% Colores personalizados
+\definecolor{unsaacRed}{RGB}{155,27,48}
+\definecolor{unsaacGray}{RGB}{90,90,90}
+\definecolor{lightGray}{RGB}{245,245,245}
+\definecolor{accent}{RGB}{200,50,70}
+
+%% TikZ librerías adicionales
+\usetikzlibrary{shapes,arrows}
+
+%% Nuevos tipos de columna
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+%% Entorno supuesto (mdframed)
+\newmdenv[
+  backgroundcolor=lightGray,
+  linecolor=unsaacGray,
+  linewidth=0.5pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=6pt,
+  skipbelow=6pt
+]{supuesto}
+
+%% Siunitx
+\sisetup{output-decimal-marker={,}}
+
+%% =====================================================
+%% CONFIGURACIÓN DE LOS DATOS DEL DOCUMENTO
+%% =====================================================
+\documenttitle{Plataforma Web para la Optimización de la Gestión del TUPA de la UNSAAC}
+\subject{Ingeniería de Software}
+\advisor{Mg. [Nombre completo del docente]}
+\semester{2026 - I}
+
+%% =====================================================
+%% REGISTRO DE AUTORES/ESTUDIANTES
+%% =====================================================
+\addauthor{[Apellidos, Nombres] --- Código: XXXXXXXX}
+\addauthor{[Apellidos, Nombres] --- Código: XXXXXXXX}
+\addauthor{[Apellidos, Nombres] --- Código: XXXXXXXX}
+
+%% =====================================================
+%% INICIO DEL DOCUMENTO
+%% =====================================================
+\begin{document}
+
+%% PORTADA
+\thispagestyle{empty}
+\makeatletter
+\input{portada}
+\makeatother
+
+%% SECCIONES PRELIMINARES CON NUMERACIÓN ROMANA
+\startpreliminary
+\clearpage
+
+%% TABLA DE CONTENIDOS
+\tableofcontents
+\clearpage
+
+%% CONTENIDO PRINCIPAL CON NUMERACIÓN ARÁBIGA
+\startmain
+
+\input{sections/01-Presentacion}
+\input{sections/02-AmbitoSolicitud}
+\input{sections/03-Problematica}
+\input{sections/04-Objetivos}
+\input{sections/05-Metodologia}
+\input{sections/06-Resultados}
+\input{sections/07-Participantes}
+\input{sections/08-AspectosAdministrativos}
+\input{sections/09-Prototipado}
+
+%% BIBLIOGRAFÍA
+\printreferences[Referencias Bibliográficas]
+
+\end{document}

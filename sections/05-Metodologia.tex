@@ -1,0 +1,200 @@
+% ── Metodología ───────────────────────────────────────────────────────────────
+\section{Metodología}
+
+\subsection{Metodología Adoptada: Scrum Adaptado}
+
+Para el desarrollo del presente proyecto se adopta el marco de trabajo \textbf{Scrum},
+en una versión adaptada al contexto académico semestral. Scrum es un marco ágil que
+organiza el trabajo en iteraciones cortas denominadas \emph{sprints}, favoreciendo la
+entrega incremental de valor, la revisión continua del progreso y la adaptación ante los
+cambios que puedan surgir durante el desarrollo.
+
+\medskip
+\textbf{Justificación de la elección:}
+
+\begin{itemize}
+  \item El proyecto tiene un alcance acotado al semestre académico, con fechas de
+        entrega definidas, lo que es directamente compatible con la planificación en
+        sprints de duración fija.
+
+  \item El equipo es pequeño (dos a tres integrantes), lo que facilita la autogestión,
+        la comunicación directa y la toma de decisiones sin estructuras jerárquicas
+        complejas.
+
+  \item La naturaleza del problema requiere iteraciones de diseño y retroalimentación
+        constante, especialmente en las interfaces de usuario y los flujos de trámites.
+
+  \item Scrum permite alinear cada sprint con los entregables formales del curso,
+        haciendo la metodología coherente con el calendario académico establecido.
+\end{itemize}
+
+Se definen tres sprints principales, de aproximadamente tres a cinco semanas de duración
+cada uno, articulados con los tres entregables semestrales del proyecto.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Distribución de sprints por entregable semestral}
+\begin{tabular}{C{1.3cm} L{3.2cm} L{7.8cm}}
+\toprule
+\rowcolor{unsaacRed}
+\color{white}\textbf{Sprint} &
+\color{white}\textbf{Período aprox.} &
+\color{white}\textbf{Entregable principal} \\
+\midrule
+1 & Semanas 1--5 \newline (mar.--may.) &
+Plan de proyecto, especificación de requerimientos y prototipado
+dinámico (primer entregable semestral). \\
+\addlinespace[4pt]
+2 & Semanas 6--10 \newline (abr.--may.) &
+Diseño de interfaces (GUIs), diseño de base de datos y repositorio
+Git configurado (segundo entregable semestral). \\
+\addlinespace[4pt]
+3 & Semanas 11--16 \newline (may.--jun.) &
+Implementación de módulos, pruebas funcionales, despliegue en la
+nube y documentación final (tercer entregable semestral). \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Actividades Principales}
+
+Las actividades del proyecto se agrupan en cuatro fases que atraviesan los sprints
+definidos:
+
+\subsubsection{Fase 1 --- Ingeniería de Requerimientos (Sprint 1)}
+
+\begin{itemize}
+  \item Revisión y análisis del TUPA vigente de la UNSAAC.
+  \item Identificación de usuarios, roles y casos de uso principales del sistema.
+  \item Levantamiento y documentación de requerimientos funcionales y no funcionales.
+  \item Elaboración del plan de proyecto y del prototipo dinámico inicial.
+\end{itemize}
+
+\subsubsection{Fase 2 --- Diseño del Sistema (Sprint 2)}
+
+\begin{itemize}
+  \item Diseño de la arquitectura del sistema (patrón cliente-servidor, MVC o similar).
+  \item Diseño del modelo de datos relacional.
+  \item Elaboración de las interfaces gráficas (mockups y prototipo interactivo en
+        Figma).
+  \item Configuración del repositorio de control de versiones en GitHub con flujo de
+        trabajo colaborativo.
+\end{itemize}
+
+\subsubsection{Fase 3 --- Desarrollo e Implementación (Sprint 3)}
+
+\begin{itemize}
+  \item Implementación del módulo de consulta del TUPA.
+  \item Implementación del módulo de registro y seguimiento de trámites.
+  \item Implementación del panel de control administrativo.
+  \item Implementación del sistema de notificaciones y gestión documental.
+  \item Desarrollo del módulo de generación de reportes y estadísticas.
+\end{itemize}
+
+\subsubsection{Fase 4 --- Pruebas, Despliegue y Documentación (Sprint 3)}
+
+\begin{itemize}
+  \item Ejecución de pruebas funcionales y de usabilidad por módulo.
+  \item Corrección de errores y ajustes de mejora post-prueba.
+  \item Despliegue de la aplicación en un servidor en la nube.
+  \item Elaboración de la documentación técnica final del proyecto.
+\end{itemize}
+
+\subsection{Infraestructura y Recursos}
+
+\subsubsection{Tecnologías de desarrollo}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Stack tecnológico propuesto}
+\begin{tabular}{L{2.6cm} L{3.4cm} L{6.8cm}}
+\toprule
+\rowcolor{unsaacRed}
+\color{white}\textbf{Capa} &
+\color{white}\textbf{Tecnología} &
+\color{white}\textbf{Justificación} \\
+\midrule
+Frontend &
+React.js / Next.js &
+Framework moderno, amplia comunidad, soporte para renderizado
+del lado del servidor (SSR) y excelente experiencia de usuario. \\
+\addlinespace[3pt]
+Backend &
+Node.js + Express &
+Ecosistema JavaScript unificado, rápido prototipado, facilita
+la construcción de APIs RESTful. \\
+\addlinespace[3pt]
+Base de datos &
+PostgreSQL &
+SGBD relacional robusto con soporte para integridad referencial
+y consultas complejas, adecuado para la gestión de trámites. \\
+\addlinespace[3pt]
+Diseño / Prototipo &
+Figma &
+Herramienta estándar del sector para UI/UX, colaborativa y con
+plan gratuito suficiente para el alcance del proyecto. \\
+\addlinespace[3pt]
+Control de versiones &
+Git + GitHub &
+Estándar de la industria; permite flujo colaborativo,
+revisión de código y trazabilidad del historial de cambios. \\
+\addlinespace[3pt]
+Despliegue &
+Railway / Render &
+Plataformas de despliegue en la nube con niveles gratuitos
+aptos para proyectos académicos de bajo tráfico. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{supuesto}
+\small\textbf{Supuesto razonable:} El stack tecnológico puede ajustarse según las
+competencias específicas del equipo o indicaciones del docente. Los servicios de
+despliegue seleccionados ofrecen niveles gratuitos suficientes para el alcance
+semestral del proyecto.
+\end{supuesto}
+
+\subsubsection{Recursos de hardware}
+
+\begin{itemize}
+  \item Computadoras personales de los integrantes del equipo (mínimo 8\,GB de RAM,
+        procesador de cuatro núcleos o superior).
+  \item Acceso a internet de banda ancha para trabajo colaborativo, consumo de
+        servicios en línea y despliegue en la nube.
+\end{itemize}
+
+\subsubsection{Recursos humanos}
+
+El equipo de trabajo está conformado por dos a tres estudiantes de la Escuela
+Profesional de Ingeniería Informática y de Sistemas, bajo la supervisión académica
+del docente del curso. Las responsabilidades se distribuyen entre las áreas de diseño
+e ingeniería de requerimientos, desarrollo frontend, desarrollo backend y
+documentación técnica.
+
+\subsection{Evaluación y Monitoreo}
+
+El seguimiento del proyecto se realizará mediante los siguientes mecanismos:
+
+\begin{itemize}
+  \item \textbf{Reuniones de sprint:} al inicio de cada sprint, el equipo define las
+        tareas a completar (\textit{sprint planning}); al final, se realiza una revisión
+        del incremento logrado (\textit{sprint review}) y una retrospectiva breve.
+
+  \item \textbf{Tablero Kanban:} se utilizará un tablero digital (GitHub Projects o
+        Trello) para visualizar el estado de las tareas en tres columnas: \textit{Por
+        hacer}, \textit{En progreso} y \textit{Completado}.
+
+  \item \textbf{Control de versiones:} el historial de commits en GitHub actuará como
+        registro continuo del avance y permitirá la trazabilidad de los cambios
+        realizados por cada integrante.
+
+  \item \textbf{Entregables semestrales:} cada entregable formal constituye un hito de
+        evaluación frente al docente del curso, permitiendo retroalimentación externa
+        al equipo en momentos clave del ciclo de vida del proyecto.
+
+  \item \textbf{Verificación de requerimientos:} al inicio del Sprint 2 se verificará
+        que el diseño del sistema sea consistente con la especificación de requerimientos
+        elaborada en el Sprint 1, conforme al criterio AG-C12.02.
+\end{itemize}

@@ -1,0 +1,346 @@
+%% =====================================================
+%% formato.sty - Paquete de formato para informes académicos
+%% Versión adaptada para UNSAAC
+%% =====================================================
+\ProvidesPackage{formato}
+
+%% =====================================================
+%% PAQUETES BÁSICOS
+%% =====================================================
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[spanish]{babel}
+\renewcommand{\es@scroman}[1]{#1}
+\RequirePackage{graphicx}
+\RequirePackage{etoolbox}
+\RequirePackage{titlesec}
+\RequirePackage{setspace}
+\RequirePackage{titletoc}
+\RequirePackage{lmodern}
+\RequirePackage{geometry}
+\geometry{
+  a4paper,
+  margin=2.54cm
+}
+\RequirePackage{fancyhdr}
+
+%% =====================================================
+%% FORMATO Y TIPOGRAFÍA
+%% =====================================================
+\RequirePackage{lscape}
+\RequirePackage{array}
+\RequirePackage{multirow}
+\RequirePackage{multicol}
+\RequirePackage{booktabs}
+\RequirePackage{float}
+\RequirePackage{courier}
+\RequirePackage{enumitem}
+
+%% =====================================================
+%% MATEMÁTICAS
+%% =====================================================
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amsfonts}
+\RequirePackage{amsthm}
+\RequirePackage{mathtools}
+
+%% =====================================================
+%% GRÁFICOS Y COLORES
+%% =====================================================
+\RequirePackage[table]{xcolor}
+\RequirePackage{wrapfig}
+\RequirePackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+%% =====================================================
+%% CÓDIGO FUENTE
+%% =====================================================
+\RequirePackage{listings}
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+
+%% =====================================================
+%% COLORES PERSONALIZADOS
+%% =====================================================
+\definecolor{HeaderBlue}{RGB}{0, 48, 96}
+\definecolor{RowGray}{RGB}{242, 242, 242}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+%% =====================================================
+%% ESTILO DE CÓDIGO (listings)
+%% =====================================================
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%% =====================================================
+%% ESTILOS TIKZ
+%% =====================================================
+\tikzset{
+  bloque/.style={rectangle, draw, fill=blue!10, text width=3.2cm,
+                 text centered, rounded corners, minimum height=0.9cm,
+                 font=\small},
+  decision/.style={diamond, draw, fill=orange!15, text width=2.4cm,
+                   text centered, aspect=2, font=\small},
+  flecha/.style={-{Stealth}, thick}
+}
+
+%% =====================================================
+%% HIPERVÍNCULOS
+%% =====================================================
+\RequirePackage[hyphens]{url}
+\RequirePackage[hidelinks]{hyperref}
+
+%% =====================================================
+%% ENCABEZADO Y PIE DE PÁGINA
+%% =====================================================
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{27.2pt}
+
+\fancyhead[L]{\includegraphics[height=0.8cm]{images/Logo-UNSAAC.png}\hspace{0.5em}\@subject}
+\fancyhead[R]{\@semester\hspace{0.5em}\includegraphics[height=0.8cm]{images/Logo-Informatica.png}}
+\fancyfoot[L]{\@documenttitle}
+\fancyfoot[R]{\thepage}
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+
+%% =====================================================
+%% BIBLIOGRAFÍA EN ESTILO APA
+%% =====================================================
+\RequirePackage{csquotes}
+\RequirePackage[
+    backend=biber,
+    style=apa,
+    natbib=true,
+    sorting=nyt,
+    maxcitenames=2,
+    maxbibnames=99,
+    uniquename=false,
+    uniquelist=false,
+    hyperref=true,
+    backref=false,
+    isbn=false,
+    url=true,
+    doi=true,
+    eprint=false
+]{biblatex}
+
+\setlength\bibhang{1.27cm}
+\setlength\bibitemsep{1\baselineskip}
+\setlength{\biblabelsep}{0pt}
+\renewcommand*{\bibfont}{\normalfont\normalsize}
+
+\setcounter{biburlnumpenalty}{9000}
+\setcounter{biburlucpenalty}{9000}
+\setcounter{biburllcpenalty}{9000}
+
+\renewbibmacro{in:}{%
+  \ifboolexpr{%
+    test {\ifentrytype{article}}%
+    or
+    test {\ifentrytype{inproceedings}}%
+  }%
+    {}%
+    {\printtext{\bibstring{in}\intitlepunct}}}
+
+\IfFileExists{bibliografia.bib}{\addbibresource{bibliografia.bib}}{}
+
+%% =====================================================
+%% CONFIGURACIÓN DE TÍTULOS
+%% =====================================================
+\titleformat{\section}
+  {\centering\bfseries\normalsize}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsection}
+  {\raggedright\bfseries\normalsize}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsubsection}
+  {\raggedright\bfseries\itshape\normalsize}
+  {}
+  {0em}
+  {}
+
+\titleformat{\paragraph}[runin]
+  {\raggedright\bfseries\normalsize}
+  {}
+  {0em}
+  {}[.]
+
+\titleformat{\subparagraph}[runin]
+  {\raggedright\bfseries\itshape\normalsize}
+  {}
+  {0em}
+  {}[.]
+
+\titlespacing{\section}{0pt}{1.5em}{0.5em}
+\titlespacing{\subsection}{0pt}{1em}{0.5em}
+\titlespacing{\subsubsection}{0pt}{1em}{0.5em}
+\titlespacing{\paragraph}{\parindent}{1em}{1em}
+\titlespacing{\subparagraph}{\parindent}{1em}{1em}
+
+%% =====================================================
+%% FECHA EN ESPAÑOL
+%% =====================================================
+\newcommand{\monthname}{\ifcase\month\or
+  Enero\or Febrero\or Marzo\or Abril\or Mayo\or Junio\or
+  Julio\or Agosto\or Septiembre\or Octubre\or Noviembre\or Diciembre\fi}
+
+%% =====================================================
+%% VARIABLES PARA LA PORTADA
+%% =====================================================
+\newcommand{\documenttitle}[1]{\gdef\@documenttitle{#1}}
+\newcommand{\advisor}[1]{\gdef\@advisor{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\subject}[1]{\gdef\@subject{#1}}
+
+\newtoggle{firstauthor}
+\toggletrue{firstauthor}
+
+\newcounter{authorcount}
+\setcounter{authorcount}{0}
+
+\def\authorlist{}
+
+\newcommand{\addauthor}[1]{%
+  \stepcounter{authorcount}%
+  \iftoggle{firstauthor}{%
+    \gdef\authorlist{#1}%
+    \togglefalse{firstauthor}%
+  }{%
+    \g@addto@macro\authorlist{\par #1}%
+  }%
+}
+
+%% =====================================================
+%% VALORES POR DEFECTO
+%% =====================================================
+\documenttitle{Título del documento}
+\subject{Asignatura}
+\advisor{Docente}
+\semester{Semestre}
+
+%% =====================================================
+%% CONFIGURACIÓN DE PÁRRAFO APA
+%% =====================================================
+\setlength{\parindent}{1.27cm}
+\setlength{\parskip}{0pt}
+\doublespacing
+
+%% =====================================================
+%% COMANDOS ADICIONALES
+%% =====================================================
+\setlist[enumerate,1]{label=\arabic*.,leftmargin=\parindent,itemsep=0pt,parsep=0pt}
+\setlist[itemize,1]{leftmargin=\parindent,itemsep=0pt,parsep=0pt}
+
+\renewenvironment{blockquote}{%
+  \begin{quote}
+  \singlespacing
+  \setlength{\leftskip}{1.27cm}
+  \setlength{\parindent}{0pt}
+}{%
+  \end{quote}
+}
+
+\newcommand{\printreferences}[1][Referencias]{%
+  \nocite{*}
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{section}{#1}
+  \printbibliography[title=#1]
+}
+
+\newcommand{\citepage}[2]{\parencite[p.~#2]{#1}}
+\newcommand{\citepages}[2]{\parencite[pp.~#2]{#1}}
+\newcommand{\textualcite}[1]{\textcite{#1}}
+\newcommand{\textualcitepage}[2]{\textcite[p.~#2]{#1}}
+
+\newenvironment{abstractenv}{%
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{section}{Resumen}
+  \begin{center}
+    \bfseries\normalsize Resumen
+  \end{center}
+  \par\vspace{1em}
+  \singlespacing
+}{%
+  \doublespacing
+}
+
+\newcommand{\keywords}[1]{%
+  \par\vspace{1em}
+  \noindent\textbf{Palabras clave:} #1
+}
+
+\newcommand{\startpreliminary}{%
+  \pagenumbering{roman}
+  \setcounter{page}{1}
+}
+
+\newcommand{\startmain}{%
+  \clearpage
+  \pagenumbering{arabic}
+  \setcounter{page}{1}
+}
+
+\newcommand{\startappendix}{%
+  \clearpage
+  \appendix
+  \phantomsection
+  \addcontentsline{toc}{section}{Apéndices}
+}
+
+\newcommand{\apafigure}[4][htbp]{%
+  \begin{figure}[#1]
+    \centering
+    #2
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+\newcommand{\apatable}[4][htbp]{%
+  \begin{table}[#1]
+    \centering
+    \caption{#3}
+    \label{#4}
+    #2
+  \end{table}
+}
+
+%% =====================================================
+%% FIN DEL PAQUETE
+%% =====================================================
+\endinput
