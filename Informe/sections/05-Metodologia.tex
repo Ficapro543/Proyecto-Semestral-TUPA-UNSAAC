@@ -9,29 +9,20 @@ y principios de diseño centrado en el usuario (UCD). Esta combinación permite
 gestionar incertidumbre, incorporar retroalimentación continua y entregar valor
 incremental a lo largo del ciclo de vida del desarrollo.
 
-La elección de Scrum se fundamenta en el análisis de plataformas de referencia:
+La elección de Scrum se fundamenta en las siguientes razones:
 
 \begin{itemize}
-  \item \textbf{PLADDES -- UNSAAC} (\texttt{tramite.unsaac.edu.pe}): sistema actual
-    de trámite documentario de la UNSAAC que gestiona solicitudes virtuales
-    clasificadas por tipo de usuario (estudiante, docente, administrativo, público
-    general), seguimiento de expedientes y adjunto de vouchers de pago.
-    Constituye el mayor referente directo del proyecto; sus limitaciones de
-    usabilidad y ausencia de notificaciones proactivas son el punto de partida
-    para las mejoras propuestas.
-
-  \item \textbf{Portal Administrativo -- PUCP}: plataforma que centraliza
-    información de trámites paso a paso para toda la comunidad universitaria,
-    integra pagos académicos virtuales y ofrece paneles diferenciados por
-    dirección. Destaca por su arquitectura orientada a servicios y la
-    digitalización progresiva de ventanillas presenciales.
-
-  \item \textbf{SISADES -- Universidad Nacional de Huancavelica}: sistema
-    integral que centraliza documentos institucionales, biblioteca virtual y
-    seguimiento de egresados. Su mesa de partes virtual y el módulo de
-    seguimiento de trámites publicado en la Plataforma del Estado Peruano
-    (gob.pe) evidencian una integración con estándares de interoperabilidad
-    pública que el presente proyecto también considerará.
+      \item El proyecto tiene un alcance acotado al semestre académico, con fechas de entrega
+      definidas, lo que es directamente compatible con la planificación en sprints de
+      duración fija.
+      \item El equipo es pequeño (dos a tres integrantes), lo que facilita la autogestión, la
+      comunicación directa y la toma de decisiones sin estructuras jerárquicas complejas.
+      \item La naturaleza del problema requiere iteraciones de diseño y retroalimentación
+      constante, especialmente en las interfaces de usuario y los flujos de trámites.
+      \item Scrum permite alinear cada sprint con los entregables formales del curso, haciendo
+      la metodología coherente con el calendario académico establecido.
+      \item Se definen tres sprints principales, de aproximadamente tres a cinco semanas de
+      duración cada uno, articulados con los tres entregables semestrales del proyecto.
 \end{itemize}
 
 \subsubsection{Roles Scrum}
@@ -68,6 +59,52 @@ La elección de Scrum se fundamenta en el análisis de plataformas de referencia
 \end{itemize}
 
 \subsubsection{Stack tecnológico propuesto}
+\begin{itemize}
+  \item \textbf{PLADDES -- UNSAAC} (\texttt{tramite.unsaac.edu.pe}): sistema actual
+    de trámite documentario de la UNSAAC que gestiona solicitudes virtuales
+    clasificadas por tipo de usuario (estudiante, docente, administrativo, público
+    general), seguimiento de expedientes y adjunto de vouchers de pago.
+    Constituye el mayor referente directo del proyecto; sus limitaciones de
+    usabilidad y ausencia de notificaciones proactivas son el punto de partida
+    para las mejoras propuestas.
+    % ── AÑADIDO ──
+    En cuanto a su stack tecnológico, el panel administrativo interno está
+    construido sobre la plantilla \textbf{AdminLTE} (Bootstrap~3 + jQuery),
+    el backend emplea \textbf{PHP con CodeIgniter} siguiendo el patrón MVC
+    con enrutamiento limpio, la autenticación integra \textbf{Google OAuth2},
+    los iconos del formulario público corresponden a \textbf{Material Design
+    Icons} y la persistencia se gestiona con \textbf{MySQL}.
+
+  \item \textbf{Portal Administrativo -- PUCP}: plataforma que centraliza
+    información de trámites paso a paso para toda la comunidad universitaria,
+    integra pagos académicos virtuales y ofrece paneles diferenciados por
+    dirección. Destaca por su arquitectura orientada a servicios y la
+    digitalización progresiva de ventanillas presenciales.
+    % ── AÑADIDO ──
+    Su stack es heterogéneo: el portal informativo
+    (\texttt{administrativo.pucp.edu.pe}) está construido sobre \textbf{WordPress}
+    (PHP~CMS), evidenciado por las rutas \texttt{wp-content/uploads/} en sus
+    recursos estáticos; mientras que el sistema académico-administrativo central
+    (Campus Virtual / Intranet) integra \textbf{SAP} para la gestión de finanzas,
+    presupuestos y recursos humanos, lo que revela una arquitectura empresarial
+    de dos capas con CMS público y ERP corporativo en el backend.
+
+  \item \textbf{SISADES -- Universidad Nacional de Huancavelica}: sistema
+    integral que centraliza documentos institucionales, biblioteca virtual y
+    seguimiento de egresados. Su mesa de partes virtual y el módulo de
+    seguimiento de trámites publicado en la Plataforma del Estado Peruano
+    (gob.pe) evidencian una integración con estándares de interoperabilidad
+    pública que el presente proyecto también considerará.
+    % ── AÑADIDO ──
+    El Sistema de Gestión Documentaria (SGD) activo,
+    accesible en \texttt{sgd.unh.edu.pe:8181/mpd/inicio.do}, expone un stack
+    \textbf{Java~EE}: el puerto 8181 es indicativo de \textbf{Apache Tomcat}
+    como servidor de aplicaciones y la extensión \texttt{.do} en las URLs es
+    característica de \textbf{Apache Struts} o \textbf{Spring~MVC}; la
+    plataforma fue desarrollada y desplegada por la Oficina de Tecnología
+    de la Información de la UNH en 2025 como reemplazo de la plataforma
+    Facilita~Perú.
+\end{itemize}
 
 \begin{center}
 \begin{tabular}{p{3.8cm} p{4.2cm} p{5cm}}
