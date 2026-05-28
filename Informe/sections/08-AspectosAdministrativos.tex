@@ -3,24 +3,19 @@
 
 \subsection{Cronograma}
 
-El cronograma del proyecto se estructura en tres sprints que abarcan las 16 semanas
-del semestre académico 2026-I, siguiendo el marco de trabajo Scrum adaptado descrito
-en la sección de metodología. Cada sprint está alineado con un entregable formal del
-curso, lo que permite una evaluación progresiva del avance del proyecto.
+El proyecto se organiza en \textbf{cuatro sprints} de dos semanas cada uno, más una
+fase inicial de planificación (\textit{Sprint 0}), alineados con las dos entregas
+formales del semestre, tal como se describe en la sección de metodología. El trabajo
+inició el \textbf{martes 19 de mayo} con el Sprint 0, el cual comprende el análisis
+del TUPA vigente, el levantamiento de requerimientos, la elaboración del plan de
+proyecto y el prototipado dinámico, culminando con el \textbf{primer entregable}
+el \textbf{28 de mayo de 2026}.
 
-El equipo sostiene reuniones de coordinación tres veces por semana (martes, jueves y
-sábado), con una dedicación estimada de dos horas por sesión. Durante estas reuniones
-se realiza el seguimiento de tareas, la planificación del trabajo inmediato y la
-resolución de bloqueos, complementando las reuniones formales de sprint planning y
-sprint review propias de Scrum.
-
-El trabajo dio inicio el \textbf{martes 19 de mayo}. El \textbf{Sprint 1}, enfocado
-en la planificación y el levantamiento de requerimientos, tuvo una duración
-intensiva de una semana, culminando con la entrega del plan de proyecto, la
-especificación de requerimientos y el prototipado dinámico. El primer entregable
-formal debió completarse el \textbf{martes 26 de mayo}. Los sprints 2 y 3 continúan
-con el diseño, desarrollo, pruebas y despliegue del sistema durante el resto del
-semestre.
+El equipo realiza reuniones de coordinación diarias (\textit{Daily Stand-up}) de
+10 minutos para sincronizar avances, identificar impedimentos y planificar el
+trabajo del día, complementadas con las ceremonias formales de Scrum (\textit{Sprint
+Planning}, \textit{Sprint Review} y \textit{Sprint Retrospective}) al inicio y
+cierre de cada sprint.
 
 \begin{figure}[H]
 \centering
@@ -43,56 +38,66 @@ semestre.
   group/.style={draw=unsaacRed,fill=unsaacRed!15},
   group peaks height=0.15,
   milestone/.style={fill=unsaacRed,shape=diamond,inner sep=2pt},
-  today=1,
+  today=10,
   today rule/.style={draw=unsaacRed!80,dashed,line width=0.7pt},
   today label={\scriptsize Hoy},
   today label node/.append style={below=2pt,font=\tiny,color=unsaacRed},
-]{1}{16}
+]{1}{22}
 %--- Encabezados ---
-\gantttitle{Semestre 2026-I (16 semanas)}{16} \\
-\gantttitle{Mayo}{3}\gantttitle{Junio}{4}\gantttitle{Julio}{4}
-\gantttitle{Agosto}{4}\gantttitle{Set.}{1} \\
-\gantttitlelist{1,...,16}{1} \\
+\gantttitle{Semestre 2026-I (22 semanas)}{22} \\
+\gantttitle{Mayo}{4}\gantttitle{Junio}{5}\gantttitle{Julio}{8}\gantttitle{Agosto}{5} \\
+\gantttitlelist{1,...,22}{1} \\
+
+%--- Sprint 0 ---
+\ganttgroup{Sprint 0 --- Planificación y Requerimientos}{1}{2} \\
+\ganttbar{Análisis del TUPA vigente}{1}{1} \\
+\ganttbar{Levantamiento de requerimientos}{1}{2} \\
+\ganttbar{Redacción del plan de proyecto}{1}{2} \\
+\ganttbar{Prototipado dinámico (Figma)}{2}{2} \\
+\ganttmilestone{Entrega 1 (28/05)}{2} \\[grid]
 
 %--- Sprint 1 ---
-\ganttgroup{Sprint 1 --- Planificación y Requerimientos}{1}{1} \\
-\ganttbar{Análisis del TUPA vigente}{1}{1} \\
-\ganttbar{Levantamiento de requerimientos}{1}{1} \\
-\ganttbar{Redacción del plan de proyecto}{1}{1} \\
-\ganttbar{Prototipado dinámico (Figma)}{1}{1} \\
-\ganttmilestone{Entregable 1 --- 26/05/2026}{1} \\[grid]
+\ganttgroup{Sprint 1 --- Módulo de Consulta TUPA}{3}{6} \\
+\ganttbar{Implementación de consulta de procedimientos}{3}{4} \\
+\ganttbar{Autenticación y gestión de usuarios}{3}{4} \\
+\ganttbar{Layout base y diseño responsivo}{3}{5} \\
+\ganttbar{Configuración de BD y migraciones}{3}{3} \\
+\ganttbar{Pruebas unitarias del módulo}{4}{6} \\[grid]
 
 %--- Sprint 2 ---
-\ganttgroup{Sprint 2 --- Diseño del Sistema}{2}{10} \\
-\ganttbar{Diseño de arquitectura del sistema}{2}{5} \\
-\ganttbar{Diseño del modelo de datos (BD)}{5}{8} \\
-\ganttbar{Diseño de GUIs en Figma}{2}{8} \\
-\ganttbar{Implementación de interfaces}{7}{10} \\
-\ganttbar{Configuración del repositorio GitHub}{2}{2} \\
-\ganttmilestone{Entregable 2 (GUIs y BD)}{10} \\[grid]
+\ganttgroup{Sprint 2 --- Registro y Seguimiento}{7}{10} \\
+\ganttbar{Formulario de registro de trámite}{7}{8} \\
+\ganttbar{Seguimiento de expedientes}{7}{9} \\
+\ganttbar{Sistema de notificaciones}{8}{10} \\
+\ganttbar{Validación de documentos}{8}{9} \\[grid]
 
 %--- Sprint 3 ---
-\ganttgroup{Sprint 3 --- Desarrollo, Pruebas y Cierre}{11}{16} \\
-\ganttbar{Implementación de módulos principales}{11}{14} \\
-\ganttbar{Panel administrativo y reportes}{12}{14} \\
-\ganttbar{Sistema de notificaciones}{13}{15} \\
-\ganttbar{Pruebas funcionales y depuración}{14}{15} \\
-\ganttbar{Despliegue en la nube}{15}{16} \\
-\ganttbar{Documentación técnica final}{15}{16} \\
-\ganttmilestone{Entregable 3 --- Versión final}{16}
+\ganttgroup{Sprint 3 --- Panel Administrativo}{11}{14} \\
+\ganttbar{Panel de control administrativo}{11}{13} \\
+\ganttbar{Módulo de reportes y estadísticas}{12}{14} \\
+\ganttbar{Mejoras de accesibilidad}{13}{14} \\[grid]
+
+%--- Sprint 4 ---
+\ganttgroup{Sprint 4 --- Integración y Cierre}{15}{21} \\
+\ganttbar{Integración de módulos}{15}{17} \\
+\ganttbar{Corrección de defectos}{15}{18} \\
+\ganttbar{Pruebas de regresión}{16}{19} \\
+\ganttbar{Documentación técnica}{17}{20} \\
+\ganttbar{Despliegue en la nube}{19}{21} \\
+\ganttmilestone{Entrega 2 (1.${}^{\circ}$ sem. agosto)}{22}
 \end{ganttchart}
 \end{figure}
 
 \subsection{Presupuesto}
 
 El presupuesto estimado considera los recursos necesarios para el desarrollo del
-sistema web durante el semestre 2026-I con un equipo de cuatro integrantes. Los
-costos se agrupan en cinco categorías: recursos humanos (valorizados a una tarifa
-referencial de mercado), equipamiento informático, software y licencias, servicios
-de hosting y dominio, y materiales de oficina e imprevistos. La estimación sigue
-criterios conservadores, priorizando herramientas con planes gratuitos o de bajo
-costo, dado que se trata de un proyecto académico autofinanciado por los
-integrantes del grupo.
+sistema web durante el semestre 2026-I con un equipo de cuatro integrantes a lo
+largo de los cuatro sprints del proyecto. Los costos se agrupan en cinco categorías:
+recursos humanos (valorizados a una tarifa referencial de mercado), equipamiento
+informático, software y licencias, servicios de hosting y dominio, y materiales de
+oficina e imprevistos. La estimación sigue criterios conservadores, priorizando
+herramientas con planes gratuitos o de bajo costo, dado que se trata de un proyecto
+académico autofinanciado por los integrantes del grupo.
 
 \begin{table}[H]
 \centering
