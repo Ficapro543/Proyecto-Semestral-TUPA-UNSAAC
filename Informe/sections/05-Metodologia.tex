@@ -1,200 +1,349 @@
-% ── Metodología ───────────────────────────────────────────────────────────────
 \section{Metodología}
+% ══════════════════════════════════════════════════════════════════════════════
 
-\subsection{Metodología Adoptada: Scrum Adaptado}
+\subsection{Metodología de desarrollo}
 
-Para el desarrollo del presente proyecto se adopta el marco de trabajo \textbf{Scrum},
-en una versión adaptada al contexto académico semestral. Scrum es un marco ágil que
-organiza el trabajo en iteraciones cortas denominadas \emph{sprints}, favoreciendo la
-entrega incremental de valor, la revisión continua del progreso y la adaptación ante los
-cambios que puedan surgir durante el desarrollo.
+El proyecto adoptará \textbf{Scrum} como marco de trabajo ágil, complementado con
+prácticas de \textbf{Ingeniería de Requerimientos} basadas en el estándar IEEE~830
+y principios de diseño centrado en el usuario (UCD). Esta combinación permite
+gestionar incertidumbre, incorporar retroalimentación continua y entregar valor
+incremental a lo largo del ciclo de vida del desarrollo.
 
-\medskip
-\textbf{Justificación de la elección:}
+La elección de Scrum se fundamenta en el análisis de plataformas de referencia:
 
 \begin{itemize}
-  \item El proyecto tiene un alcance acotado al semestre académico, con fechas de
-        entrega definidas, lo que es directamente compatible con la planificación en
-        sprints de duración fija.
+  \item \textbf{PLADDES -- UNSAAC} (\texttt{tramite.unsaac.edu.pe}): sistema actual
+    de trámite documentario de la UNSAAC que gestiona solicitudes virtuales
+    clasificadas por tipo de usuario (estudiante, docente, administrativo, público
+    general), seguimiento de expedientes y adjunto de vouchers de pago.
+    Constituye el mayor referente directo del proyecto; sus limitaciones de
+    usabilidad y ausencia de notificaciones proactivas son el punto de partida
+    para las mejoras propuestas.
 
-  \item El equipo es pequeño (dos a tres integrantes), lo que facilita la autogestión,
-        la comunicación directa y la toma de decisiones sin estructuras jerárquicas
-        complejas.
+  \item \textbf{Portal Administrativo -- PUCP}: plataforma que centraliza
+    información de trámites paso a paso para toda la comunidad universitaria,
+    integra pagos académicos virtuales y ofrece paneles diferenciados por
+    dirección. Destaca por su arquitectura orientada a servicios y la
+    digitalización progresiva de ventanillas presenciales.
 
-  \item La naturaleza del problema requiere iteraciones de diseño y retroalimentación
-        constante, especialmente en las interfaces de usuario y los flujos de trámites.
-
-  \item Scrum permite alinear cada sprint con los entregables formales del curso,
-        haciendo la metodología coherente con el calendario académico establecido.
+  \item \textbf{SISADES -- Universidad Nacional de Huancavelica}: sistema
+    integral que centraliza documentos institucionales, biblioteca virtual y
+    seguimiento de egresados. Su mesa de partes virtual y el módulo de
+    seguimiento de trámites publicado en la Plataforma del Estado Peruano
+    (gob.pe) evidencian una integración con estándares de interoperabilidad
+    pública que el presente proyecto también considerará.
 \end{itemize}
 
-Se definen tres sprints principales, de aproximadamente tres a cinco semanas de duración
-cada uno, articulados con los tres entregables semestrales del proyecto.
+\subsubsection{Roles Scrum}
 
-\begin{table}[H]
-\centering
-\small
-\caption{Distribución de sprints por entregable semestral}
-\begin{tabular}{C{1.3cm} L{3.2cm} L{7.8cm}}
-\toprule
-\rowcolor{unsaacRed}
-\color{white}\textbf{Sprint} &
-\color{white}\textbf{Período aprox.} &
-\color{white}\textbf{Entregable principal} \\
-\midrule
-1 & Semanas 1--5 \newline (mar.--may.) &
-Plan de proyecto, especificación de requerimientos y prototipado
-dinámico (primer entregable semestral). \\
-\addlinespace[4pt]
-2 & Semanas 6--10 \newline (abr.--may.) &
-Diseño de interfaces (GUIs), diseño de base de datos y repositorio
-Git configurado (segundo entregable semestral). \\
-\addlinespace[4pt]
-3 & Semanas 11--16 \newline (may.--jun.) &
-Implementación de módulos, pruebas funcionales, despliegue en la
-nube y documentación final (tercer entregable semestral). \\
-\bottomrule
+\begin{center}
+\rowcolors{2}{filaClara}{white}
+\begin{tabular}{p{3.5cm} p{9.5cm}}
+  \toprule
+  \rowcolor{encabezado}
+  \color{white}\textbf{Rol} & \color{white}\textbf{Responsabilidad} \\
+  \midrule
+  Product Owner   & Define y prioriza el \textit{Product Backlog} en función de los
+                    objetivos del TUPA y las necesidades de estudiantes y personal
+                    administrativo. \\
+  Scrum Master    & Facilita ceremonias, elimina impedimentos y asegura que el equipo
+                    siga el marco de trabajo. \\
+  Dev Team        & Diseña, implementa y prueba los incrementos de producto en cada
+                    sprint. \\
+  \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\subsection{Actividades Principales}
-
-Las actividades del proyecto se agrupan en cuatro fases que atraviesan los sprints
-definidos:
-
-\subsubsection{Fase 1 --- Ingeniería de Requerimientos (Sprint 1)}
+\subsubsection{Ceremonias y artefactos}
 
 \begin{itemize}
-  \item Revisión y análisis del TUPA vigente de la UNSAAC.
-  \item Identificación de usuarios, roles y casos de uso principales del sistema.
-  \item Levantamiento y documentación de requerimientos funcionales y no funcionales.
-  \item Elaboración del plan de proyecto y del prototipo dinámico inicial.
+  \item \textbf{Sprint Planning}: primera sesión del sprint; se seleccionan ítems
+    del backlog y se define el \textit{Sprint Goal}.
+  \item \textbf{Daily Stand-up} (10\,min): sincronización diaria de avances,
+    impedimentos y planes del día.
+  \item \textbf{Sprint Review}: demostración del incremento al \textit{Product
+    Owner} y recogida de retroalimentación.
+  \item \textbf{Sprint Retrospective}: mejora continua del proceso.
+  \item \textbf{Artefactos}: Product Backlog, Sprint Backlog, Definition of Done
+    e Incremento potencialmente entregable.
 \end{itemize}
 
-\subsubsection{Fase 2 --- Diseño del Sistema (Sprint 2)}
+\subsubsection{Stack tecnológico propuesto}
 
-\begin{itemize}
-  \item Diseño de la arquitectura del sistema (patrón cliente-servidor, MVC o similar).
-  \item Diseño del modelo de datos relacional.
-  \item Elaboración de las interfaces gráficas (mockups y prototipo interactivo en
-        Figma).
-  \item Configuración del repositorio de control de versiones en GitHub con flujo de
-        trabajo colaborativo.
-\end{itemize}
-
-\subsubsection{Fase 3 --- Desarrollo e Implementación (Sprint 3)}
-
-\begin{itemize}
-  \item Implementación del módulo de consulta del TUPA.
-  \item Implementación del módulo de registro y seguimiento de trámites.
-  \item Implementación del panel de control administrativo.
-  \item Implementación del sistema de notificaciones y gestión documental.
-  \item Desarrollo del módulo de generación de reportes y estadísticas.
-\end{itemize}
-
-\subsubsection{Fase 4 --- Pruebas, Despliegue y Documentación (Sprint 3)}
-
-\begin{itemize}
-  \item Ejecución de pruebas funcionales y de usabilidad por módulo.
-  \item Corrección de errores y ajustes de mejora post-prueba.
-  \item Despliegue de la aplicación en un servidor en la nube.
-  \item Elaboración de la documentación técnica final del proyecto.
-\end{itemize}
-
-\subsection{Infraestructura y Recursos}
-
-\subsubsection{Tecnologías de desarrollo}
-
-\begin{table}[H]
-\centering
-\small
-\caption{Stack tecnológico propuesto}
-\begin{tabular}{L{2.6cm} L{3.4cm} L{6.8cm}}
-\toprule
-\rowcolor{unsaacRed}
-\color{white}\textbf{Capa} &
-\color{white}\textbf{Tecnología} &
-\color{white}\textbf{Justificación} \\
-\midrule
-Frontend &
-React.js / Next.js &
-Framework moderno, amplia comunidad, soporte para renderizado
-del lado del servidor (SSR) y excelente experiencia de usuario. \\
-\addlinespace[3pt]
-Backend &
-Node.js + Express &
-Ecosistema JavaScript unificado, rápido prototipado, facilita
-la construcción de APIs RESTful. \\
-\addlinespace[3pt]
-Base de datos &
-PostgreSQL &
-SGBD relacional robusto con soporte para integridad referencial
-y consultas complejas, adecuado para la gestión de trámites. \\
-\addlinespace[3pt]
-Diseño / Prototipo &
-Figma &
-Herramienta estándar del sector para UI/UX, colaborativa y con
-plan gratuito suficiente para el alcance del proyecto. \\
-\addlinespace[3pt]
-Control de versiones &
-Git + GitHub &
-Estándar de la industria; permite flujo colaborativo,
-revisión de código y trazabilidad del historial de cambios. \\
-\addlinespace[3pt]
-Despliegue &
-Railway / Render &
-Plataformas de despliegue en la nube con niveles gratuitos
-aptos para proyectos académicos de bajo tráfico. \\
-\bottomrule
+\begin{center}
+\rowcolors{2}{filaClara}{white}
+\begin{tabular}{p{3.8cm} p{4.2cm} p{5cm}}
+  \toprule
+  \rowcolor{encabezado}
+  \color{white}\textbf{Capa} & \color{white}\textbf{Tecnología} &
+  \color{white}\textbf{Justificación} \\
+  \midrule
+  Frontend        & React.js + Tailwind CSS  & SPA reactiva, ecosistema maduro,
+                                               facilita prototipos interactivos. \\
+  Backend         & Node.js + Express.js     & API REST ligera, JSON nativo,
+                                               alto rendimiento para I/O. \\
+  Base de datos   & PostgreSQL               & Soporte robusto de relaciones,
+                                               transacciones y consultas complejas. \\
+  Autenticación   & JWT + OAuth2             & Seguridad estándar para sesiones
+                                               y roles diferenciados. \\
+  Notificaciones  & Nodemailer + WebSockets  & Alertas por correo y en tiempo
+                                               real sobre estado de trámites. \\
+  Control de versiones & Git + GitHub        & Flujo colaborativo con ramas por
+                                               feature y pull requests. \\
+  Contenerización & Docker / Docker Compose  & Entornos reproducibles para
+                                               desarrollo y despliegue. \\
+  \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\begin{supuesto}
-\small\textbf{Supuesto razonable:} El stack tecnológico puede ajustarse según las
-competencias específicas del equipo o indicaciones del docente. Los servicios de
-despliegue seleccionados ofrecen niveles gratuitos suficientes para el alcance
-semestral del proyecto.
-\end{supuesto}
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Actividades principales}
 
-\subsubsection{Recursos de hardware}
+El proyecto se organiza en \textbf{cuatro sprints} de dos semanas cada uno, más
+una fase inicial de planificación (\textit{Sprint 0}), alineados con las dos
+entregas formales del semestre.
+
+\subsubsection{Sprint 0 -- Planificación y análisis de requerimientos\\(hasta 28/05/2026 -- Entrega~1)}
 
 \begin{itemize}
-  \item Computadoras personales de los integrantes del equipo (mínimo 8\,GB de RAM,
-        procesador de cuatro núcleos o superior).
-  \item Acceso a internet de banda ancha para trabajo colaborativo, consumo de
-        servicios en línea y despliegue en la nube.
+  \item Revisión y análisis de la plataforma PLADDES--UNSAAC vigente.
+  \item Estudio comparativo de los sistemas de referencia (PUCP, UNH).
+  \item Levantamiento de requerimientos funcionales y no funcionales mediante
+    entrevistas con usuarios representativos (estudiantes, administrativos).
+  \item Elaboración del \textit{Product Backlog} con historias de usuario
+    priorizadas (MoSCoW).
+  \item Diseño de la arquitectura lógica y física del sistema.
+  \item \textbf{Diseño de la base de datos}: modelo entidad-relación y diagrama
+    relacional (PostgreSQL).
+  \item \textbf{Prototipado dinámico} de las interfaces principales (Figma):
+    pantalla de consulta del TUPA, registro de trámite, seguimiento de
+    expediente y panel administrativo.
+  \item Configuración del repositorio GitHub con estrategia de ramificación
+    (\textit{Git Flow}).
+  \item Redacción del Plan de Proyecto (presente documento).
 \end{itemize}
+
+\subsubsection{Sprint 1 -- Módulo de consulta TUPA e interfaz base
+(01/06/2026 -- 12/06/2026)}
+
+\begin{itemize}
+  \item Implementación del módulo de \textbf{consulta de procedimientos}: listado,
+    búsqueda por categoría, detalle de requisitos y costos asociados del TUPA.
+  \item Desarrollo de la \textbf{autenticación y gestión de usuarios}: registro,
+    inicio de sesión, roles (estudiante, administrativo, administrador).
+  \item Construcción del \textbf{layout base} de la aplicación: barra de
+    navegación, footer, diseño responsivo y sistema de estilos.
+  \item Configuración del entorno de base de datos y migraciones iniciales.
+  \item Pruebas unitarias de los endpoints REST y pruebas de usabilidad del
+    módulo de consulta.
+\end{itemize}
+
+\subsubsection{Sprint 2 -- Módulo de registro y seguimiento de trámites
+(15/06/2026 -- 26/06/2026)}
+
+\begin{itemize}
+  \item Implementación del \textbf{formulario de registro de trámite}: datos del
+    solicitante, selección de procedimiento TUPA, adjunto de documentos digitales
+    y clave de pago.
+  \item Desarrollo del \textbf{módulo de seguimiento de expedientes}: estado
+    actual, historial de movimientos y observaciones por oficina.
+  \item \textbf{Sistema de notificaciones}: alertas por correo electrónico ante
+    cambios de estado (recibido, en revisión, observado, resuelto).
+  \item Validación digital de documentos adjuntos (tipo, tamaño, formato PDF).
+  \item Pruebas de integración del flujo completo de registro y seguimiento.
+\end{itemize}
+
+\subsubsection{Sprint 3 -- Panel administrativo y módulo de reportes
+(29/06/2026 -- 10/07/2026)}
+
+\begin{itemize}
+  \item Desarrollo del \textbf{panel de control administrativo}: bandeja de
+    trámites recibidos, cambio de estado, asignación a oficina responsable y
+    registro de observaciones.
+  \item Implementación del \textbf{módulo de reportes y estadísticas}: trámites
+    procesados por período, tiempo de atención promedio, procedimientos más
+    solicitados y exportación a PDF/Excel.
+  \item Mejoras de \textbf{accesibilidad} (WCAG 2.1 nivel AA): contraste,
+    etiquetas ARIA, navegación por teclado.
+  \item Pruebas de carga y rendimiento básicas.
+\end{itemize}
+
+\subsubsection{Sprint 4 -- Integración, pruebas finales y documentación
+(13/07/2026 -- primera semana de agosto 2026 -- Entrega 2)}
+
+\begin{itemize}
+  \item Integración de todos los módulos y pruebas de regresión del sistema.
+  \item Corrección de defectos identificados en sprints anteriores.
+  \item Despliegue de la versión de demostración en entorno de pruebas (Docker).
+  \item Elaboración de la \textbf{documentación técnica}: diagramas de
+    arquitectura, manual de usuario, diccionario de datos y guía de instalación.
+  \item Actualización del repositorio GitHub con commits organizados por módulo.
+  \item Preparación de la \textbf{demostración funcional} de la plataforma
+    (Entrega Semestral N.º 2, primera semana de agosto de 2026).
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Infraestructura y recursos}
+
+\subsubsection{Hardware}
+
+\begin{center}
+\rowcolors{2}{filaClara}{white}
+\begin{tabular}{p{4.5cm} p{4cm} p{4.5cm}}
+  \toprule
+  \rowcolor{encabezado}
+  \color{white}\textbf{Recurso} & \color{white}\textbf{Especificación mínima} &
+  \color{white}\textbf{Uso} \\
+  \midrule
+  Laptops de desarrollo   & 8\,GB RAM, CPU i5/Ryzen 5, SSD 256\,GB &
+                            Desarrollo y pruebas locales. \\
+  Servidor de despliegue  & VPS 2\,vCPU, 4\,GB RAM, 40\,GB SSD     &
+                            Entorno de pruebas y demo. \\
+  Red universitaria       & Conexión a internet estable              &
+                            Acceso a repositorios y herramientas cloud. \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Software y servicios}
+
+\begin{center}
+\rowcolors{2}{filaClara}{white}
+\begin{tabular}{p{4cm} p{3.5cm} p{5.5cm}}
+  \toprule
+  \rowcolor{encabezado}
+  \color{white}\textbf{Herramienta} & \color{white}\textbf{Tipo} &
+  \color{white}\textbf{Propósito} \\
+  \midrule
+  Visual Studio Code      & IDE               & Desarrollo del frontend y backend. \\
+  Node.js v20 LTS         & Runtime           & Ejecución del servidor Express. \\
+  React.js v18            & Framework UI      & Construcción de la SPA. \\
+  PostgreSQL 16           & SGBD              & Persistencia de datos. \\
+  Docker Desktop          & Contenerización   & Entornos de desarrollo homogéneos. \\
+  GitHub                  & Repositorio       & Control de versiones y CI básico. \\
+  Figma                   & Diseño UX/UI      & Prototipado dinámico. \\
+  Postman                 & Pruebas API       & Validación de endpoints REST. \\
+  Trello / Jira (libre)   & Gestión ágil      & Tablero Scrum y seguimiento de tareas. \\
+  Nodemailer + SMTP       & Notificaciones    & Envío de alertas por correo. \\
+  \bottomrule
+\end{tabular}
+\end{center}
 
 \subsubsection{Recursos humanos}
 
-El equipo de trabajo está conformado por dos a tres estudiantes de la Escuela
-Profesional de Ingeniería Informática y de Sistemas, bajo la supervisión académica
-del docente del curso. Las responsabilidades se distribuyen entre las áreas de diseño
-e ingeniería de requerimientos, desarrollo frontend, desarrollo backend y
-documentación técnica.
+El equipo de desarrollo está conformado por \textbf{2 a 3 estudiantes} de la
+Escuela Profesional de Ingeniería Informática y de Sistemas de la UNSAAC,
+quienes asumirán de manera rotativa los roles de \textit{Product Owner},
+\textit{Scrum Master} y miembros del \textit{Development Team}.
 
-\subsection{Evaluación y Monitoreo}
+Como equipo externo de apoyo se contempla la participación de:
+\begin{itemize}
+  \item \textbf{Docentes asesores} de la asignatura, en calidad de
+    \textit{stakeholders} y revisores de entregables.
+  \item \textbf{Personal administrativo de la UNSAAC} (muestra representativa)
+    para validación de requerimientos y pruebas de usabilidad.
+  \item \textbf{Estudiantes voluntarios} para pruebas funcionales y de
+    accesibilidad.
+\end{itemize}
 
-El seguimiento del proyecto se realizará mediante los siguientes mecanismos:
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Evaluación y monitoreo}
+
+\subsubsection{Mecanismos de control de calidad}
 
 \begin{itemize}
-  \item \textbf{Reuniones de sprint:} al inicio de cada sprint, el equipo define las
-        tareas a completar (\textit{sprint planning}); al final, se realiza una revisión
-        del incremento logrado (\textit{sprint review}) y una retrospectiva breve.
-
-  \item \textbf{Tablero Kanban:} se utilizará un tablero digital (GitHub Projects o
-        Trello) para visualizar el estado de las tareas en tres columnas: \textit{Por
-        hacer}, \textit{En progreso} y \textit{Completado}.
-
-  \item \textbf{Control de versiones:} el historial de commits en GitHub actuará como
-        registro continuo del avance y permitirá la trazabilidad de los cambios
-        realizados por cada integrante.
-
-  \item \textbf{Entregables semestrales:} cada entregable formal constituye un hito de
-        evaluación frente al docente del curso, permitiendo retroalimentación externa
-        al equipo en momentos clave del ciclo de vida del proyecto.
-
-  \item \textbf{Verificación de requerimientos:} al inicio del Sprint 2 se verificará
-        que el diseño del sistema sea consistente con la especificación de requerimientos
-        elaborada en el Sprint 1, conforme al criterio AG-C12.02.
+  \item \textbf{Revisión de código} (\textit{Code Review}): toda funcionalidad
+    se integra a la rama principal mediante \textit{pull requests} revisados por
+    al menos un compañero de equipo antes de aprobar el merge.
+  \item \textbf{Definition of Done (DoD)}: un ítem del backlog se considera
+    terminado cuando cuenta con código funcional, pruebas unitarias aprobadas,
+    documentación básica actualizada y revisión de pares completada.
+  \item \textbf{Pruebas unitarias e integración}: uso de \textit{Jest} para el
+    backend y \textit{React Testing Library} para el frontend, con cobertura
+    mínima del 70\,\% en módulos críticos.
+  \item \textbf{Pruebas de usabilidad}: al menos una sesión de prueba con usuarios
+    reales por sprint, utilizando la \textit{Escala de Usabilidad del Sistema}
+    (SUS) para medir la experiencia de usuario.
 \end{itemize}
+
+\subsubsection{Seguimiento del progreso}
+
+\begin{itemize}
+  \item \textbf{Tablero Scrum}: visualización del estado de las tareas
+    (\textit{To Do} / \textit{In Progress} / \textit{Done}) actualizado
+    diariamente.
+  \item \textbf{Burndown Chart}: gráfica de trabajo restante vs. tiempo para
+    cada sprint, utilizada en la \textit{Sprint Review} para medir la velocidad
+    del equipo.
+  \item \textbf{Commits en GitHub}: historial versionado que refleja el avance
+    diario; se revisará el número de commits y la cobertura de las historias
+    de usuario en cada entrega formal.
+  \item \textbf{Bitácora de sprints}: documento que registra impedimentos,
+    decisiones técnicas y lecciones aprendidas tras cada retrospectiva.
+\end{itemize}
+
+\subsubsection{Indicadores de desempeño (KPIs)}
+
+\begin{center}
+\rowcolors{2}{filaClara}{white}
+\begin{tabular}{p{5.5cm} p{3cm} p{4.5cm}}
+  \toprule
+  \rowcolor{encabezado}
+  \color{white}\textbf{Indicador} & \color{white}\textbf{Meta} &
+  \color{white}\textbf{Herramienta de medición} \\
+  \midrule
+  Cobertura de pruebas unitarias   & $\geq$ 70\,\%      & Jest / Coverage report \\
+  Puntuación SUS (usabilidad)      & $\geq$ 68 puntos   & Cuestionario SUS \\
+  Historias completadas por sprint & $\geq$ 80\,\%      & Burndown chart \\
+  Tiempo de respuesta de la API    & $\leq$ 500\,ms     & Postman / logs \\
+  Defectos críticos en entrega     & 0                  & Registro de bugs (GitHub Issues) \\
+  Commits por sprint               & $\geq$ 20          & GitHub insights \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Cronograma de sprints}
+
+\begin{figure}[H]
+\centering
+\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    x unit=0.46cm,
+    y unit title=0.6cm,
+    y unit chart=0.55cm,
+    title label font=\scriptsize,
+    bar label font=\scriptsize,
+    bar/.style={fill=unsaacRojo!70},
+    bar incomplete/.style={fill=unsaacGris!40},
+    milestone/.style={fill=unsaacRojo, shape=diamond, inner sep=1.5pt},
+    today=10,
+    today rule/.style={draw=unsaacRojo, ultra thick},
+    title height=1
+  ]{1}{22}
+  \gantttitle{Mayo}{2}
+  \gantttitle{Junio}{9}
+  \gantttitle{Julio}{9}
+  \gantttitle{Ago}{2} \\
+  \gantttitle{S4}{1}\gantttitle{S5}{1}
+  \gantttitle{S1}{1}\gantttitle{S2}{1}\gantttitle{S3}{1}\gantttitle{S4}{1}
+  \gantttitle{S1}{1}\gantttitle{S2}{1}\gantttitle{S3}{1}
+  \gantttitle{S1}{1}\gantttitle{S2}{1}\gantttitle{S3}{1}\gantttitle{S4}{1}
+  \gantttitle{S5}{1}\gantttitle{S1}{1}\gantttitle{S2}{1}\gantttitle{S3}{1}
+  \gantttitle{S4}{1}\gantttitle{S5}{1}
+  \gantttitle{S1}{1}\gantttitle{S2}{1}\gantttitle{S3}{1} \\
+  % Sprint 0
+  \ganttbar{Sprint 0: Análisis y planif.}{1}{2} \\
+  \ganttmilestone{Entrega 1 (28/05)}{2} \\
+  % Sprint 1
+  \ganttbar{Sprint 1: Consulta TUPA}{3}{6} \\
+  % Sprint 2
+  \ganttbar{Sprint 2: Registro/seguim.}{7}{10} \\
+  % Sprint 3
+  \ganttbar{Sprint 3: Panel admin.}{11}{14} \\
+  % Sprint 4
+  \ganttbar{Sprint 4: Integración/doc.}{15}{21} \\
+  \ganttmilestone{Entrega 2 (1.ª sem. ago.)}{22}
+\end{ganttchart}
+\caption{Cronograma de sprints del proyecto (semanas S = semana del mes).}
+\end{figure}

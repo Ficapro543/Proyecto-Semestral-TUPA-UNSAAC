@@ -1,38 +1,81 @@
-% ── Resultados Esperados ──────────────────────────────────────────────────────
-\section{Resultados Esperados}
+\section{Resultados esperados}
+% ══════════════════════════════════════════════════════════════════════════════
 
-Al término del semestre académico 2026-I se esperan obtener los siguientes resultados:
+Al concluir el proyecto se espera obtener los siguientes productos y beneficios
+verificables:
 
-\begin{enumerate}
-  \item \textbf{Plataforma web funcional:} sistema web completamente operativo que
-        centralice la gestión de los procedimientos del TUPA de la UNSAAC, accesible
-        desde navegadores de escritorio y dispositivos móviles.
+\begin{enumerate}[label=\textbf{\arabic*.}]
 
-  \item \textbf{Módulo de consulta del TUPA:} interfaz de búsqueda y visualización de
-        procedimientos administrativos, con información clara sobre requisitos, costos,
-        plazos y unidades responsables.
+  \item \textbf{Plataforma web funcional y desplegada}\\
+    Sistema web completamente operativo que reemplaza y optimiza las limitaciones
+    identificadas en PLADDES--UNSAAC, accesible desde cualquier dispositivo con
+    navegador web (responsivo) y disponible las 24 horas del día, los 7 días de
+    la semana.
 
-  \item \textbf{Módulo de registro y seguimiento de trámites:} sistema que permita al
-        usuario registrar solicitudes, adjuntar documentos digitales y consultar el
-        estado actualizado de sus trámites en tiempo real.
+  \item \textbf{Módulo de consulta del TUPA mejorado}\\
+    Interfaz intuitiva que permite buscar, filtrar y visualizar todos los
+    procedimientos administrativos de la UNSAAC con sus requisitos, costos,
+    plazos y oficinas responsables, reduciendo la necesidad de consultas
+    presenciales.
 
-  \item \textbf{Panel administrativo:} herramienta de gestión para el personal de las
-        oficinas responsables, que facilite la recepción, procesamiento y resolución de
-        trámites con control de flujo y validación documental.
+  \item \textbf{Sistema de registro y seguimiento de trámites}\\
+    Formulario digital de registro de solicitudes con adjunto de documentos
+    (validados por tipo y tamaño), clave de pago integrada y trazabilidad
+    completa del expediente desde su ingreso hasta su resolución, equivalente
+    o superior a la funcionalidad actual de PLADDES.
 
-  \item \textbf{Sistema de notificaciones:} mecanismo automatizado que informe a los
-        usuarios sobre cambios en el estado de sus procedimientos mediante correo
-        electrónico o notificaciones internas en la plataforma.
+  \item \textbf{Sistema de notificaciones proactivas}\\
+    Módulo de alertas automáticas por correo electrónico que informa al
+    solicitante ante cada cambio de estado de su trámite (recibido, en revisión,
+    observado, resuelto), eliminando la necesidad de consultas de seguimiento
+    manuales.
 
-  \item \textbf{Módulo de reportes:} generación de estadísticas e informes sobre la
-        cantidad y estado de los trámites procesados, como soporte a la gestión
-        administrativa institucional.
+  \item \textbf{Panel de control administrativo}\\
+    Interfaz exclusiva para el personal de oficinas responsables, que centraliza
+    la bandeja de trámites recibidos, permite asignar responsables, registrar
+    observaciones y actualizar el estado de cada expediente de forma ágil.
 
-  \item \textbf{Documentación técnica completa:} especificación de requerimientos,
-        diagramas de arquitectura, modelo de datos, manual de usuario y documentación
-        del código fuente gestionado en GitHub.
+  \item \textbf{Módulo de reportes y estadísticas}\\
+    Generación de reportes exportables (PDF y Excel) sobre trámites procesados,
+    tiempos de atención promedio y procedimientos más solicitados, como apoyo
+    a la toma de decisiones del personal directivo.
 
-  \item \textbf{Mejora de la experiencia administrativa:} reducción de la atención
-        presencial innecesaria, menor tiempo de respuesta en la resolución de trámites
-        y mayor satisfacción de la comunidad universitaria con el servicio.
+  \item \textbf{Base de datos relacional documentada}\\
+    Esquema PostgreSQL normalizado (hasta 3FN), con diccionario de datos,
+    diagrama entidad-relación y diagrama relacional entregados como parte de la
+    documentación técnica del proyecto.
+
+  \item \textbf{Prototipo de alta fidelidad (Figma)}\\
+    Prototipo dinámico validado con usuarios reales que sirvió de guía para la
+    implementación y que evidencia la mejora en experiencia de usuario respecto
+    a PLADDES--UNSAAC actual.
+
+  \item \textbf{Repositorio GitHub documentado}\\
+    Código fuente versionado con historial de commits organizado por módulo y
+    sprint, \textit{README} completo, instrucciones de instalación y despliegue
+    con Docker, y uso de \textit{issues} para el registro de defectos.
+
+  \item \textbf{Mejora medible en usabilidad}\\
+    Puntuación SUS $\geq$ 68 puntos obtenida en sesiones de prueba con usuarios
+    de la comunidad UNSAAC, indicando un nivel de usabilidad \textit{aceptable}
+    o superior, frente a la experiencia actual del sistema.
+
+  \item \textbf{Cobertura de pruebas $\geq$ 70\,\%}\\
+    Suite de pruebas unitarias e integración con cobertura mínima del 70\,\% en
+    los módulos críticos (autenticación, registro de trámite, seguimiento y
+    notificaciones), acompañada de un informe de pruebas.
+
+  \item \textbf{Documentación completa del proyecto}\\
+    Entregables documentales que incluyen: Plan de Proyecto, especificación de
+    requerimientos (historias de usuario + criterios de aceptación), manual de
+    usuario y documentación técnica de la arquitectura, conforme a los
+    lineamientos de la asignatura.
+
 \end{enumerate}
+
+\bigskip
+En síntesis, la plataforma desarrollada \textbf{reducirá los tiempos de atención
+de trámites, disminuirá las consultas presenciales, centralizará la gestión
+documental} entre las oficinas responsables y \textbf{mejorará sustancialmente
+la experiencia} de los estudiantes y personal administrativo de la UNSAAC en
+la gestión de procedimientos del TUPA.
