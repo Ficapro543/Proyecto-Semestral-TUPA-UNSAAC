@@ -1,0 +1,23 @@
+# Archivos auxiliares de LaTeX
+aux/
+
+# Otros archivos comunes de LaTeX (por si acaso)
+*.log
+*.aux
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+*.idx
+*.ilg
+*.ind
+*.nlo
+*.nls
+
+# Archivos de compilación de PDF
+build/
