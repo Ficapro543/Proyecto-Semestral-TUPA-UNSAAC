@@ -41,19 +41,20 @@
     %% =====================================================
     %% INFORMACIÓN DEL CURSO Y PARTICIPANTES
     %% =====================================================
-    \noindent\hspace*{2cm}%
-    \parbox{0.49\textwidth}{
+    \noindent\hspace*{1.5cm}%
+    \parbox{0.85\textwidth}{
         \raggedright
         \textbf{Asignatura:} \\
         \hspace*{1em} \@subject \\[0.8cm]
         \textbf{Docente:} \\
         \hspace*{1em} \@advisor \\[0.8cm]
-        \textbf{Estudiante:} \\
+        \textbf{Estudiantes:} \\
         \hspace*{1em}
         \parbox{\dimexpr\linewidth-2em\relax}{
-            \raggedright
-            \vspace{0.3em}
-            \authorlist
+            \vspace{0.5em}
+            \begin{tabular}{l@{\hspace{2em}}l}
+                \authorlist
+            \end{tabular}
         }
     }
 
