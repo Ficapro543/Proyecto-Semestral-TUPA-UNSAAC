@@ -3,13 +3,12 @@
 
 \subsection{Cronograma}
 
-El proyecto se organiza en \textbf{cuatro sprints} de dos semanas cada uno, más una
-fase inicial de planificación (\textit{Sprint 0}), alineados con las dos entregas
-formales del semestre, tal como se describe en la sección de metodología. El trabajo
-inició el \textbf{martes 19 de mayo} con el Sprint 0, el cual comprende el análisis
-del TUPA vigente, el levantamiento de requerimientos, la elaboración del plan de
-proyecto y el prototipado dinámico, culminando con el \textbf{primer entregable}
-el \textbf{28 de mayo de 2026}.
+El proyecto se organiza en \textbf{cinco sprints} de dos semanas cada uno,
+iniciando con el \textit{Sprint 0} el \textbf{martes 19 de mayo}, y se alinea con
+las dos entregas formales del semestre, tal como se describe en la sección de
+metodología. El Sprint 0 comprende el análisis del TUPA vigente, el levantamiento
+de requerimientos, la elaboración del plan de proyecto y el prototipado dinámico,
+culminando con el \textbf{primer entregable} el \textbf{28 de mayo de 2026}.
 
 El equipo realiza reuniones de coordinación diarias (\textit{Daily Stand-up}) de
 10 minutos para sincronizar avances, identificar impedimentos y planificar el
@@ -38,15 +37,15 @@ cierre de cada sprint.
   group/.style={draw=unsaacRed,fill=unsaacRed!15},
   group peaks height=0.15,
   milestone/.style={fill=unsaacRed,shape=diamond,inner sep=2pt},
-  today=10,
+    today=3,
   today rule/.style={draw=unsaacRed!80,dashed,line width=0.7pt},
   today label={\scriptsize Hoy},
   today label node/.append style={below=2pt,font=\tiny,color=unsaacRed},
-]{1}{22}
+]{1}{10}
 %--- Encabezados ---
-\gantttitle{Semestre 2026-I (22 semanas)}{22} \\
-\gantttitle{Mayo}{4}\gantttitle{Junio}{5}\gantttitle{Julio}{8}\gantttitle{Agosto}{5} \\
-\gantttitlelist{1,...,22}{1} \\
+\gantttitle{Semestre 2026-I (10 semanas)}{10} \\
+\gantttitle{Mayo}{2}\gantttitle{Junio}{4}\gantttitle{Julio}{4} \\
+\gantttitlelist{1,...,10}{1} \\
 
 %--- Sprint 0 ---
 \ganttgroup{Sprint 0 --- Planificación y Requerimientos}{1}{2} \\
@@ -57,34 +56,34 @@ cierre de cada sprint.
 \ganttmilestone{Entrega 1 (28/05)}{2} \\[grid]
 
 %--- Sprint 1 ---
-\ganttgroup{Sprint 1 --- Módulo de Consulta TUPA}{3}{6} \\
+\ganttgroup{Sprint 1 --- Módulo de Consulta TUPA}{3}{4} \\
 \ganttbar{Implementación de consulta de procedimientos}{3}{4} \\
 \ganttbar{Autenticación y gestión de usuarios}{3}{4} \\
-\ganttbar{Layout base y diseño responsivo}{3}{5} \\
+\ganttbar{Layout base y diseño responsivo}{3}{4} \\
 \ganttbar{Configuración de BD y migraciones}{3}{3} \\
-\ganttbar{Pruebas unitarias del módulo}{4}{6} \\[grid]
+\ganttbar{Pruebas unitarias del módulo}{4}{4} \\[grid]
 
 %--- Sprint 2 ---
-\ganttgroup{Sprint 2 --- Registro y Seguimiento}{7}{10} \\
-\ganttbar{Formulario de registro de trámite}{7}{8} \\
-\ganttbar{Seguimiento de expedientes}{7}{9} \\
-\ganttbar{Sistema de notificaciones}{8}{10} \\
-\ganttbar{Validación de documentos}{8}{9} \\[grid]
+\ganttgroup{Sprint 2 --- Registro y Seguimiento}{5}{6} \\
+\ganttbar{Formulario de registro de trámite}{5}{6} \\
+\ganttbar{Seguimiento de expedientes}{5}{6} \\
+\ganttbar{Sistema de notificaciones}{6}{6} \\
+\ganttbar{Validación de documentos}{6}{6} \\[grid]
 
 %--- Sprint 3 ---
-\ganttgroup{Sprint 3 --- Panel Administrativo}{11}{14} \\
-\ganttbar{Panel de control administrativo}{11}{13} \\
-\ganttbar{Módulo de reportes y estadísticas}{12}{14} \\
-\ganttbar{Mejoras de accesibilidad}{13}{14} \\[grid]
+\ganttgroup{Sprint 3 --- Panel Administrativo}{7}{8} \\
+\ganttbar{Panel de control administrativo}{7}{8} \\
+\ganttbar{Módulo de reportes y estadísticas}{7}{8} \\
+\ganttbar{Mejoras de accesibilidad}{8}{8} \\[grid]
 
 %--- Sprint 4 ---
-\ganttgroup{Sprint 4 --- Integración y Cierre}{15}{21} \\
-\ganttbar{Integración de módulos}{15}{17} \\
-\ganttbar{Corrección de defectos}{15}{18} \\
-\ganttbar{Pruebas de regresión}{16}{19} \\
-\ganttbar{Documentación técnica}{17}{20} \\
-\ganttbar{Despliegue en la nube}{19}{21} \\
-\ganttmilestone{Entrega 2 (1.${}^{\circ}$ sem. agosto)}{22}
+\ganttgroup{Sprint 4 --- Integración y Cierre}{9}{10} \\
+\ganttbar{Integración de módulos}{9}{10} \\
+\ganttbar{Corrección de defectos}{9}{10} \\
+\ganttbar{Pruebas de regresión}{10}{10} \\
+\ganttbar{Documentación técnica}{10}{10} \\
+\ganttbar{Despliegue en la nube}{10}{10} \\
+\ganttmilestone{Entrega 2 (1.${}^{\circ}$ sem. agosto)}{10}
 \end{ganttchart}
 \end{figure}
 
@@ -92,7 +91,7 @@ cierre de cada sprint.
 
 El presupuesto estimado considera los recursos necesarios para el desarrollo del
 sistema web durante el semestre 2026-I con un equipo de cuatro integrantes a lo
-largo de los cuatro sprints del proyecto. Los costos se agrupan en cinco categorías:
+largo de los cinco sprints del proyecto. Los costos se agrupan en cinco categorías:
 recursos humanos (valorizados a una tarifa referencial de mercado), equipamiento
 informático, software y licencias, servicios de hosting y dominio, y materiales de
 oficina e imprevistos. La estimación sigue criterios conservadores, priorizando
@@ -103,7 +102,7 @@ académico autofinanciado por los integrantes del grupo.
 \centering
 \small
 \caption{Presupuesto estimado del proyecto (en Soles peruanos --- S/.)}
-\begin{tabular}{C{0.5cm} L{5.2cm} C{1.8cm} C{1.6cm} R{2.0cm}}
+\begin{tabular}{C{0.6cm} L{7.0cm} C{2.0cm} C{1.8cm} R{2.6cm}}
 \toprule
 \rowcolor{unsaacRed}
 \color{white}\textbf{N.º} &
@@ -115,28 +114,28 @@ académico autofinanciado por los integrantes del grupo.
 \multicolumn{5}{l}{\textbf{A. Recursos Humanos}} \\
 \midrule
 1 & Programador iniciante (4 integrantes)
-    & Horas & 384 & \num{7680,00} \\
-\multicolumn{4}{r}{\textit{Subtotal A}} & \textbf{\num{7680,00}} \\
+    & Horas & 320 & \num{6400,00} \\
+\multicolumn{4}{r}{\textit{Subtotal A}} & \textbf{\num{6400,00}} \\
 \midrule
 \multicolumn{5}{l}{\textbf{B. Equipamiento}} \\
 \midrule
 2 & Computadoras portátiles (costo de uso semestral, 4 unid.)
     & Global & 4 & \num{800,00} \\
-3 & Servidor de desarrollo (VPS, 4 meses)
-    & Mes & 4 & \num{120,00} \\
+3 & Servidor de desarrollo (VPS, 3 meses)
+    & Mes & 3 & \num{90,00} \\
 4 & Periféricos (mouse, teclado, hub USB)
     & Global & 1 & \num{80,00} \\
-\multicolumn{4}{r}{\textit{Subtotal B}} & \textbf{\num{1000,00}} \\
+\multicolumn{4}{r}{\textit{Subtotal B}} & \textbf{\num{970,00}} \\
 \midrule
 \multicolumn{5}{l}{\textbf{C. Software y Licencias}} \\
 \midrule
 5 & Claude Pro (plan más barato, 4 meses)
-    & Mes & 4 & \num{300,00} \\
+    & Mes & 3 & \num{225,00} \\
 6 & Cuenta GitHub (plan gratuito)
     & --- & --- & \num{0,00} \\
 7 & Cuenta Figma (plan gratuito)
     & --- & --- & \num{0,00} \\
-\multicolumn{4}{r}{\textit{Subtotal C}} & \textbf{\num{300,00}} \\
+\multicolumn{4}{r}{\textit{Subtotal C}} & \textbf{\num{225,00}} \\
 \midrule
 \multicolumn{5}{l}{\textbf{D. Hosting y Dominio}} \\
 \midrule
@@ -151,11 +150,11 @@ académico autofinanciado por los integrantes del grupo.
 10 & Materiales de oficina (lapiceros, folders, etc.)
     & Global & 1 & \num{30,00} \\
 11 & Imprevistos (5\,\% del subtotal de B + C + D)
-    & --- & --- & \num{67,50} \\
-\multicolumn{4}{r}{\textit{Subtotal E}} & \textbf{\num{97,50}} \\
+    & --- & --- & \num{62,25} \\
+\multicolumn{4}{r}{\textit{Subtotal E}} & \textbf{\num{92,25}} \\
 \midrule
 \rowcolor{lightGray}
-\multicolumn{4}{r}{\textbf{TOTAL GENERAL}} & \textbf{S/.\,\num{9127,50}} \\
+\multicolumn{4}{r}{\textbf{TOTAL GENERAL}} & \textbf{S/.\,\num{7737,25}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -163,10 +162,10 @@ académico autofinanciado por los integrantes del grupo.
 \begin{supuesto}
 \small\textbf{Nota:} Los costos de recursos humanos (A) se valorizan a una tarifa
 referencial de S/.\,20,00 por hora para programadores iniciantes, considerando
-2 horas diarias, 3 días por semana (martes, jueves y sábado), durante las
-16 semanas del semestre (384 horas totales). El equipamiento (B) considera el
+2 horas diarias, 3 días por semana (martes, jueves y sábado), para un total de
+320 horas totales (80 horas por integrante). El equipamiento (B) considera el
 costo de uso y desgaste semestral de las laptops personales de los integrantes.
 El software (C) incluye una suscripción compartida de Claude Pro. El total
-asciende a \textbf{S/.\,\num{9127,50}}, financiado íntegramente por los
+asciende a \textbf{S/.\,\num{7737,25}}, financiado íntegramente por los
 integrantes del grupo.
 \end{supuesto}
