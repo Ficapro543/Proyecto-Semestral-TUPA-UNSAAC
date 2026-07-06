@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Cuadrícula | TUPA UNSAAC</title>
+  <meta name="description" content="Vista cuadrícula del catálogo de procedimientos TUPA con cards compactas." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .compact-card {
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl); padding: var(--sp-md);
+      cursor: pointer; display: flex; flex-direction: column; gap: var(--sp-sm);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast);
+    }
+    .compact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }
+    .compact-card-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); background: var(--clr-primary-fixed); display: flex; align-items: center; justify-content: center; }
+    .compact-card-icon .material-symbols-outlined { font-size: 22px; color: var(--clr-primary); font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .compact-card-title { font-size: 14px; font-weight: 700; color: var(--clr-primary); line-height: 1.3; }
+    .compact-card-meta { display: flex; gap: var(--sp-xs); flex-wrap: wrap; }
+    .compact-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: var(--sp-xs); border-top: 1px solid var(--clr-outline-variant); }
+    .compact-card-cost { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--clr-primary); }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<div style="background:var(--clr-primary);padding:var(--sp-xl) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md)">
+      <div>
+        <h1 style="font-family:'Hanken Grotesk',sans-serif;font-size:28px;font-weight:800;color:white">Catálogo TUPA — Vista Cuadrícula</h1>
+        <p style="font-size:14px;color:rgba(255,255,255,0.65);margin-top:4px">103 procedimientos en formato compacto</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo.lista')">
+          <span class="material-symbols-outlined">view_list</span> Lista
+        </button>
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo.acordeon')">
+          <span class="material-symbols-outlined">view_agenda</span> Acordeón
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-xl) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="position:relative;margin-bottom:var(--sp-lg);max-width:500px">
+      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--clr-outline)">search</span>
+      <input id="grid-search" type="text" placeholder="Buscar procedimiento..."
+             style="width:100%;height:44px;padding:0 var(--sp-md) 0 40px;background:var(--clr-surface-container-lowest);border:1px solid var(--clr-outline-variant);border-radius:var(--radius-lg);font-size:14px;outline:none" />
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--sp-md)" id="grid-container"></div>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'catalogo' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+
+  const icons = ['school','description','manage_accounts','favorite','science','workspace_premium','receipt_long','article','gavel','payments','upload_file','verified'];
+  const items = [
+    {t:'Diploma de Bachiller',cat:'Académico',cost:'S/. 120',time:'15 d'},
+    {t:'Certificado de Matrícula',cat:'Académico',cost:'Gratuito',time:'2 d'},
+    {t:'Constancia de Egresado',cat:'Académico',cost:'S/. 30',time:'3 d'},
+    {t:'Récord Académico',cat:'Académico',cost:'S/. 15',time:'1 d'},
+    {t:'Título Profesional',cat:'Académico',cost:'S/. 250',time:'30 d'},
+    {t:'Homologación de Notas',cat:'Académico',cost:'S/. 45',time:'7 d'},
+    {t:'Traslado Externo',cat:'Admin.',cost:'S/. 180',time:'20 d'},
+    {t:'Cambio de Especialidad',cat:'Admin.',cost:'S/. 60',time:'10 d'},
+    {t:'Duplicado de Carné',cat:'Admin.',cost:'S/. 25',time:'3 d'},
+    {t:'Beca Comedor',cat:'Bienestar',cost:'Gratuito',time:'5 d'},
+    {t:'Reserva de Matrícula',cat:'Académico',cost:'S/. 20',time:'2 d'},
+    {t:'Convalidación',cat:'Académico',cost:'S/. 35',time:'5 d'},
+    {t:'Certif. de Estudios',cat:'Académico',cost:'S/. 20',time:'2 d'},
+    {t:'Constancia de Notas',cat:'Académico',cost:'S/. 10',time:'1 d'},
+    {t:'Beca Transporte',cat:'Bienestar',cost:'Gratuito',time:'7 d'},
+    {t:'Seguro Estudiantil',cat:'Bienestar',cost:'Gratuito',time:'1 d'},
+    {t:'Proyecto de Tesis',cat:'Investig.',cost:'S/. 40',time:'5 d'},
+    {t:'Dictamen de Tesis',cat:'Investig.',cost:'S/. 50',time:'10 d'},
+    {t:'Certif. Tercio Superior',cat:'Académico',cost:'S/. 25',time:'2 d'},
+    {t:'Pensión Diferenciada',cat:'Admin.',cost:'Variable',time:'Inmediato'},
+  ];
+
+  document.getElementById('grid-container').innerHTML = items.map((item, i) => `
+    <div class="compact-card animate-on-load stagger-${i % 5 + 1}" onclick="navigate('catalogo.detalle')" role="listitem" tabindex="0">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div class="compact-card-icon">
+          <span class="material-symbols-outlined">${icons[i % icons.length]}</span>
+        </div>
+        <span class="badge badge-primary" style="font-size:10px">${item.cat}</span>
+      </div>
+      <div class="compact-card-title">${item.t}</div>
+      <div class="compact-card-footer">
+        <div class="compact-card-cost">${item.cost}</div>
+        <div style="font-size:11px;color:var(--clr-secondary)">${item.time}</div>
+      </div>
+    </div>
+  `).join('');
+
+  initPage({ route: 'catalogo.cuadricula', pageTitle: 'Catálogo — Cuadrícula' });
+  initSearch('#grid-search', '.compact-card');
+</script>
+</body>
+</html>

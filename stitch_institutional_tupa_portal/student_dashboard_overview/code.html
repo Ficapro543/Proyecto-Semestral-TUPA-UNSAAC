@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Estudiante | TUPA UNSAAC</title>
+  <meta name="description" content="Panel principal del estudiante. Accede a tus trámites, notificaciones y estado de expedientes." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .quick-action-card {
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: var(--sp-xl);
+      border-radius: var(--radius-xl);
+      min-height: 140px;
+      cursor: pointer;
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+      position: relative; overflow: hidden;
+      border: 1px solid transparent;
+    }
+    .quick-action-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .quick-action-card:active { transform: scale(0.97); }
+    .quick-action-card .qa-bg-icon {
+      position: absolute; right: -12px; bottom: -12px;
+      font-size: 80px; opacity: 0.08;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      transition: transform 0.4s ease;
+    }
+    .quick-action-card:hover .qa-bg-icon { transform: scale(1.15) rotate(-5deg); }
+    .qa-primary { background: var(--clr-primary); color: var(--clr-on-primary); }
+    .qa-white   { background: var(--clr-surface-container-lowest); color: var(--clr-primary); border-color: var(--clr-outline-variant); }
+    .qa-white:hover { border-color: var(--clr-primary); }
+    .qa-teal    { background: var(--clr-tertiary-container); color: var(--clr-tertiary-fixed); }
+    .qa-navy    { background: var(--clr-primary-container); color: var(--clr-primary-fixed-dim); }
+
+    .activity-item {
+      display: flex; align-items: flex-start; gap: var(--sp-md);
+      padding: var(--sp-md);
+      border-radius: var(--radius-lg);
+      transition: background var(--transition-fast);
+      cursor: pointer;
+    }
+    .activity-item:hover { background: var(--clr-surface-container-low); }
+    .activity-avatar {
+      width: 42px; height: 42px; border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .activity-avatar .material-symbols-outlined { font-size: 20px; }
+
+    .tracking-mini-card { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); padding: var(--sp-lg); box-shadow: var(--shadow-sm); }
+    .help-card { background: linear-gradient(135deg, var(--clr-tertiary-container), var(--clr-primary-container)); border-radius: var(--radius-xl); padding: var(--sp-xl); position: relative; overflow: hidden; }
+    .help-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 120px; height: 120px; background: rgba(137,245,231,0.1); border-radius: 50%; }
+    .help-card::after  { content: ''; position: absolute; bottom: -20px; left: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+  </style>
+</head>
+<body class="app-layout">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-mount"></div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div id="topbar-mount"></div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+      <!-- Welcome Header -->
+      <section class="animate-on-load" style="margin-bottom:var(--sp-xl)">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md)">
+          <div>
+            <h1 class="text-display-md" style="color:var(--clr-primary)">
+              Buen día, Elena 👋
+            </h1>
+            <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">
+              Aquí tienes un resumen de tu estado administrativo actual.
+            </p>
+          </div>
+          <button class="btn btn-primary" onclick="navigate('tramite.paso1')" aria-label="Iniciar nuevo trámite">
+            <span class="material-symbols-outlined">add</span>
+            Nuevo Trámite
+          </button>
+        </div>
+      </section>
+
+      <!-- STAT CARDS -->
+      <section class="animate-on-load stagger-1" style="margin-bottom:var(--sp-xl)" aria-labelledby="stats-title">
+        <h2 id="stats-title" class="sr-only">Resumen de trámites</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--sp-lg)">
+          <div id="stat-activos"></div>
+          <div id="stat-aprobados"></div>
+          <div id="stat-observados"></div>
+          <div id="stat-pagos"></div>
+        </div>
+      </section>
+
+      <!-- MAIN GRID -->
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:var(--sp-xl)">
+
+        <!-- LEFT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:var(--sp-xl);min-width:0">
+
+          <!-- Quick Actions -->
+          <section class="animate-on-load stagger-2" aria-labelledby="qa-title">
+            <h2 id="qa-title" class="text-headline-sm" style="margin-bottom:var(--sp-md);color:var(--clr-on-surface)">
+              Acciones Rápidas
+            </h2>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp-md)">
+              <div class="quick-action-card qa-primary"
+                   onclick="navigate('tramite.paso1')"
+                   role="button" tabindex="0" aria-label="Iniciar nuevo trámite"
+                   onkeypress="if(event.key==='Enter') navigate('tramite.paso1')">
+                <span class="material-symbols-outlined icon-xl">rocket_launch</span>
+                <div style="position:relative;z-index:1">
+                  <div class="text-headline-sm" style="color:inherit">Iniciar Trámite</div>
+                  <div class="text-label-sm" style="opacity:0.75;margin-top:4px">Nueva solicitud administrativa</div>
+                </div>
+                <span class="qa-bg-icon material-symbols-outlined">add_circle</span>
+              </div>
+              <div class="quick-action-card qa-white"
+                   onclick="navigate('seguimiento')"
+                   role="button" tabindex="0" aria-label="Rastrear expediente"
+                   onkeypress="if(event.key==='Enter') navigate('seguimiento')">
+                <span class="material-symbols-outlined icon-xl" style="color:var(--clr-primary)">location_searching</span>
+                <div>
+                  <div class="text-headline-sm">Rastrear Expediente</div>
+                  <div class="text-label-sm" style="color:var(--clr-secondary);margin-top:4px">Estado en tiempo real</div>
+                </div>
+                <span class="qa-bg-icon material-symbols-outlined" style="color:var(--clr-primary)">track_changes</span>
+              </div>
+              <div class="quick-action-card qa-white"
+                   onclick="navigate('tramite.paso4')"
+                   role="button" tabindex="0" aria-label="Subir documentos"
+                   onkeypress="if(event.key==='Enter') navigate('tramite.paso4')">
+                <span class="material-symbols-outlined icon-xl" style="color:var(--clr-primary)">upload_file</span>
+                <div>
+                  <div class="text-headline-sm">Subir Documentos</div>
+                  <div class="text-label-sm" style="color:var(--clr-secondary);margin-top:4px">Adjuntar archivos pendientes</div>
+                </div>
+                <span class="qa-bg-icon material-symbols-outlined" style="color:var(--clr-primary)">cloud_upload</span>
+              </div>
+              <div class="quick-action-card qa-white"
+                   onclick="navigate('catalogo')"
+                   role="button" tabindex="0" aria-label="Ver catálogo TUPA"
+                   onkeypress="if(event.key==='Enter') navigate('catalogo')">
+                <span class="material-symbols-outlined icon-xl" style="color:var(--clr-primary)">menu_book</span>
+                <div>
+                  <div class="text-headline-sm">Catálogo TUPA</div>
+                  <div class="text-label-sm" style="color:var(--clr-secondary);margin-top:4px">Explorar procedimientos</div>
+                </div>
+                <span class="qa-bg-icon material-symbols-outlined" style="color:var(--clr-primary)">list_alt</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Activity -->
+          <section class="card animate-on-load stagger-3" aria-labelledby="activity-title">
+            <div class="card-header">
+              <span class="card-header-title" id="activity-title">Actividad Reciente</span>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('estudiante.tramites')">Ver todo</button>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div id="activity-list">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline btn-sm w-full" onclick="navigate('estudiante.tramites')">
+                Ver historial completo
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+
+          <!-- Active Tracking Widget -->
+          <section class="tracking-mini-card animate-on-load stagger-2" aria-labelledby="tracking-title">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-lg)">
+              <div>
+                <div class="text-label-sm" style="color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em">Expediente activo</div>
+                <div class="text-headline-sm" style="color:var(--clr-primary);margin-top:4px" id="tracking-title">EXP-2024-8902</div>
+              </div>
+              <span class="badge badge-in-review">En Revisión</span>
+            </div>
+
+            <div class="timeline" style="--timeline-gap:var(--sp-md)" id="mini-timeline">
+              <!-- Rendered by JS -->
+            </div>
+
+            <button class="btn btn-outline w-full" style="margin-top:var(--sp-lg)"
+                    onclick="navigate('seguimiento.detalle')">
+              Ver historial completo
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </section>
+
+          <!-- Help Card -->
+          <div class="help-card animate-on-load stagger-3" role="complementary" aria-label="Asistente virtual">
+            <div style="position:relative;z-index:1">
+              <div class="text-headline-sm" style="color:var(--clr-tertiary-fixed);margin-bottom:var(--sp-sm)">¿Necesitas ayuda?</div>
+              <p class="text-body-sm" style="color:rgba(255,255,255,0.7);margin-bottom:var(--sp-md)">
+                Nuestro asistente virtual puede guiarte con los requisitos y plazos de cada trámite.
+              </p>
+              <button class="btn btn-teal btn-sm" onclick="navigate('ayuda')">
+                <span class="material-symbols-outlined">smart_toy</span>
+                Consultar Asistente
+              </button>
+            </div>
+          </div>
+
+          <!-- Notification Preview -->
+          <section class="card animate-on-load stagger-4" aria-labelledby="notif-title">
+            <div class="card-header">
+              <span class="card-header-title" id="notif-title">Notificaciones</span>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('estudiante.notificaciones')">Ver todas</button>
+            </div>
+            <div style="padding:var(--sp-sm)" id="notif-preview">
+              <!-- Rendered by JS -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-mount"></div>
+  </div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  // ── Mount shared components ──────────────────────────────
+  document.getElementById('sidebar-mount').outerHTML = StudentSidebar({ activeRoute: 'estudiante.dashboard', notifCount: 2 });
+  document.getElementById('topbar-mount').outerHTML  = StudentTopbar({ title: 'Dashboard' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  // ── Stat cards ────────────────────────────────────────────
+  document.getElementById('stat-activos').outerHTML = StatCard({
+    icon: 'pending_actions', iconBg: 'var(--clr-primary-fixed)', iconColor: 'var(--clr-primary)',
+    value: '3', label: 'Trámites Activos', badge: 'Activo', badgeClass: 'badge-blue',
+    targetRoute: 'estudiante.tramites'
+  });
+  document.getElementById('stat-aprobados').outerHTML = StatCard({
+    icon: 'check_circle', iconBg: '#d1fae5', iconColor: '#065f46',
+    value: '12', label: 'Aprobados', badge: 'Completado', badgeClass: 'badge-success',
+    targetRoute: 'estudiante.tramites'
+  });
+  document.getElementById('stat-observados').outerHTML = StatCard({
+    icon: 'warning', iconBg: 'var(--clr-error-container)', iconColor: 'var(--clr-error)',
+    value: '1', label: 'Observaciones', badge: 'Atención', badgeClass: 'badge-error',
+    targetRoute: 'estudiante.observacion'
+  });
+  document.getElementById('stat-pagos').outerHTML = StatCard({
+    icon: 'payments', iconBg: 'var(--clr-primary-fixed)', iconColor: 'var(--clr-on-primary-fixed-variant)',
+    value: 'S/240', label: 'Pagos Recientes', badge: 'Confirmado', badgeClass: 'badge-success'
+  });
+
+  // ── Activity feed ─────────────────────────────────────────
+  const activities = [
+    { icon: 'upload_file', bg: 'var(--clr-surface-container-highest)', color: 'var(--clr-primary)',
+      title: 'Documento <code>DNI_Copia.pdf</code> subido',
+      desc: 'Hoy a las 10:45 · Trámite de Grado', route: 'tramite.paso4' },
+    { icon: 'payments', bg: 'var(--clr-tertiary-fixed)', color: 'var(--clr-on-tertiary-fixed)',
+      title: 'Pago confirmado para <strong>Trámite de Diploma</strong>',
+      desc: 'Ayer · Expediente EXP-2024-1102', route: 'seguimiento.detalle' },
+    { icon: 'rule', bg: 'var(--clr-error-container)', color: 'var(--clr-error)',
+      title: 'Nueva observación en <strong>Trámite de Grado</strong>',
+      desc: '24 Oct 2024 · Acción requerida: Resubir Anexo B', route: 'estudiante.observacion' },
+    { icon: 'check_circle', bg: '#d1fae5', color: '#065f46',
+      title: 'Solicitud <strong>Certificado de Matrícula</strong> aprobada',
+      desc: '20 Oct 2024 · Expediente EXP-2024-0891', route: 'seguimiento.detalle' },
+  ];
+  document.getElementById('activity-list').innerHTML = activities.map(a => `
+    <div class="activity-item" onclick="navigate('${a.route}')" role="listitem" tabindex="0">
+      <div class="activity-avatar" style="background:${a.bg};color:${a.color}">
+        <span class="material-symbols-outlined">${a.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p class="text-body-md" style="color:var(--clr-on-surface)">${a.title}</p>
+        <p class="text-label-sm" style="color:var(--clr-secondary);margin-top:2px">${a.desc}</p>
+      </div>
+      <span class="material-symbols-outlined icon-sm" style="color:var(--clr-outline);flex-shrink:0">chevron_right</span>
+    </div>
+  `).join('');
+
+  // ── Mini timeline ─────────────────────────────────────────
+  const timelineSteps = [
+    { state: 'completed', icon: 'check', title: 'Solicitud presentada', date: '12 Oct 2024' },
+    { state: 'completed', icon: 'check', title: 'Pago confirmado', date: '15 Oct 2024' },
+    { state: 'active',    icon: 'schedule', title: 'Revisión administrativa', date: 'Desde 18 Oct 2024', desc: 'En proceso...' },
+    { state: 'pending',   icon: 'radio_button_unchecked', title: 'Aprobación final del Decano', date: 'Previsto 05 Nov 2024' },
+  ];
+  document.getElementById('mini-timeline').innerHTML = timelineSteps.map(
+    (s, i) => TimelineItem({ ...s, isLast: i === timelineSteps.length - 1 })
+  ).join('');
+
+  // ── Notification preview ──────────────────────────────────
+  const notifs = [
+    { icon: 'warning', iconBg: 'var(--clr-error-container)', iconColor: 'var(--clr-error)',
+      title: 'Observación en tu expediente', description: 'Debes resubir el Anexo B antes del 30 Oct.',
+      time: 'Hace 2 horas', unread: true, targetRoute: 'estudiante.observacion' },
+    { icon: 'payments', iconBg: 'var(--clr-tertiary-fixed)', iconColor: 'var(--clr-on-tertiary-fixed)',
+      title: 'Pago verificado', description: 'El pago de S/120 fue confirmado.',
+      time: 'Ayer', unread: false, targetRoute: 'seguimiento.detalle' },
+  ];
+  document.getElementById('notif-preview').innerHTML = notifs.map(n => NotificationItem(n)).join('');
+
+  // ── Init page ─────────────────────────────────────────────
+  initPage({ route: 'estudiante.dashboard', pageTitle: 'Dashboard Estudiante' });
+</script>
+</body>
+</html>

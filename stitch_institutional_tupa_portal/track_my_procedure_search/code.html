@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rastrear Trámite | TUPA UNSAAC</title>
+  <meta name="description" content="Rastrea el estado de tu expediente en el Portal TUPA UNSAAC usando tu código de expediente." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .track-hero { background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%); padding: var(--sp-3xl) var(--sp-lg); position: relative; overflow: hidden; }
+    .track-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 40%, rgba(137,245,231,0.15) 0%, transparent 70%); pointer-events: none; }
+    .search-hero-bar { display: flex; gap: var(--sp-sm); max-width: 600px; margin: var(--sp-xl) auto 0; position: relative; z-index: 1; }
+    .search-hero-input { flex: 1; height: 56px; padding: 0 var(--sp-lg); background: white; border: none; border-radius: var(--radius-xl); font-size: 16px; outline: none; box-shadow: var(--shadow-lg); }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<section class="track-hero" aria-labelledby="track-heading">
+  <div style="max-width:900px;margin:0 auto;position:relative;z-index:1;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:var(--sp-md);padding:4px 14px;background:rgba(137,245,231,0.12);border:1px solid rgba(137,245,231,0.3);border-radius:9999px;font-size:12px;font-weight:600;color:var(--clr-tertiary-fixed);letter-spacing:0.05em;text-transform:uppercase">
+      <span class="material-symbols-outlined" style="font-size:12px">location_searching</span>
+      Seguimiento de Expedientes
+    </div>
+    <h1 id="track-heading" style="font-family:'Hanken Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:800;color:white;line-height:1.1;margin-bottom:var(--sp-md)">
+      Rastrear mi Expediente
+    </h1>
+    <p style="font-size:16px;color:rgba(255,255,255,0.75);max-width:520px;margin:0 auto;line-height:1.65">
+      Ingresa el código de tu expediente para conocer el estado actual de tu trámite en tiempo real.
+    </p>
+    <div class="search-hero-bar">
+      <input class="search-hero-input" type="text" id="exp-input" placeholder="Ej. EXP-2024-8902"
+             aria-label="Código de expediente" oninput="validateExpCode()" />
+      <button class="btn btn-teal btn-lg" onclick="searchExpediente()" id="btn-search" aria-label="Buscar expediente">
+        <span class="material-symbols-outlined">search</span>
+        Buscar
+      </button>
+    </div>
+    <div style="margin-top:var(--sp-md);font-size:13px;color:rgba(255,255,255,0.55)">
+      Formato: EXP-YYYY-NNNN · Ej. EXP-2024-8902
+    </div>
+  </div>
+</section>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-2xl) var(--sp-lg)">
+  <div style="max-width:900px;margin:0 auto">
+
+    <!-- Result (hidden by default) -->
+    <div id="search-result" style="display:none" aria-live="polite"></div>
+
+    <!-- Tips -->
+    <div id="tips-section">
+      <h2 class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg);text-align:center">¿Cómo encontrar tu código de expediente?</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--sp-lg);margin-bottom:var(--sp-2xl)">
+        <div class="card animate-on-load">
+          <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-md);text-align:center">
+            <div style="width:56px;height:56px;background:var(--clr-primary-fixed);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center">
+              <span class="material-symbols-outlined icon-filled" style="font-size:28px;color:var(--clr-primary)">email</span>
+            </div>
+            <div style="font-weight:700;color:var(--clr-primary)">Correo de confirmación</div>
+            <p class="text-body-sm" style="color:var(--clr-secondary)">Al enviar tu solicitud recibiste un correo con el código de expediente.</p>
+          </div>
+        </div>
+        <div class="card animate-on-load stagger-1">
+          <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-md);text-align:center">
+            <div style="width:56px;height:56px;background:#d1fae5;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center">
+              <span class="material-symbols-outlined icon-filled" style="font-size:28px;color:#065f46">person</span>
+            </div>
+            <div style="font-weight:700;color:var(--clr-primary)">Panel del estudiante</div>
+            <p class="text-body-sm" style="color:var(--clr-secondary)">Inicia sesión y ve a "Mis Trámites" para ver todos tus expedientes.</p>
+          </div>
+        </div>
+        <div class="card animate-on-load stagger-2">
+          <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-md);text-align:center">
+            <div style="width:56px;height:56px;background:#fef3c7;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center">
+              <span class="material-symbols-outlined icon-filled" style="font-size:28px;color:#92400e">receipt</span>
+            </div>
+            <div style="font-weight:700;color:var(--clr-primary)">Comprobante de pago</div>
+            <p class="text-body-sm" style="color:var(--clr-secondary)">El código aparece en el comprobante de pago del trámite.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center">
+        <p style="font-size:14px;color:var(--clr-secondary);margin-bottom:var(--sp-md)">¿Ya tienes cuenta? Accede directamente a tus expedientes.</p>
+        <button class="btn btn-primary" onclick="navigate('login')">
+          <span class="material-symbols-outlined">login</span>
+          Iniciar sesión para ver mis trámites
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: '' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+
+  function validateExpCode() {
+    const val = document.getElementById('exp-input').value.trim().toUpperCase();
+    const valid = /^EXP-\d{4}-\d{4}$/.test(val) || val.length >= 3;
+    document.getElementById('btn-search').disabled = val.length < 3;
+  }
+
+  function searchExpediente() {
+    const code = document.getElementById('exp-input').value.trim().toUpperCase() || 'EXP-2024-8902';
+    document.getElementById('tips-section').style.display = 'none';
+    const result = document.getElementById('search-result');
+    result.style.display = 'block';
+    result.innerHTML = `<div style="text-align:center;padding:var(--sp-xl)">` + LoadingSpinner(32) + `<p style="margin-top:var(--sp-md);color:var(--clr-secondary)">Buscando expediente...</p></div>`;
+    setTimeout(() => {
+      result.innerHTML = `
+        <div class="alert alert-success" style="margin-bottom:var(--sp-lg)">
+          <span class="material-symbols-outlined">check_circle</span>
+          <div>Expediente encontrado · <strong>${code}</strong></div>
+        </div>
+      `;
+      navigate('seguimiento.resultados');
+    }, 1500);
+  }
+
+  document.getElementById('exp-input').addEventListener('keypress', e => {
+    if (e.key === 'Enter') searchExpediente();
+  });
+
+  initPage({ route: 'seguimiento', pageTitle: 'Rastrear Trámite' });
+</script>
+</body>
+</html>

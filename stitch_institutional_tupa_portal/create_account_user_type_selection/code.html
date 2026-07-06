@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Cuenta | TUPA UNSAAC</title>
+  <meta name="description" content="Solicita acceso institucional al Portal TUPA UNSAAC. Selecciona tu tipo de usuario para comenzar el proceso de registro." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { min-height: 100vh; display: flex; align-items: stretch; overflow: hidden; }
+
+    .reg-left {
+      display: none; width: 42%;
+      background: linear-gradient(150deg, var(--clr-primary) 0%, #0d3a6b 100%);
+      color: white; padding: var(--sp-3xl) var(--sp-2xl);
+      flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    @media (min-width: 900px) { .reg-left { display: flex; } }
+    .reg-left::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(137,245,231,0.18) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .reg-left-orb {
+      position: absolute; border-radius: 50%; opacity: 0.07; pointer-events: none;
+    }
+    .steps-visual { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--sp-lg); }
+    .step-visual { display: flex; align-items: flex-start; gap: var(--sp-md); }
+    .step-visual-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(137,245,231,0.2); border: 1px solid rgba(137,245,231,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: var(--clr-tertiary-fixed); flex-shrink: 0;
+    }
+    .step-visual-text .step-title { font-size: 14px; font-weight: 600; }
+    .step-visual-text .step-desc  { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+
+    .reg-right {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: var(--sp-xl) var(--sp-lg); background: var(--clr-background); overflow-y: auto;
+    }
+    .reg-card { width: 100%; max-width: 520px; }
+
+    .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-md); margin-bottom: var(--sp-xl); }
+    .type-btn {
+      padding: var(--sp-lg) var(--sp-md);
+      border: 2px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl);
+      display: flex; flex-direction: column; align-items: center; gap: var(--sp-sm);
+      cursor: pointer; text-align: center;
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-spring);
+    }
+    .type-btn:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); transform: translateY(-2px); }
+    .type-btn.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); box-shadow: 0 0 0 3px rgba(0,32,69,0.1); }
+    .type-btn .type-icon { width: 56px; height: 56px; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; }
+    .type-btn .material-symbols-outlined { font-size: 32px; }
+    .type-btn .type-name { font-size: 15px; font-weight: 700; color: var(--clr-on-surface); }
+    .type-btn .type-sub  { font-size: 12px; color: var(--clr-secondary); }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .progress-bar-wrap { height: 4px; background: var(--clr-surface-container); border-radius: 4px; overflow: hidden; margin-bottom: var(--sp-xl); }
+    .progress-bar-fill { height: 100%; background: var(--clr-primary); border-radius: 4px; transition: width 0.5s ease; }
+  </style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="reg-left" aria-hidden="true">
+  <div class="reg-left-orb" style="top:-100px;right:-100px;width:350px;height:350px;background:rgba(137,245,231,1)"></div>
+  <div class="reg-left-orb" style="bottom:-60px;left:-60px;width:250px;height:250px;background:rgba(255,255,255,1)"></div>
+
+  <div style="position:relative;z-index:1">
+    <div style="display:flex;align-items:center;gap:var(--sp-md);margin-bottom:var(--sp-2xl)">
+      <div style="width:48px;height:48px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined icon-filled" style="font-size:26px;color:var(--clr-tertiary-fixed)">account_balance</span>
+      </div>
+      <div>
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:20px;font-weight:800">TUPA UNSAAC</div>
+        <div style="font-size:12px;opacity:0.65">Portal Administrativo Digital</div>
+      </div>
+    </div>
+    <h2 style="font-family:'Hanken Grotesk',sans-serif;font-size:28px;font-weight:800;line-height:1.2;margin-bottom:var(--sp-md)">
+      Tu cuenta institucional en 3 pasos
+    </h2>
+    <p style="font-size:14px;opacity:0.7;line-height:1.65;margin-bottom:var(--sp-2xl)">
+      Completa el formulario con tus datos institucionales y en minutos tendrás acceso completo al portal.
+    </p>
+  </div>
+
+  <div class="steps-visual" style="position:relative;z-index:1">
+    <div class="step-visual">
+      <div class="step-visual-num">1</div>
+      <div class="step-visual-text">
+        <div class="step-title">Tipo de usuario</div>
+        <div class="step-desc">Estudiante, personal o egresado</div>
+      </div>
+    </div>
+    <div class="step-visual">
+      <div class="step-visual-num">2</div>
+      <div class="step-visual-text">
+        <div class="step-title">Datos institucionales</div>
+        <div class="step-desc">CUI, facultad y programa</div>
+      </div>
+    </div>
+    <div class="step-visual">
+      <div class="step-visual-num">3</div>
+      <div class="step-visual-text">
+        <div class="step-title">Verificación</div>
+        <div class="step-desc">Confirma tu correo institucional</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:relative;z-index:1;font-size:12px;opacity:0.5;text-align:center">
+    UNSAAC © 2024 · Datos protegidos por política institucional
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="reg-right">
+  <div class="reg-card animate-slide-up">
+    <div style="text-align:center;margin-bottom:var(--sp-xl)">
+      <div style="width:56px;height:56px;background:var(--clr-primary);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-md);box-shadow:0 8px 24px rgba(0,32,69,0.25)">
+        <span class="material-symbols-outlined icon-filled" style="font-size:30px;color:white">person_add</span>
+      </div>
+      <h1 style="font-family:'Hanken Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--clr-primary)">Crear cuenta institucional</h1>
+      <p style="font-size:14px;color:var(--clr-secondary);margin-top:4px">Acceso al Portal TUPA · Universidad Nacional de San Antonio Abad del Cusco</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="reg-progress" style="width:33%"></div>
+    </div>
+
+    <!-- STEP 1: Type selection -->
+    <div class="form-step active" id="step-1">
+      <h2 style="font-family:'Hanken Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--clr-on-surface);margin-bottom:var(--sp-xs)">¿Qué tipo de usuario eres?</h2>
+      <p style="font-size:14px;color:var(--clr-secondary);margin-bottom:var(--sp-lg)">Selecciona tu categoría para personalizar tu acceso.</p>
+
+      <div class="type-selector" role="group" aria-label="Tipo de usuario">
+        <div class="type-btn selected" id="type-estudiante" onclick="selectType('estudiante')" role="radio" aria-checked="true" tabindex="0">
+          <div class="type-icon" style="background:var(--clr-primary-fixed)">
+            <span class="material-symbols-outlined icon-filled" style="color:var(--clr-primary)">school</span>
+          </div>
+          <div class="type-name">Estudiante</div>
+          <div class="type-sub">Pregrado · Posgrado</div>
+        </div>
+        <div class="type-btn" id="type-egresado" onclick="selectType('egresado')" role="radio" aria-checked="false" tabindex="0">
+          <div class="type-icon" style="background:rgba(137,245,231,0.2)">
+            <span class="material-symbols-outlined icon-filled" style="color:var(--clr-tertiary-container)">workspace_premium</span>
+          </div>
+          <div class="type-name">Egresado</div>
+          <div class="type-sub">Ex-alumno UNSAAC</div>
+        </div>
+        <div class="type-btn" id="type-personal" onclick="selectType('personal')" role="radio" aria-checked="false" tabindex="0">
+          <div class="type-icon" style="background:#fef3c7">
+            <span class="material-symbols-outlined icon-filled" style="color:#92400e">badge</span>
+          </div>
+          <div class="type-name">Personal</div>
+          <div class="type-sub">Docente · Administrativo</div>
+        </div>
+        <div class="type-btn" id="type-externo" onclick="selectType('externo')" role="radio" aria-checked="false" tabindex="0">
+          <div class="type-icon" style="background:var(--clr-secondary-container)">
+            <span class="material-symbols-outlined icon-filled" style="color:var(--clr-secondary)">person</span>
+          </div>
+          <div class="type-name">Externo</div>
+          <div class="type-sub">Otro tipo de usuario</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-full btn-lg" onclick="goStep(2)" id="btn-next-1">
+        Continuar
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+
+    <!-- STEP 2: Data -->
+    <div class="form-step" id="step-2">
+      <h2 style="font-family:'Hanken Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--clr-on-surface);margin-bottom:var(--sp-xs)">Datos institucionales</h2>
+      <p style="font-size:14px;color:var(--clr-secondary);margin-bottom:var(--sp-lg)">Ingresa tu información para verificar tu pertenencia a la UNSAAC.</p>
+
+      <div style="display:flex;flex-direction:column;gap:var(--sp-md)">
+        <div class="form-group">
+          <label class="form-label required" for="reg-nombres">Nombres completos</label>
+          <input class="form-input" type="text" id="reg-nombres" placeholder="Ej. Elena María" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label required" for="reg-apellidos">Apellidos</label>
+          <input class="form-input" type="text" id="reg-apellidos" placeholder="Ej. Rodríguez Quispe" required />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md)">
+          <div class="form-group">
+            <label class="form-label required" for="reg-cui">CUI / DNI</label>
+            <input class="form-input" type="text" id="reg-cui" placeholder="00000000" maxlength="8" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="reg-code">Código UNSAAC</label>
+            <input class="form-input" type="text" id="reg-code" placeholder="202300123" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label required" for="reg-facultad">Facultad</label>
+          <select class="form-select" id="reg-facultad" required>
+            <option value="">— Seleccionar facultad —</option>
+            <option>Ingeniería Eléctrica, Electrónica, Informática y Mecánica</option>
+            <option>Ciencias Contables y Financieras</option>
+            <option>Arquitectura y Artes Plásticas</option>
+            <option>Ciencias Administrativas y Turismo</option>
+            <option>Ciencias Biológicas</option>
+            <option>Ciencias Físicas y Matemáticas</option>
+            <option>Ciencias Químicas, Físicas y Matemáticas</option>
+            <option>Ciencias Sociales</option>
+            <option>Derecho y Ciencias Políticas</option>
+            <option>Educación</option>
+            <option>Enfermería</option>
+            <option>Medicina Humana</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label required" for="reg-email">Correo institucional</label>
+          <div class="form-input-icon">
+            <span class="material-symbols-outlined">email</span>
+            <input class="form-input" type="email" id="reg-email" placeholder="usuario@unsaac.edu.pe" required />
+          </div>
+          <span class="form-hint">Usa tu correo @unsaac.edu.pe para verificación automática</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label required" for="reg-pass">Contraseña</label>
+          <div class="form-input-icon">
+            <span class="material-symbols-outlined">lock</span>
+            <input class="form-input" type="password" id="reg-pass" placeholder="Mínimo 8 caracteres" required />
+          </div>
+        </div>
+        <label class="form-check">
+          <input type="checkbox" id="reg-terms" required />
+          <span style="font-size:13px;color:var(--clr-secondary)">Acepto los <a href="#" style="color:var(--clr-primary);font-weight:600">Términos de Uso</a> y la <a href="#" style="color:var(--clr-primary);font-weight:600">Política de Privacidad</a></span>
+        </label>
+      </div>
+
+      <div style="display:flex;gap:var(--sp-md);margin-top:var(--sp-xl)">
+        <button class="btn btn-outline" onclick="goStep(1)">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Atrás
+        </button>
+        <button class="btn btn-primary flex-1" onclick="goStep(3)">
+          Crear cuenta
+          <span class="material-symbols-outlined">person_add</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div class="form-step" id="step-3">
+      <div style="text-align:center;padding:var(--sp-xl) 0">
+        <div style="width:80px;height:80px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-lg)">
+          <span class="material-symbols-outlined icon-filled" style="font-size:44px;color:#065f46">check_circle</span>
+        </div>
+        <h2 style="font-family:'Hanken Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--clr-primary);margin-bottom:var(--sp-sm)">¡Cuenta creada exitosamente!</h2>
+        <p style="font-size:14px;color:var(--clr-secondary);line-height:1.6;margin-bottom:var(--sp-xl)">
+          Te enviamos un enlace de verificación a tu correo institucional. Revisa tu bandeja y activa tu cuenta.
+        </p>
+        <button class="btn btn-primary btn-lg w-full" onclick="navigate('login')">
+          <span class="material-symbols-outlined">login</span>
+          Ir al inicio de sesión
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:var(--sp-lg);font-size:13px;color:var(--clr-secondary)">
+      ¿Ya tienes cuenta?
+      <a href="#" onclick="navigate('login')" style="color:var(--clr-primary);font-weight:600">Iniciar sesión</a>
+    </div>
+    <div style="text-align:center;margin-top:var(--sp-md)">
+      <a href="../index.html" style="font-size:12px;color:var(--clr-outline)">← Volver al portal principal</a>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  let selectedType = 'estudiante';
+  let currentStep = 1;
+
+  function selectType(type) {
+    selectedType = type;
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      const active = btn.id === `type-${type}`;
+      btn.classList.toggle('selected', active);
+      btn.setAttribute('aria-checked', active.toString());
+    });
+  }
+
+  function goStep(n) {
+    document.getElementById(`step-${currentStep}`).classList.remove('active');
+    currentStep = n;
+    document.getElementById(`step-${n}`).classList.add('active');
+    const pct = n === 1 ? 33 : n === 2 ? 66 : 100;
+    document.getElementById('reg-progress').style.width = pct + '%';
+    if (n === 3) showToast({ message: '¡Cuenta registrada! Verifica tu correo.', type: 'success' });
+  }
+
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('keypress', e => { if (e.key === 'Enter' || e.key === ' ') btn.click(); });
+  });
+</script>
+</body>
+</html>

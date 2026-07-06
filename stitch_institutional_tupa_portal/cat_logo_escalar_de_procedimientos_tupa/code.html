@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Lista | TUPA UNSAAC</title>
+  <meta name="description" content="Vista escalada de procedimientos administrativos TUPA — formato lista compacta." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .list-item {
+      display: flex; align-items: center; gap: var(--sp-md);
+      padding: var(--sp-md) var(--sp-lg);
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-left: 4px solid transparent;
+      border-radius: var(--radius-lg);
+      cursor: pointer; margin-bottom: var(--sp-sm);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast);
+    }
+    .list-item:hover { transform: translateX(4px); box-shadow: var(--shadow-md); border-left-color: var(--clr-primary); }
+    .list-num { width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--clr-surface-container); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--clr-secondary); flex-shrink: 0; }
+    .list-info { flex: 1; min-width: 0; }
+    .list-title { font-size: 15px; font-weight: 600; color: var(--clr-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .list-meta  { font-size: 12px; color: var(--clr-secondary); margin-top: 2px; display: flex; gap: var(--sp-md); flex-wrap: wrap; }
+    .list-cost  { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--clr-primary); white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<div style="background:var(--clr-primary);padding:var(--sp-lg) var(--sp-lg) var(--sp-lg);position:relative;overflow:hidden">
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:1">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md)">
+      <div>
+        <h1 style="font-family:'Hanken Grotesk',sans-serif;font-size:28px;font-weight:800;color:white">Catálogo TUPA — Vista Lista</h1>
+        <p style="font-size:14px;color:rgba(255,255,255,0.65);margin-top:4px">103 procedimientos ordenados por código</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo')">
+          <span class="material-symbols-outlined">grid_view</span> Vista Cuadrícula
+        </button>
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo.acordeon')">
+          <span class="material-symbols-outlined">view_agenda</span> Vista Acordeón
+        </button>
+      </div>
+    </div>
+    <div style="position:relative;margin-top:var(--sp-lg);max-width:500px">
+      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--clr-outline)">search</span>
+      <input id="list-search" type="text" placeholder="Filtrar procedimientos..."
+             style="width:100%;height:44px;padding:0 var(--sp-md) 0 40px;border:none;border-radius:var(--radius-lg);font-size:14px;outline:none" />
+    </div>
+  </div>
+</div>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-md)">
+      <div style="font-size:13px;color:var(--clr-secondary)">Mostrando 103 procedimientos</div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="filter-chip active">Todos</button>
+        <button class="filter-chip">Académico</button>
+        <button class="filter-chip">Administrativo</button>
+        <button class="filter-chip">Bienestar</button>
+      </div>
+    </div>
+    <div id="list-container"></div>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'catalogo' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+
+  const items = [
+    {n:'P001',t:'Diploma de Bachiller',cat:'Académico',cost:'S/. 120',time:'15 d'},
+    {n:'P002',t:'Certificado de Matrícula',cat:'Académico',cost:'Gratuito',time:'2 d'},
+    {n:'P003',t:'Constancia de Egresado',cat:'Académico',cost:'S/. 30',time:'3 d'},
+    {n:'P004',t:'Récord Académico',cat:'Académico',cost:'S/. 15',time:'1 d'},
+    {n:'P005',t:'Título Profesional',cat:'Académico',cost:'S/. 250',time:'30 d'},
+    {n:'P006',t:'Homologación de Notas',cat:'Académico',cost:'S/. 45',time:'7 d'},
+    {n:'P007',t:'Traslado Externo',cat:'Administrativo',cost:'S/. 180',time:'20 d'},
+    {n:'P008',t:'Cambio de Especialidad',cat:'Administrativo',cost:'S/. 60',time:'10 d'},
+    {n:'P009',t:'Duplicado de Carné',cat:'Administrativo',cost:'S/. 25',time:'3 d'},
+    {n:'P010',t:'Beca Comedor',cat:'Bienestar',cost:'Gratuito',time:'5 d'},
+    {n:'P011',t:'Reserva de Matrícula',cat:'Académico',cost:'S/. 20',time:'2 d'},
+    {n:'P012',t:'Convalidación de Cursos',cat:'Académico',cost:'S/. 35',time:'5 d'},
+    {n:'P013',t:'Certificado de Estudios',cat:'Académico',cost:'S/. 20',time:'2 d'},
+    {n:'P014',t:'Constancia de Notas',cat:'Académico',cost:'S/. 10',time:'1 d'},
+    {n:'P015',t:'Pensión de Enseñanza',cat:'Administrativo',cost:'Según nivel',time:'Inmediato'},
+    {n:'P016',t:'Carné Universitario',cat:'Administrativo',cost:'S/. 15',time:'3 d'},
+    {n:'P017',t:'Reconocimiento de Estudios',cat:'Académico',cost:'S/. 40',time:'7 d'},
+    {n:'P018',t:'Certificado de Tercio Superior',cat:'Académico',cost:'S/. 25',time:'2 d'},
+    {n:'P019',t:'Beca Transporte',cat:'Bienestar',cost:'Gratuito',time:'7 d'},
+    {n:'P020',t:'Seguro Estudiantil',cat:'Bienestar',cost:'Gratuito',time:'1 d'},
+  ];
+
+  const catColors = { Académico:'badge-primary', Administrativo:'badge-neutral', Bienestar:'badge-success', Investigación:'badge-in-review' };
+
+  document.getElementById('list-container').innerHTML = items.map((item, i) => `
+    <div class="list-item animate-on-load stagger-${Math.min(i % 5 + 1, 5)}" onclick="navigate('catalogo.detalle')"
+         role="listitem" tabindex="0" aria-label="${item.t}">
+      <div class="list-num">${item.n}</div>
+      <div class="list-info">
+        <div class="list-title">${item.t}</div>
+        <div class="list-meta">
+          <span class="badge ${catColors[item.cat] || 'badge-neutral'}" style="font-size:10px">${item.cat}</span>
+          <span><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle">schedule</span> ${item.time}</span>
+        </div>
+      </div>
+      <div class="list-cost">${item.cost}</div>
+      <span class="material-symbols-outlined" style="color:var(--clr-outline);font-size:18px">chevron_right</span>
+    </div>
+  `).join('');
+
+  initPage({ route: 'catalogo.lista', pageTitle: 'Catálogo — Vista Lista' });
+  initSearch('#list-search', '.list-item');
+
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

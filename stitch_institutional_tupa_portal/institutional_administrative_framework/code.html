@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marco Institucional | TUPA UNSAAC</title>
+  <meta name="description" content="Marco legal e institucional del procedimiento administrativo en la UNSAAC. Base normativa del TUPA." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .norm-card {
+      background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant);
+      border-left: 4px solid var(--clr-primary); border-radius: var(--radius-xl); padding: var(--sp-lg);
+      cursor: pointer;
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+    }
+    .norm-card:hover { transform: translateX(4px); box-shadow: var(--shadow-md); }
+    .norm-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--clr-primary); margin-bottom: var(--sp-xs); }
+    .norm-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--clr-on-surface); margin-bottom: 4px; }
+    .norm-desc { font-size: 13px; color: var(--clr-secondary); line-height: 1.55; }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<div style="background:var(--clr-primary);padding:var(--sp-2xl) var(--sp-lg);position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(137,245,231,0.1) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:1">
+    <nav class="breadcrumb" style="color:rgba(255,255,255,0.6);margin-bottom:var(--sp-md)">
+      <a onclick="navigate('catalogo')" href="#" style="color:rgba(255,255,255,0.6)">Catálogo</a>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span style="color:white">Marco Institucional</span>
+    </nav>
+    <h1 style="font-family:'Hanken Grotesk',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:800;color:white;margin-bottom:var(--sp-sm)">
+      Marco Institucional Administrativo
+    </h1>
+    <p style="font-size:15px;color:rgba(255,255,255,0.7);max-width:640px">
+      Base normativa, disposiciones legales y marco regulatorio que rige el Texto Único de Procedimientos Administrativos (TUPA) de la UNSAAC.
+    </p>
+  </div>
+</div>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-2xl) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:var(--sp-xl)">
+    
+    <div>
+      <!-- Base legal -->
+      <section style="margin-bottom:var(--sp-2xl)">
+        <h2 class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Base Legal</h2>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-md)">
+          <div class="norm-card animate-on-load">
+            <div class="norm-code">Ley N.° 27444</div>
+            <div class="norm-title">Ley del Procedimiento Administrativo General</div>
+            <p class="norm-desc">Establece el régimen jurídico aplicable para que la actuación de la Administración Pública sirva a la protección del interés general.</p>
+          </div>
+          <div class="norm-card animate-on-load stagger-1">
+            <div class="norm-code">D.S. N.° 006-2017-JUS</div>
+            <div class="norm-title">Texto Único Ordenado de la Ley N.° 27444</div>
+            <p class="norm-desc">Consolida las modificaciones a la Ley del Procedimiento Administrativo General hasta el año 2017.</p>
+          </div>
+          <div class="norm-card animate-on-load stagger-2">
+            <div class="norm-code">Ley N.° 30220</div>
+            <div class="norm-title">Ley Universitaria</div>
+            <p class="norm-desc">Regula la creación, funcionamiento, supervisión y cierre de las universidades. Define los procedimientos académicos y administrativos.</p>
+          </div>
+          <div class="norm-card animate-on-load stagger-3">
+            <div class="norm-code">Estatuto UNSAAC 2024</div>
+            <div class="norm-title">Estatuto de la Universidad Nacional de San Antonio Abad del Cusco</div>
+            <p class="norm-desc">Norma interna que regula la organización, funciones y procedimientos de la UNSAAC, incluyendo los trámites administrativos.</p>
+          </div>
+          <div class="norm-card animate-on-load stagger-4">
+            <div class="norm-code">R.C.U. N.° 0089-2024</div>
+            <div class="norm-title">Reglamento TUPA UNSAAC 2024</div>
+            <p class="norm-desc">Aprobación del Texto Único de Procedimientos Administrativos vigente con los 103 procedimientos catalogados y sus requisitos.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Principios -->
+      <section style="margin-bottom:var(--sp-2xl)">
+        <h2 class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Principios del Procedimiento Administrativo</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--sp-md)">
+          <div class="card animate-on-load">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:36px;height:36px;border-radius:var(--radius-lg);background:var(--clr-primary-fixed);display:flex;align-items:center;justify-content:center">
+                  <span class="material-symbols-outlined icon-sm" style="color:var(--clr-primary)">gavel</span>
+                </div>
+                <div style="font-weight:700;color:var(--clr-primary)">Legalidad</div>
+              </div>
+              <p class="text-body-sm" style="color:var(--clr-secondary)">Las autoridades actúan con respeto a la Constitución y a las leyes vigentes.</p>
+            </div>
+          </div>
+          <div class="card animate-on-load stagger-1">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:36px;height:36px;border-radius:var(--radius-lg);background:#d1fae5;display:flex;align-items:center;justify-content:center">
+                  <span class="material-symbols-outlined icon-sm" style="color:#065f46">verified_user</span>
+                </div>
+                <div style="font-weight:700;color:var(--clr-primary)">Debido Proceso</div>
+              </div>
+              <p class="text-body-sm" style="color:var(--clr-secondary)">Los ciudadanos tienen derecho a ser oídos y a que sus solicitudes sean resueltas motivadamente.</p>
+            </div>
+          </div>
+          <div class="card animate-on-load stagger-2">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:36px;height:36px;border-radius:var(--radius-lg);background:#fef3c7;display:flex;align-items:center;justify-content:center">
+                  <span class="material-symbols-outlined icon-sm" style="color:#92400e">visibility</span>
+                </div>
+                <div style="font-weight:700;color:var(--clr-primary)">Transparencia</div>
+              </div>
+              <p class="text-body-sm" style="color:var(--clr-secondary)">Las actuaciones administrativas son públicas y accesibles para los ciudadanos.</p>
+            </div>
+          </div>
+          <div class="card animate-on-load stagger-3">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:36px;height:36px;border-radius:var(--radius-lg);background:rgba(137,245,231,0.2);display:flex;align-items:center;justify-content:center">
+                  <span class="material-symbols-outlined icon-sm" style="color:var(--clr-tertiary-container)">bolt</span>
+                </div>
+                <div style="font-weight:700;color:var(--clr-primary)">Celeridad</div>
+              </div>
+              <p class="text-body-sm" style="color:var(--clr-secondary)">Los plazos se cumplen y los trámites se resuelven en el tiempo mínimo necesario.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside style="display:flex;flex-direction:column;gap:var(--sp-lg);align-self:start;position:sticky;top:80px">
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Acceso rápido</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+          <button class="btn btn-primary w-full" onclick="navigate('catalogo')">
+            <span class="material-symbols-outlined">menu_book</span> Ver catálogo completo
+          </button>
+          <button class="btn btn-outline w-full" onclick="navigate('tramite.paso1')">
+            <span class="material-symbols-outlined">rocket_launch</span> Iniciar un trámite
+          </button>
+          <button class="btn btn-ghost w-full" onclick="navigate('ayuda')">
+            <span class="material-symbols-outlined">help</span> Centro de ayuda
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Estadísticas TUPA</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-md)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--clr-secondary)">Procedimientos vigentes</span>
+            <span style="font-family:'Hanken Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--clr-primary)">103</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--clr-secondary)">Gratuitos</span>
+            <span style="font-weight:700;color:#065f46">22</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--clr-secondary)">Última actualización</span>
+            <span style="font-weight:600;color:var(--clr-on-surface)">Enero 2024</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--clr-secondary)">Resolución de aprobación</span>
+            <span class="text-mono-sm" style="color:var(--clr-primary)">R.C.U. 0089-2024</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'catalogo' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+  initPage({ route: 'catalogo.marco', pageTitle: 'Marco Institucional' });
+</script>
+</body>
+</html>

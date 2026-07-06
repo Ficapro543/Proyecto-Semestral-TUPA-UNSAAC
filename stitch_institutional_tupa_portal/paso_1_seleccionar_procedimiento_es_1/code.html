@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso 1 — Seleccionar Trámite | TUPA UNSAAC</title>
+  <meta name="description" content="Asistente de trámites TUPA — Paso 1: Selecciona el procedimiento que deseas iniciar." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--clr-background); }
+
+    .wizard-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-xl); flex: 1; }
+    @media (max-width: 900px) { .wizard-layout { grid-template-columns: 1fr; } }
+
+    .proc-option {
+      display: flex; align-items: flex-start; gap: var(--sp-md);
+      padding: var(--sp-lg); border: 2px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl); cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-normal);
+      position: relative;
+    }
+    .proc-option:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+    .proc-option.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); box-shadow: 0 0 0 3px rgba(0,32,69,0.08); }
+    .proc-option.selected::after { content: ''; position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; background: var(--clr-primary); border-radius: 50%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E"); background-size: 14px; background-repeat: no-repeat; background-position: center; }
+    .proc-option-icon { width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .proc-option-icon .material-symbols-outlined { font-size: 24px; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body>
+
+<div style="background:var(--clr-primary);padding:var(--sp-md) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:var(--sp-md)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined icon-filled" style="font-size:20px;color:var(--clr-tertiary-fixed)">account_balance</span>
+      </div>
+      <span style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">TUPA UNSAAC — Asistente de Trámites</span>
+    </div>
+    <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7)" onclick="navigate('estudiante.dashboard')">
+      <span class="material-symbols-outlined">close</span> Cancelar
+    </button>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:var(--sp-lg);flex:1;width:100%;display:flex;flex-direction:column;gap:var(--sp-lg)">
+  <!-- Stepper -->
+  <div id="wizard-stepper"></div>
+
+  <div class="wizard-layout">
+    <!-- LEFT: Procedure selection -->
+    <div>
+      <div style="margin-bottom:var(--sp-xl)">
+        <h1 class="text-headline-md" style="color:var(--clr-primary);margin-bottom:var(--sp-xs)">Selecciona el procedimiento</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary)">Elige el trámite que deseas iniciar. Puedes buscar por nombre o filtrar por categoría.</p>
+      </div>
+
+      <!-- Search -->
+      <div style="position:relative;margin-bottom:var(--sp-md)">
+        <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--clr-outline)">search</span>
+        <input id="proc-search" type="text" placeholder="Buscar procedimiento..."
+               style="width:100%;height:44px;padding:0 var(--sp-md) 0 40px;background:var(--clr-surface-container-lowest);border:1px solid var(--clr-outline-variant);border-radius:var(--radius-lg);font-size:14px;outline:none" />
+      </div>
+
+      <!-- Category filter -->
+      <div style="display:flex;gap:var(--sp-xs);flex-wrap:wrap;margin-bottom:var(--sp-lg)">
+        <button class="filter-chip active" onclick="setFilter('todos',this)">Todos</button>
+        <button class="filter-chip" onclick="setFilter('Académico',this)">Académico</button>
+        <button class="filter-chip" onclick="setFilter('Administrativo',this)">Administrativo</button>
+        <button class="filter-chip" onclick="setFilter('Bienestar',this)">Bienestar</button>
+      </div>
+
+      <!-- Procedure options -->
+      <div style="display:flex;flex-direction:column;gap:var(--sp-sm)" id="proc-list">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+      <div class="card" id="selection-card">
+        <div class="card-header">
+          <span class="card-header-title">Tu selección</span>
+        </div>
+        <div class="card-body" id="selection-detail">
+          <div class="empty-state" style="padding:var(--sp-xl) 0">
+            <span class="material-symbols-outlined">touch_app</span>
+            <div class="empty-state-title">Selecciona un trámite</div>
+            <div class="empty-state-desc">Haz clic en uno de los procedimientos de la lista</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <span class="material-symbols-outlined">info</span>
+        <div>Una vez seleccionado el procedimiento, revisarás los requisitos antes de continuar con el pago.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex;justify-content:space-between;padding-top:var(--sp-lg);border-top:1px solid var(--clr-outline-variant)">
+    <button class="btn btn-ghost" onclick="navigate('catalogo.detalle')">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Volver al catálogo
+    </button>
+    <button class="btn btn-primary btn-lg" id="btn-continue" disabled onclick="navigate('tramite.paso2')">
+      Continuar a Requisitos
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  renderWizardStepper(1);
+
+  const procedures = [
+    { id:'P001', title:'Diploma de Bachiller', cat:'Académico', cost:'S/. 120.00', time:'15 días', icon:'workspace_premium', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)', desc:'Diploma acreditativo del Grado Académico de Bachiller.' },
+    { id:'P002', title:'Certificado de Matrícula', cat:'Académico', cost:'Gratuito', time:'2 días', icon:'school', iconBg:'#d1fae5', iconColor:'#065f46', desc:'Constancia oficial del estado de matrícula del semestre actual.' },
+    { id:'P003', title:'Constancia de Egresado', cat:'Académico', cost:'S/. 30.00', time:'3 días', icon:'verified', iconBg:'var(--clr-surface-container)', iconColor:'var(--clr-primary)', desc:'Certifica la conclusión satisfactoria del plan de estudios.' },
+    { id:'P004', title:'Récord Académico', cat:'Académico', cost:'S/. 15.00', time:'1 día', icon:'receipt_long', iconBg:'rgba(137,245,231,0.2)', iconColor:'var(--clr-tertiary-container)', desc:'Historial completo de notas y créditos del estudiante.' },
+    { id:'P007', title:'Traslado Externo', cat:'Administrativo', cost:'S/. 180.00', time:'20 días', icon:'swap_horiz', iconBg:'#fef3c7', iconColor:'#92400e', desc:'Proceso de admisión por traslado desde otra universidad.' },
+    { id:'P010', title:'Beca Comedor Universitario', cat:'Bienestar', cost:'Gratuito', time:'5 días', icon:'restaurant', iconBg:'var(--clr-error-container)', iconColor:'var(--clr-error)', desc:'Solicitud de beca para el servicio de comedor universitario.' },
+  ];
+
+  let selected = null;
+
+  function renderList(filter = 'todos') {
+    const list = filter === 'todos' ? procedures : procedures.filter(p => p.cat === filter);
+    document.getElementById('proc-list').innerHTML = list.map(p => `
+      <div class="proc-option animate-on-load ${selected === p.id ? 'selected' : ''}"
+           id="opt-${p.id}" onclick="selectProc('${p.id}')"
+           role="radio" aria-checked="${selected === p.id}" tabindex="0"
+           onkeypress="if(event.key==='Enter') selectProc('${p.id}')">
+        <div class="proc-option-icon" style="background:${p.iconBg}">
+          <span class="material-symbols-outlined" style="color:${p.iconColor}">${p.icon}</span>
+        </div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:var(--sp-sm);margin-bottom:4px">
+            <div style="font-size:15px;font-weight:600;color:var(--clr-on-surface)">${p.title}</div>
+            <span class="badge badge-primary" style="font-size:10px">${p.cat}</span>
+          </div>
+          <div style="font-size:13px;color:var(--clr-secondary);margin-bottom:var(--sp-xs)">${p.desc}</div>
+          <div style="display:flex;gap:var(--sp-md)">
+            <span style="font-size:12px;color:var(--clr-secondary)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle">payments</span> ${p.cost}</span>
+            <span style="font-size:12px;color:var(--clr-secondary)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle">schedule</span> ${p.time}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function selectProc(id) {
+    selected = id;
+    const p = procedures.find(x => x.id === id);
+    renderList(currentFilter);
+    document.getElementById('selection-detail').innerHTML = `
+      <div style="display:flex;align-items:center;gap:var(--sp-md);margin-bottom:var(--sp-md)">
+        <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:${p.iconBg};display:flex;align-items:center;justify-content:center">
+          <span class="material-symbols-outlined icon-filled" style="font-size:24px;color:${p.iconColor}">${p.icon}</span>
+        </div>
+        <div>
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-primary)">${p.title}</div>
+          <span class="badge badge-primary">${p.cat}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-sm);font-size:14px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Código</span><span class="text-mono-sm" style="color:var(--clr-primary)">${p.id}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Costo</span><span style="font-weight:700;color:var(--clr-primary)">${p.cost}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Plazo</span><span style="font-weight:600">${p.time} hábiles</span></div>
+      </div>
+    `;
+    document.getElementById('btn-continue').disabled = false;
+    showToast({ message: `Seleccionado: ${p.title}`, type: 'success', duration: 2000 });
+  }
+
+  let currentFilter = 'todos';
+  function setFilter(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderList(f);
+  }
+
+  renderList();
+  initSearch('#proc-search', '.proc-option');
+  initPage({ route: 'tramite.paso1', pageTitle: 'Paso 1 — Seleccionar Trámite' });
+</script>
+</body>
+</html>

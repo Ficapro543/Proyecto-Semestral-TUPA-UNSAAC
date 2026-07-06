@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados de Búsqueda | TUPA UNSAAC</title>
+  <meta name="description" content="Resultados del seguimiento del expediente en el Portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .result-card { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); padding: var(--sp-lg); cursor: pointer; transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast); }
+    .result-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<div style="background:var(--clr-primary);padding:var(--sp-lg)">
+  <div style="max-width:900px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:var(--sp-md)">
+      <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7)" onclick="navigate('seguimiento')">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <div style="position:relative;flex:1;max-width:500px">
+        <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--clr-outline)">search</span>
+        <input type="text" value="EXP-2024-8902"
+               style="width:100%;height:44px;padding:0 var(--sp-md) 0 40px;background:white;border:none;border-radius:var(--radius-lg);font-size:14px;outline:none"
+               aria-label="Buscar otro expediente" />
+      </div>
+      <button class="btn btn-teal">Buscar</button>
+    </div>
+  </div>
+</div>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-2xl) var(--sp-lg)">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="alert alert-success animate-slide-up" style="margin-bottom:var(--sp-xl)">
+      <span class="material-symbols-outlined">check_circle</span>
+      <div>Se encontraron <strong>1 expediente</strong> para "EXP-2024-8902"</div>
+    </div>
+
+    <div class="result-card animate-on-load" onclick="navigate('seguimiento.detalle')" role="article" tabindex="0">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-lg)">
+        <div style="display:flex;align-items:center;gap:var(--sp-md)">
+          <div style="width:52px;height:52px;background:var(--clr-primary-fixed);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:26px;color:var(--clr-primary)">workspace_premium</span>
+          </div>
+          <div>
+            <div style="font-family:'Hanken Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--clr-primary)">Diploma de Bachiller</div>
+            <div style="font-size:13px;color:var(--clr-secondary);margin-top:2px;display:flex;gap:var(--sp-md)">
+              <span class="text-mono-sm" style="color:var(--clr-primary)">EXP-2024-8902</span>
+              <span>·</span>
+              <span>Iniciado: 12 Oct 2024</span>
+            </div>
+          </div>
+        </div>
+        <span class="badge badge-in-review badge-lg">En Revisión</span>
+      </div>
+
+      <!-- Progress -->
+      <div style="margin-bottom:var(--sp-lg)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--sp-sm)">
+          <span style="font-size:13px;color:var(--clr-secondary)">Progreso del trámite</span>
+          <span style="font-size:13px;font-weight:600;color:var(--clr-primary)">Paso 3 de 5</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" style="width:60%"></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-lg)">
+        <div style="padding:var(--sp-md);background:var(--clr-surface-container-low);border-radius:var(--radius-lg)">
+          <div style="font-size:12px;color:var(--clr-secondary);margin-bottom:2px">Solicitante</div>
+          <div style="font-size:14px;font-weight:600">Elena M. Rodríguez Q.</div>
+        </div>
+        <div style="padding:var(--sp-md);background:var(--clr-surface-container-low);border-radius:var(--radius-lg)">
+          <div style="font-size:12px;color:var(--clr-secondary);margin-bottom:2px">Área responsable</div>
+          <div style="font-size:14px;font-weight:600">Ofic. de Grados y Títulos</div>
+        </div>
+        <div style="padding:var(--sp-md);background:var(--clr-surface-container-low);border-radius:var(--radius-lg)">
+          <div style="font-size:12px;color:var(--clr-secondary);margin-bottom:2px">Plazo estimado</div>
+          <div style="font-size:14px;font-weight:600">05 Nov 2024</div>
+        </div>
+        <div style="padding:var(--sp-md);background:var(--clr-surface-container-low);border-radius:var(--radius-lg)">
+          <div style="font-size:12px;color:var(--clr-secondary);margin-bottom:2px">Costo</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--clr-primary)">S/. 120.00</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:13px;color:var(--clr-secondary)">
+          <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">schedule</span>
+          Última actualización: hace 2 días
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();navigate('seguimiento.detalle')">
+          Ver detalle completo
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="margin-top:var(--sp-xl);text-align:center">
+      <p style="font-size:14px;color:var(--clr-secondary);margin-bottom:var(--sp-md)">¿No es el expediente que buscas?</p>
+      <button class="btn btn-outline" onclick="navigate('seguimiento')">
+        <span class="material-symbols-outlined">search</span>
+        Nueva búsqueda
+      </button>
+    </div>
+  </div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: '' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+  initPage({ route: 'seguimiento.resultados', pageTitle: 'Resultados de Búsqueda' });
+</script>
+</body>
+</html>

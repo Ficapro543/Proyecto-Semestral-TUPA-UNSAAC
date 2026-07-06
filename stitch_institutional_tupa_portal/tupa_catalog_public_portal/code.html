@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo TUPA | TUPA UNSAAC</title>
+  <meta name="description" content="Catálogo completo de procedimientos administrativos de la Universidad Nacional de San Antonio Abad del Cusco." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .catalog-hero {
+      background: var(--clr-primary);
+      padding: var(--sp-2xl) var(--sp-lg);
+      position: relative; overflow: hidden;
+    }
+    .catalog-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 50%, rgba(137,245,231,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .catalog-hero-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+
+    .view-toggle { display: flex; gap: 4px; background: rgba(255,255,255,0.1); border-radius: var(--radius-lg); padding: 4px; }
+    .view-btn {
+      width: 36px; height: 36px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.6); cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .view-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+    .view-btn.active { background: rgba(255,255,255,0.2); color: white; }
+    .view-btn .material-symbols-outlined { font-size: 20px; }
+
+    .catalog-content { flex: 1; background: var(--clr-background); }
+    .catalog-inner { max-width: 1280px; margin: 0 auto; padding: var(--sp-lg); display: grid; grid-template-columns: 280px 1fr; gap: var(--sp-lg); }
+    @media (max-width: 900px) { .catalog-inner { grid-template-columns: 1fr; } }
+
+    /* Sidebar filters */
+    .filter-panel { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); padding: var(--sp-lg); height: fit-content; position: sticky; top: 80px; }
+    .filter-panel-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--clr-primary); margin-bottom: var(--sp-md); display: flex; justify-content: space-between; align-items: center; }
+    .filter-section { margin-bottom: var(--sp-lg); }
+    .filter-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--clr-secondary); margin-bottom: var(--sp-sm); }
+    .filter-option { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; cursor: pointer; }
+    .filter-option label { display: flex; align-items: center; gap: var(--sp-sm); font-size: 14px; color: var(--clr-on-surface); cursor: pointer; }
+    .filter-count { font-size: 11px; color: var(--clr-secondary); background: var(--clr-surface-container); padding: 1px 6px; border-radius: var(--radius-full); }
+
+    /* Catalog grid */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--sp-lg); }
+
+    .catalog-topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-md); margin-bottom: var(--sp-lg); }
+    .catalog-count { font-size: 14px; color: var(--clr-secondary); }
+
+    .category-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar-mount"></div>
+
+<!-- HERO -->
+<section class="catalog-hero" aria-labelledby="catalog-heading">
+  <div class="catalog-hero-inner">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-lg)">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--clr-tertiary-fixed);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-sm)">Portal TUPA · UNSAAC</div>
+        <h1 id="catalog-heading" style="font-family:'Hanken Grotesk',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:800;color:white;line-height:1.1;margin-bottom:var(--sp-sm)">
+          Catálogo de Procedimientos<br />Administrativos
+        </h1>
+        <p style="font-size:15px;color:rgba(255,255,255,0.7);max-width:520px">
+          103 procedimientos vigentes clasificados por facultad, área y tipo de trámite.
+        </p>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--sp-md)">
+        <div class="view-toggle" role="group" aria-label="Cambiar vista">
+          <button class="view-btn active" onclick="switchView('grid')" title="Vista cuadrícula" aria-label="Vista cuadrícula">
+            <span class="material-symbols-outlined">grid_view</span>
+          </button>
+          <button class="view-btn" onclick="switchView('list')" title="Vista lista" aria-label="Vista lista">
+            <span class="material-symbols-outlined">view_list</span>
+          </button>
+          <button class="view-btn" onclick="switchView('accordion')" title="Vista acordeón" aria-label="Vista acordeón">
+            <span class="material-symbols-outlined">view_agenda</span>
+          </button>
+        </div>
+        <button class="btn btn-teal" onclick="navigate('login')" aria-label="Iniciar sesión para acceder a trámites">
+          <span class="material-symbols-outlined">login</span>
+          Iniciar trámite
+        </button>
+      </div>
+    </div>
+
+    <!-- Search in hero -->
+    <div style="position:relative;margin-top:var(--sp-xl);max-width:600px">
+      <span class="material-symbols-outlined" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--clr-outline)">search</span>
+      <input type="text" id="catalog-search" placeholder="Buscar procedimiento... ej: diploma, matrícula, constancia"
+             style="width:100%;height:50px;padding:0 var(--sp-md) 0 46px;border:none;border-radius:var(--radius-xl);font-size:15px;outline:none;box-shadow:var(--shadow-lg)"
+             aria-label="Buscar procedimientos" />
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<div class="catalog-content">
+  <div class="catalog-inner">
+
+    <!-- FILTER PANEL -->
+    <aside class="filter-panel" aria-label="Filtros de búsqueda">
+      <div class="filter-panel-title">
+        Filtros
+        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Limpiar</button>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-label">Área</div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" checked /><span>Académica</span></label><span class="filter-count">47</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Administrativa</span></label><span class="filter-count">28</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Bienestar</span></label><span class="filter-count">15</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Investigación</span></label><span class="filter-count">13</span></div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-label">Costo</div>
+        <div class="filter-option"><label class="form-check"><input type="radio" name="cost" checked /><span>Todos</span></label></div>
+        <div class="filter-option"><label class="form-check"><input type="radio" name="cost" /><span>Gratuito</span></label><span class="filter-count">22</span></div>
+        <div class="filter-option"><label class="form-check"><input type="radio" name="cost" /><span>S/. 1 – S/. 50</span></label><span class="filter-count">38</span></div>
+        <div class="filter-option"><label class="form-check"><input type="radio" name="cost" /><span>S/. 50 – S/. 200</span></label><span class="filter-count">31</span></div>
+        <div class="filter-option"><label class="form-check"><input type="radio" name="cost" /><span>Más de S/. 200</span></label><span class="filter-count">12</span></div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-label">Plazo de atención</div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Inmediato (mismo día)</span></label><span class="filter-count">8</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>1–3 días hábiles</span></label><span class="filter-count">34</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>4–10 días hábiles</span></label><span class="filter-count">41</span></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Más de 10 días</span></label><span class="filter-count">20</span></div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-section-label">Otros</div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Solo digitales</span></label></div>
+        <div class="filter-option"><label class="form-check"><input type="checkbox" /><span>Con presencia física</span></label></div>
+      </div>
+
+      <button class="btn btn-primary w-full" onclick="applyFilters()">Aplicar filtros</button>
+    </aside>
+
+    <!-- CATALOG GRID -->
+    <main>
+      <div class="catalog-topbar">
+        <div class="catalog-count" aria-live="polite">Mostrando <strong id="count">47</strong> procedimientos académicos</div>
+        <div style="display:flex;gap:var(--sp-sm);align-items:center">
+          <label style="font-size:13px;color:var(--clr-secondary)">Ordenar:</label>
+          <select class="form-select" style="height:36px;font-size:13px;width:160px" aria-label="Ordenar procedimientos">
+            <option>Relevancia</option>
+            <option>Nombre A–Z</option>
+            <option>Menor costo</option>
+            <option>Mayor rapidez</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="tabs" id="cat-tabs" style="margin-bottom:var(--sp-lg)">
+        <div class="tab-item" data-tab="tab-todos">Todos (103)</div>
+        <div class="tab-item" data-tab="tab-academico">Académico (47)</div>
+        <div class="tab-item" data-tab="tab-admin">Administrativo (28)</div>
+        <div class="tab-item" data-tab="tab-bienestar">Bienestar (15)</div>
+        <div class="tab-item" data-tab="tab-investigacion">Investigación (13)</div>
+      </div>
+
+      <div class="catalog-grid" id="procedure-list">
+        <!-- Cards generated by JS -->
+      </div>
+
+      <div class="pagination" aria-label="Paginación">
+        <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <span style="color:var(--clr-outline)">…</span>
+        <button class="page-btn">8</button>
+        <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'catalogo' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+
+  const procedures = [
+    { id:'P001', title:'Diploma de Bachiller', category:'Académico', description:'Solicitud de diploma acreditativo de grado de bachiller otorgado por la UNSAAC.', cost:'S/. 120.00', time:'15 días hábiles', badge:'Frecuente' },
+    { id:'P002', title:'Certificado de Matrícula', category:'Académico', description:'Constancia oficial que acredita el estado de matrícula del estudiante en el semestre actual.', cost:'Gratuito', time:'2 días hábiles' },
+    { id:'P003', title:'Constancia de Egresado', category:'Académico', description:'Documento que certifica que el alumno ha concluido satisfactoriamente el plan de estudios.', cost:'S/. 30.00', time:'3 días hábiles' },
+    { id:'P004', title:'Récord Académico', category:'Académico', description:'Certificado con el historial completo de notas y créditos del estudiante.', cost:'S/. 15.00', time:'1 día hábil', badge:'Popular' },
+    { id:'P005', title:'Título Profesional', category:'Académico', description:'Otorgamiento del título profesional con modalidad de tesis o suficiencia profesional.', cost:'S/. 250.00', time:'30 días hábiles' },
+    { id:'P006', title:'Homologación de Notas', category:'Académico', description:'Reconocimiento y equivalencia de asignaturas cursadas en otra universidad.', cost:'S/. 45.00', time:'7 días hábiles' },
+    { id:'P007', title:'Traslado Externo', category:'Administrativo', description:'Proceso de admisión por traslado desde otra universidad al tercio superior.', cost:'S/. 180.00', time:'20 días hábiles' },
+    { id:'P008', title:'Cambio de Especialidad', category:'Administrativo', description:'Solicitud de cambio de programa o especialidad dentro de la misma facultad.', cost:'S/. 60.00', time:'10 días hábiles' },
+    { id:'P009', title:'Duplicado de Carné Universitario', category:'Administrativo', description:'Reposición del carné universitario por pérdida, robo o deterioro.', cost:'S/. 25.00', time:'3 días hábiles' },
+    { id:'P010', title:'Beca Comedor Universitario', category:'Bienestar', description:'Solicitud de beca parcial o total para el servicio de comedor de la UNSAAC.', cost:'Gratuito', time:'5 días hábiles', badge:'Nuevo' },
+    { id:'P011', title:'Reserva de Matrícula', category:'Académico', description:'Suspensión temporal de la matrícula hasta por cuatro semestres académicos.', cost:'S/. 20.00', time:'2 días hábiles' },
+    { id:'P012', title:'Convalidación de Cursos', category:'Académico', description:'Validación de asignaturas aprobadas en programas de intercambio o posgrado.', cost:'S/. 35.00', time:'5 días hábiles' },
+  ];
+
+  document.getElementById('procedure-list').innerHTML = procedures.map(p =>
+    ProcedureCard({ ...p, targetRoute: 'catalogo.detalle' })
+  ).join('');
+
+  initPage({ route: 'catalogo', pageTitle: 'Catálogo TUPA' });
+  initSearch('#catalog-search', '.procedure-card');
+  initTabs('cat-tabs');
+
+  function switchView(view) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if (view === 'list') navigate('catalogo.lista');
+    else if (view === 'accordion') navigate('catalogo.acordeon');
+  }
+
+  function applyFilters() {
+    showToast({ message: 'Filtros aplicados', type: 'success' });
+  }
+  function clearFilters() {
+    document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(c => c.checked = false);
+    showToast({ message: 'Filtros eliminados', type: 'info' });
+  }
+</script>
+</body>
+</html>

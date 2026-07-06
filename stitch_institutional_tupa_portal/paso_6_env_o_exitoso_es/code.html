@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Solicitud Enviada! | TUPA UNSAAC</title>
+  <meta name="description" content="Tu solicitud de trámite TUPA ha sido enviada exitosamente. Aquí está tu número de expediente." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--clr-background); }
+    .success-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: #d1fae5; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--sp-lg);
+      position: relative;
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); }
+      50%       { box-shadow: 0 0 0 20px rgba(16,185,129,0); }
+    }
+    .confetti-particle {
+      position: fixed; pointer-events: none; animation: confettiFall 3s ease-out forwards;
+      border-radius: 2px;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .next-step-card {
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl);
+      padding: var(--sp-lg); cursor: pointer; display: flex; align-items: center; gap: var(--sp-md);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast);
+    }
+    .next-step-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }
+  </style>
+</head>
+<body>
+
+<div style="background:var(--clr-primary);padding:var(--sp-md) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:var(--sp-md)">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+      <span class="material-symbols-outlined icon-filled" style="font-size:20px;color:var(--clr-tertiary-fixed)">account_balance</span>
+    </div>
+    <span style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">TUPA UNSAAC</span>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:var(--sp-lg);flex:1;width:100%;display:flex;flex-direction:column;gap:var(--sp-lg)">
+  <div id="wizard-stepper"></div>
+
+  <!-- Success card -->
+  <div style="max-width:720px;margin:0 auto;width:100%;text-align:center;padding:var(--sp-2xl) 0">
+    <div class="success-ring animate-scale-in">
+      <span class="material-symbols-outlined icon-filled" style="font-size:60px;color:#065f46">check_circle</span>
+    </div>
+
+    <h1 class="text-display-md animate-slide-up" style="color:var(--clr-primary);margin-bottom:var(--sp-md)">
+      ¡Solicitud enviada exitosamente!
+    </h1>
+    <p class="text-body-lg animate-fade-in" style="color:var(--clr-secondary);margin-bottom:var(--sp-2xl);line-height:1.65">
+      Tu solicitud de <strong>Diploma de Bachiller</strong> ha sido registrada en el sistema. 
+      Recibirás notificaciones sobre el avance de tu expediente.
+    </p>
+
+    <!-- Expediente code -->
+    <div style="background:var(--clr-primary);border-radius:var(--radius-2xl);padding:var(--sp-xl);margin-bottom:var(--sp-2xl);position:relative;overflow:hidden;animate-scale-in">
+      <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(137,245,231,0.1);pointer-events:none"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:var(--sp-sm);text-transform:uppercase;letter-spacing:0.06em;font-weight:600">Código de tu expediente</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:800;color:var(--clr-tertiary-fixed);letter-spacing:0.05em;margin-bottom:var(--sp-md)">
+        EXP-2024-8902
+      </div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65)">Guarda este código para rastrear el estado de tu trámite</div>
+      <button onclick="copyCode()" style="margin-top:var(--sp-md);background:rgba(137,245,231,0.15);border:1px solid rgba(137,245,231,0.3);color:var(--clr-tertiary-fixed);padding:8px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;margin:var(--sp-md) auto 0">
+        <span class="material-symbols-outlined" style="font-size:16px">content_copy</span>
+        Copiar código
+      </button>
+    </div>
+
+    <!-- Timeline preview -->
+    <div class="card" style="text-align:left;margin-bottom:var(--sp-xl)">
+      <div class="card-header"><span class="card-header-title">¿Qué sigue ahora?</span></div>
+      <div class="card-body" style="padding:var(--sp-md)">
+        <div class="timeline" id="next-timeline"></div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md);margin-bottom:var(--sp-lg)">
+      <div class="next-step-card" onclick="navigate('seguimiento.detalle')">
+        <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:var(--clr-primary-fixed);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span class="material-symbols-outlined icon-filled" style="color:var(--clr-primary)">timeline</span>
+        </div>
+        <div style="text-align:left">
+          <div style="font-weight:700;color:var(--clr-primary)">Ver estado del expediente</div>
+          <div style="font-size:12px;color:var(--clr-secondary)">Seguimiento en tiempo real</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline);margin-left:auto">chevron_right</span>
+      </div>
+      <div class="next-step-card" onclick="navigate('estudiante.dashboard')">
+        <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:rgba(137,245,231,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span class="material-symbols-outlined icon-filled" style="color:var(--clr-tertiary-container)">dashboard</span>
+        </div>
+        <div style="text-align:left">
+          <div style="font-weight:700;color:var(--clr-primary)">Ir al dashboard</div>
+          <div style="font-size:12px;color:var(--clr-secondary)">Ver todos mis trámites</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline);margin-left:auto">chevron_right</span>
+      </div>
+    </div>
+
+    <button class="btn btn-outline" onclick="navigate('tramite.paso1')">
+      <span class="material-symbols-outlined">add</span>
+      Iniciar otro trámite
+    </button>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  renderWizardStepper(6);
+
+  // Timeline
+  const steps = [
+    { state:'completed', icon:'check', title:'Solicitud registrada', description:'Tu expediente ha sido creado en el sistema.', date:'Hoy, ' + new Date().toLocaleTimeString('es-PE', {hour:'2-digit',minute:'2-digit'}) },
+    { state:'active', icon:'payments', title:'Verificación de pago', description:'El sistema está verificando el pago con el Banco de la Nación.', date:'Próximas 24 horas' },
+    { state:'pending', icon:'fact_check', title:'Revisión de documentos', description:'La Oficina de Grados y Títulos revisará tu documentación.', date:'Días 4–10' },
+    { state:'pending', icon:'gavel', title:'Resolución del Decano', description:'Emisión de la resolución de otorgamiento del grado.', date:'Días 11–13' },
+    { state:'pending', icon:'workspace_premium', title:'Elaboración y entrega del diploma', description:'Recoge tu diploma en la Oficina de Grados y Títulos.', date:'Días 14–15' },
+  ];
+  document.getElementById('next-timeline').innerHTML = steps.map((s, i) => TimelineItem({ ...s, isLast: i === steps.length - 1 })).join('');
+
+  function copyCode() {
+    navigator.clipboard.writeText('EXP-2024-8902').then(() => {
+      showToast({ message: 'Código copiado al portapapeles', type: 'success', duration: 2000 });
+    });
+  }
+
+  // Confetti
+  function spawnConfetti() {
+    const colors = ['#002045','#89f5e7','#adc7f7','#ffd700','#65c9f7'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-particle';
+      el.style.cssText = `
+        left:${Math.random() * 100}vw;
+        top:-10px;
+        width:${6 + Math.random() * 8}px;
+        height:${8 + Math.random() * 12}px;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        animation-delay:${Math.random() * 2}s;
+        animation-duration:${2 + Math.random() * 3}s;
+        opacity:0.9;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+  }
+  window.addEventListener('load', () => setTimeout(spawnConfetti, 300));
+
+  initPage({ route: 'tramite.paso6', pageTitle: 'Solicitud Enviada Exitosamente' });
+</script>
+</body>
+</html>

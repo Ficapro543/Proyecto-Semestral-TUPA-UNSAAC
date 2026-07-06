@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Observación Pendiente | TUPA UNSAAC</title>
+  <meta name="description" content="Detalle de observación y acciones pendientes para tu trámite en el Portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .obs-action-card {
+      background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl); padding: var(--sp-lg);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast);
+    }
+    .obs-action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <!-- Observation alert banner -->
+    <div style="background:var(--clr-error-container);border:1px solid var(--clr-error);border-radius:var(--radius-xl);padding:var(--sp-lg);margin-bottom:var(--sp-xl);display:flex;align-items:flex-start;gap:var(--sp-md)">
+      <span class="material-symbols-outlined icon-filled" style="font-size:32px;color:var(--clr-error);flex-shrink:0">warning</span>
+      <div style="flex:1">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--clr-error);margin-bottom:4px">Observación Pendiente de Resolución</div>
+        <p style="font-size:14px;color:var(--clr-on-error-container);line-height:1.6">
+          Tu expediente <strong>EXP-2024-8902</strong> tiene una observación emitida por la Oficina de Grados y Títulos.
+          Tienes hasta el <strong>30 de octubre de 2024</strong> para subsanarla.
+        </p>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:24px;font-weight:800;color:var(--clr-error)">5</div>
+        <div style="font-size:12px;color:var(--clr-error)">días restantes</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--sp-xl)">
+      <div>
+        <!-- Observation detail -->
+        <div class="card animate-on-load" style="margin-bottom:var(--sp-lg)">
+          <div class="card-header">
+            <span class="card-header-title">Detalle de la Observación</span>
+            <span class="badge badge-error">Acción requerida</span>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:var(--sp-lg)">
+              <div style="font-size:12px;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-xs)">Observación emitida</div>
+              <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-error);margin-bottom:var(--sp-sm)">
+                Documento incompleto: Anexo B — Declaración de No Adeudo
+              </div>
+              <p style="font-size:14px;color:var(--clr-secondary);line-height:1.65;background:var(--clr-error-container);padding:var(--sp-md);border-radius:var(--radius-lg);border-left:4px solid var(--clr-error)">
+                El documento "Constancia de No Adeudo a la Biblioteca" (Anexo B) que fue adjuntado presenta ilegibilidad 
+                en la firma del director de biblioteca y el sello no es visible. Debe ser resubido con mejor calidad de escaneo 
+                (mínimo 200 DPI) o reemplazado por uno nuevo con fecha actualizada.
+              </p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md);font-size:14px">
+              <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Emitido por</div><div style="font-weight:600">Ofic. de Grados y Títulos</div></div>
+              <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Fecha de emisión</div><div style="font-weight:600">24 Oct 2024</div></div>
+              <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Plazo de subsanación</div><div style="font-weight:700;color:var(--clr-error)">30 Oct 2024</div></div>
+              <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Responsable</div><div style="font-weight:600">Dr. Carlos Quispe M.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Required actions -->
+        <h2 class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Acciones requeridas</h2>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-md)">
+          <div class="obs-action-card animate-on-load">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-md)">
+              <div style="width:44px;height:44px;background:var(--clr-primary-fixed);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <span class="material-symbols-outlined icon-filled" style="color:var(--clr-primary)">upload_file</span>
+              </div>
+              <div style="flex:1">
+                <div style="font-weight:700;color:var(--clr-primary);margin-bottom:4px">1. Obtener nuevo documento</div>
+                <p style="font-size:13px;color:var(--clr-secondary);line-height:1.55;margin-bottom:var(--sp-md)">
+                  Dirígete a la Biblioteca Central de la UNSAAC y solicita una nueva Constancia de No Adeudo. Debe tener sello y firma legibles. Horario: Lun–Vie 8:00–17:00.
+                </p>
+                <button class="btn btn-outline btn-sm" onclick="showToast({message:'Abriendo mapa de la biblioteca...',type:'info'})">
+                  <span class="material-symbols-outlined">location_on</span> Cómo llegar a la biblioteca
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="obs-action-card animate-on-load stagger-1">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-md)">
+              <div style="width:44px;height:44px;background:rgba(137,245,231,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <span class="material-symbols-outlined icon-filled" style="color:var(--clr-tertiary-container)">scanner</span>
+              </div>
+              <div style="flex:1">
+                <div style="font-weight:700;color:var(--clr-primary);margin-bottom:4px">2. Digitalizar correctamente</div>
+                <p style="font-size:13px;color:var(--clr-secondary);line-height:1.55">
+                  Escanea el documento con al menos 200 DPI en PDF. Verifica que la firma, sello y fecha sean completamente legibles antes de subir.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="obs-action-card animate-on-load stagger-2">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-md)">
+              <div style="width:44px;height:44px;background:#d1fae5;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <span class="material-symbols-outlined icon-filled" style="color:#065f46">cloud_upload</span>
+              </div>
+              <div style="flex:1">
+                <div style="font-weight:700;color:var(--clr-primary);margin-bottom:4px">3. Subir el documento corregido</div>
+                <p style="font-size:13px;color:var(--clr-secondary);line-height:1.55;margin-bottom:var(--sp-md)">
+                  Usa el botón abajo para adjuntar el nuevo Anexo B directamente a tu expediente.
+                </p>
+                <button class="btn btn-primary" onclick="handleReupload()">
+                  <span class="material-symbols-outlined">upload</span>
+                  Subir Anexo B corregido
+                </button>
+                <input type="file" id="anexo-b-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="confirmUpload(this)" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div style="display:flex;flex-direction:column;gap:var(--sp-lg);align-self:start;position:sticky;top:80px">
+        <div class="card" style="border-color:var(--clr-error)">
+          <div class="card-header"><span class="card-header-title">Resumen del expediente</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm);font-size:14px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Expediente</span><span class="text-mono-sm" style="color:var(--clr-primary)">EXP-2024-8902</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Trámite</span><span style="font-weight:600">Diploma de Bachiller</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Estado</span><span class="badge badge-error">Observado</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Plazo</span><span style="font-weight:700;color:var(--clr-error)">30 Oct 2024</span></div>
+          </div>
+        </div>
+        <div class="alert alert-warning">
+          <span class="material-symbols-outlined">warning</span>
+          <div>Si no subsanas la observación antes del plazo, tu expediente podría ser archivado y deberás iniciar un nuevo trámite.</div>
+        </div>
+        <button class="btn btn-outline w-full" onclick="navigate('seguimiento.detalle')">
+          <span class="material-symbols-outlined">timeline</span>
+          Ver historial completo
+        </button>
+        <button class="btn btn-ghost w-full" onclick="navigate('ayuda')">
+          <span class="material-symbols-outlined">help</span>
+          Necesito ayuda
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = StudentSidebar({ activeRoute: 'estudiante.observacion', notifCount: 2 });
+  document.getElementById('topbar-mount').outerHTML  = StudentTopbar({ title: 'Observación Pendiente' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  function handleReupload() {
+    document.getElementById('anexo-b-file').click();
+  }
+
+  function confirmUpload(input) {
+    if (!input.files.length) return;
+    showToast({ message: 'Anexo B subido correctamente. La observación está en proceso de revisión.', type: 'success', duration: 4000 });
+    setTimeout(() => navigate('seguimiento.detalle'), 2000);
+  }
+
+  initPage({ route: 'estudiante.observacion', pageTitle: 'Observación Pendiente' });
+</script>
+</body>
+</html>

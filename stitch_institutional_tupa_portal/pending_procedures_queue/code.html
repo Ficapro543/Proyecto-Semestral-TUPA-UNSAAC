@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cola de Pendientes | TUPA UNSAAC Admin</title>
+  <meta name="description" content="Gestión de la cola de trámites pendientes de revisión administrativa en TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .queue-item {
+      display: grid; grid-template-columns: 36px 1fr 140px 120px 100px 120px;
+      gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+      border-bottom: 1px solid var(--clr-outline-variant); align-items: center;
+      cursor: pointer; transition: background var(--transition-fast);
+    }
+    .queue-item:hover { background: var(--clr-surface-container-low); }
+    .priority-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Cola de Pendientes</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px"><strong>47</strong> trámites esperando revisión administrativa</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" onclick="showToast({message:'Exportando a Excel...',type:'info'})">
+          <span class="material-symbols-outlined">download</span> Exportar
+        </button>
+        <button class="btn btn-primary" onclick="navigate('admin.validacion')">
+          <span class="material-symbols-outlined">fact_check</span>
+          Ir a validación
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)" id="queue-stats"></div>
+
+    <!-- Filters -->
+    <div class="card animate-on-load">
+      <div class="card-header" style="flex-wrap:wrap;gap:var(--sp-md)">
+        <div style="display:flex;gap:var(--sp-sm);flex-wrap:wrap">
+          <button class="filter-chip active" id="f-todos" onclick="filterQueue('todos',this)">Todos (47)</button>
+          <button class="filter-chip" id="f-urgente" onclick="filterQueue('urgente',this)">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--clr-error);display:inline-block"></span>
+            Urgente (8)
+          </button>
+          <button class="filter-chip" id="f-normal" onclick="filterQueue('normal',this)">Normal (31)</button>
+          <button class="filter-chip" id="f-baja" onclick="filterQueue('baja',this)">Baja (8)</button>
+        </div>
+        <div style="display:flex;gap:var(--sp-sm);margin-left:auto">
+          <div style="position:relative">
+            <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--clr-outline)">search</span>
+            <input id="queue-search" type="text" placeholder="Buscar expediente..."
+                   style="height:36px;padding:0 var(--sp-md) 0 34px;border:1px solid var(--clr-outline-variant);border-radius:var(--radius-lg);font-size:13px;outline:none" />
+          </div>
+          <select class="form-select" style="height:36px;font-size:13px;width:150px">
+            <option>Todos los tipos</option>
+            <option>Grados y Títulos</option>
+            <option>Administrativo</option>
+            <option>Bienestar</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table header -->
+      <div class="queue-item" style="background:var(--clr-surface-container-low);cursor:default;font-size:11px;font-weight:700;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em">
+        <div></div>
+        <div>Solicitante / Expediente</div>
+        <div>Trámite</div>
+        <div>Fecha</div>
+        <div>Estado</div>
+        <div>Acción</div>
+      </div>
+      <div id="queue-list"></div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = AdminSidebar({ activeRoute: 'admin.cola' });
+  document.getElementById('topbar-mount').outerHTML  = AdminTopbar({ title: 'Cola de Pendientes' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  const statsDef = [
+    { icon:'pending_actions', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)', value:'47', label:'Total pendientes', badgeClass:'badge-blue' },
+    { icon:'warning', iconBg:'var(--clr-error-container)', iconColor:'var(--clr-error)', value:'8', label:'Urgentes', badgeClass:'badge-error' },
+    { icon:'schedule', iconBg:'#fef3c7', iconColor:'#92400e', value:'5', label:'Plazo hoy', badgeClass:'badge-warning' },
+    { icon:'check_circle', iconBg:'#d1fae5', iconColor:'#065f46', value:'128', label:'Resueltos (mes)', badgeClass:'badge-success' },
+  ];
+  document.getElementById('queue-stats').innerHTML = statsDef.map(s => StatCard(s)).join('');
+
+  const queueData = [
+    { priority:'urgente', priorityColor:'var(--clr-error)', name:'Elena Rodríguez Quispe', exp:'EXP-2024-8902', tramite:'Diploma de Bachiller', date:'12 Oct 2024', status:'En Revisión', sc:'badge-in-review' },
+    { priority:'urgente', priorityColor:'var(--clr-error)', name:'Juan Carlos Mamani', exp:'EXP-2024-8891', tramite:'Título Profesional', date:'10 Oct 2024', status:'Obs. Pendiente', sc:'badge-error' },
+    { priority:'normal', priorityColor:'#92400e', name:'María Lucía Ccoa', exp:'EXP-2024-8870', tramite:'Certif. de Matrícula', date:'08 Oct 2024', status:'Verificando pago', sc:'badge-warning' },
+    { priority:'normal', priorityColor:'#92400e', name:'Carlos Ttito Flores', exp:'EXP-2024-8844', tramite:'Constancia de Egresado', date:'06 Oct 2024', status:'En Revisión', sc:'badge-in-review' },
+    { priority:'normal', priorityColor:'#92400e', name:'Rosa Quispe Huillca', exp:'EXP-2024-8801', tramite:'Récord Académico', date:'01 Oct 2024', status:'Pendiente', sc:'badge-neutral' },
+    { priority:'baja', priorityColor:'var(--clr-outline)', name:'Luis Condori Apaza', exp:'EXP-2024-8780', tramite:'Reserva de Matrícula', date:'28 Sep 2024', status:'Pendiente', sc:'badge-neutral' },
+    { priority:'baja', priorityColor:'var(--clr-outline)', name:'Ana Corimanya', exp:'EXP-2024-8760', tramite:'Duplicado de Carné', date:'25 Sep 2024', status:'Pendiente', sc:'badge-neutral' },
+  ];
+
+  let currentFilter = 'todos';
+
+  function renderQueue(filter) {
+    const filtered = filter === 'todos' ? queueData : queueData.filter(i => i.priority === filter);
+    document.getElementById('queue-list').innerHTML = filtered.map(item => `
+      <div class="queue-item" onclick="navigate('admin.detalle')">
+        <div class="priority-dot" style="background:${item.priorityColor}"></div>
+        <div>
+          <div style="font-size:14px;font-weight:600">${item.name}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--clr-secondary)">${item.exp}</div>
+        </div>
+        <div style="font-size:13px;color:var(--clr-secondary)">${item.tramite}</div>
+        <div style="font-size:13px;color:var(--clr-secondary)">${item.date}</div>
+        <div><span class="badge ${item.sc}">${item.status}</span></div>
+        <div>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();navigate('admin.detalle')">
+            Revisar
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterQueue(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderQueue(f);
+  }
+
+  renderQueue('todos');
+  initPage({ route: 'admin.cola', pageTitle: 'Cola de Pendientes' });
+  initSearch('#queue-search', '.queue-item');
+</script>
+</body>
+</html>

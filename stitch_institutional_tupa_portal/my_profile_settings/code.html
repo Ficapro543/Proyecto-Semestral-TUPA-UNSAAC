@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Perfil | TUPA UNSAAC</title>
+  <meta name="description" content="Configuración del perfil y datos personales del estudiante en el Portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .avatar-ring { width: 96px; height: 96px; border-radius: 50%; background: var(--clr-primary); display: flex; align-items: center; justify-content: center; font-family: 'Hanken Grotesk', sans-serif; font-size: 36px; font-weight: 800; color: white; position: relative; }
+    .avatar-edit { position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; background: var(--clr-tertiary-fixed); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .avatar-edit .material-symbols-outlined { font-size: 14px; color: var(--clr-on-tertiary-fixed); }
+    .info-row { display: flex; padding: var(--sp-md) 0; border-bottom: 1px solid var(--clr-outline-variant); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { width: 180px; font-size: 13px; color: var(--clr-secondary); flex-shrink: 0; padding-top: 2px; }
+    .info-value { font-size: 14px; font-weight: 500; color: var(--clr-on-surface); flex: 1; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <h1 class="text-display-md" style="color:var(--clr-primary);margin-bottom:var(--sp-xl)">Mi Perfil</h1>
+
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:var(--sp-xl)">
+
+      <!-- Left: Avatar card -->
+      <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+        <div class="card animate-on-load">
+          <div class="card-body" style="text-align:center">
+            <div style="position:relative;display:inline-block;margin-bottom:var(--sp-lg)">
+              <div class="avatar-ring">ER</div>
+              <div class="avatar-edit" onclick="showToast({message:'Función de cambio de foto próximamente',type:'info'})">
+                <span class="material-symbols-outlined">photo_camera</span>
+              </div>
+            </div>
+            <div style="font-family:'Hanken Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--clr-primary)">Elena Rodríguez</div>
+            <div style="font-size:13px;color:var(--clr-secondary);margin-top:4px">Estudiante de Ingeniería Informática</div>
+            <div style="margin-top:var(--sp-md)">
+              <span class="badge badge-success">Cuenta verificada</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card animate-on-load stagger-1">
+          <div class="card-header"><span class="card-header-title">Estadísticas</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-md)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--clr-secondary)">Trámites iniciados</span>
+              <span style="font-weight:700;color:var(--clr-primary)">18</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--clr-secondary)">Trámites aprobados</span>
+              <span style="font-weight:700;color:#065f46">15</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--clr-secondary)">En proceso</span>
+              <span style="font-weight:700;color:var(--clr-primary)">2</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--clr-secondary)">Miembro desde</span>
+              <span style="font-weight:600">Mar 2019</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-error" onclick="showToast({message:'Sesión cerrada',type:'info'});setTimeout(()=>navigate('login'),800)">
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar sesión
+        </button>
+      </div>
+
+      <!-- Right: Tabs -->
+      <div>
+        <div class="tabs" id="profile-tabs" style="margin-bottom:var(--sp-xl)">
+          <div class="tab-item" data-tab="tab-datos">Datos Personales</div>
+          <div class="tab-item" data-tab="tab-seguridad">Seguridad</div>
+          <div class="tab-item" data-tab="tab-notif">Notificaciones</div>
+        </div>
+
+        <!-- Datos personales -->
+        <div class="tab-content" id="tab-datos">
+          <div class="card animate-on-load">
+            <div class="card-header">
+              <span class="card-header-title">Información Personal</span>
+              <button class="btn btn-outline btn-sm" id="edit-btn" onclick="toggleEdit()">
+                <span class="material-symbols-outlined">edit</span> Editar
+              </button>
+            </div>
+            <div class="card-body" id="info-display">
+              <div class="info-row"><div class="info-label">Nombres completos</div><div class="info-value">Elena María</div></div>
+              <div class="info-row"><div class="info-label">Apellidos</div><div class="info-value">Rodríguez Quispe</div></div>
+              <div class="info-row"><div class="info-label">CUI / DNI</div><div class="info-value"><span class="text-mono-sm">73456891</span></div></div>
+              <div class="info-row"><div class="info-label">Código UNSAAC</div><div class="info-value"><span class="text-mono-sm">201900456</span></div></div>
+              <div class="info-row"><div class="info-label">Facultad</div><div class="info-value">Ing. Eléctrica, Electrónica, Informática y Mecánica</div></div>
+              <div class="info-row"><div class="info-label">Especialidad</div><div class="info-value">Ingeniería Informática y de Sistemas</div></div>
+              <div class="info-row"><div class="info-label">Semestre</div><div class="info-value">X Semestre (2024-II)</div></div>
+              <div class="info-row"><div class="info-label">Correo institucional</div><div class="info-value">e.rodriguez@unsaac.edu.pe</div></div>
+              <div class="info-row"><div class="info-label">Correo personal</div><div class="info-value">elena.rodriguez@gmail.com</div></div>
+              <div class="info-row"><div class="info-label">Teléfono</div><div class="info-value">+51 984 123 456</div></div>
+            </div>
+            <div class="card-body" id="info-form" style="display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md);margin-bottom:var(--sp-md)">
+                <div class="form-group"><label class="form-label" for="f-nombres">Nombres</label><input class="form-input" id="f-nombres" value="Elena María" /></div>
+                <div class="form-group"><label class="form-label" for="f-apellidos">Apellidos</label><input class="form-input" id="f-apellidos" value="Rodríguez Quispe" /></div>
+              </div>
+              <div class="form-group" style="margin-bottom:var(--sp-md)"><label class="form-label" for="f-email">Correo personal</label><input class="form-input" id="f-email" type="email" value="elena.rodriguez@gmail.com" /></div>
+              <div class="form-group" style="margin-bottom:var(--sp-md)"><label class="form-label" for="f-phone">Teléfono</label><input class="form-input" id="f-phone" type="tel" value="+51 984 123 456" /></div>
+              <div style="display:flex;gap:var(--sp-md)">
+                <button class="btn btn-primary" onclick="saveProfile()">
+                  <span class="material-symbols-outlined">save</span> Guardar cambios
+                </button>
+                <button class="btn btn-ghost" onclick="toggleEdit()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seguridad -->
+        <div class="tab-content" id="tab-seguridad">
+          <div class="card animate-on-load">
+            <div class="card-header"><span class="card-header-title">Cambiar contraseña</span></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:var(--sp-md)">
+                <div class="form-group">
+                  <label class="form-label required" for="pass-actual">Contraseña actual</label>
+                  <input class="form-input" type="password" id="pass-actual" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="pass-nueva">Nueva contraseña</label>
+                  <input class="form-input" type="password" id="pass-nueva" placeholder="Mínimo 8 caracteres" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label required" for="pass-confirm">Confirmar nueva contraseña</label>
+                  <input class="form-input" type="password" id="pass-confirm" placeholder="Repite la nueva contraseña" />
+                </div>
+                <button class="btn btn-primary" onclick="showToast({message:'Contraseña actualizada correctamente',type:'success'})">
+                  <span class="material-symbols-outlined">lock_reset</span>
+                  Cambiar contraseña
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notificaciones config -->
+        <div class="tab-content" id="tab-notif">
+          <div class="card animate-on-load">
+            <div class="card-header"><span class="card-header-title">Preferencias de notificación</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--sp-md) 0;border-bottom:1px solid var(--clr-outline-variant)">
+                <div><div style="font-weight:600">Notificaciones por correo</div><div style="font-size:13px;color:var(--clr-secondary)">Recibe alertas de tus trámites en tu correo</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--sp-md) 0;border-bottom:1px solid var(--clr-outline-variant)">
+                <div><div style="font-weight:600">Recordatorios de plazo</div><div style="font-size:13px;color:var(--clr-secondary)">Alertas cuando un plazo está próximo a vencer</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--sp-md) 0">
+                <div><div style="font-weight:600">Notificaciones de pagos</div><div style="font-size:13px;color:var(--clr-secondary)">Confirmaciones de pagos realizados</div></div>
+                <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <button class="btn btn-primary" onclick="showToast({message:'Preferencias guardadas',type:'success'})">
+                <span class="material-symbols-outlined">save</span> Guardar preferencias
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = StudentSidebar({ activeRoute: 'estudiante.perfil', notifCount: 2 });
+  document.getElementById('topbar-mount').outerHTML  = StudentTopbar({ title: 'Mi Perfil' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  function toggleEdit() {
+    const display = document.getElementById('info-display');
+    const form = document.getElementById('info-form');
+    const btn = document.getElementById('edit-btn');
+    const editing = form.style.display !== 'none';
+    display.style.display = editing ? '' : 'none';
+    form.style.display = editing ? 'none' : '';
+    btn.innerHTML = editing ? '<span class="material-symbols-outlined">edit</span> Editar' : '<span class="material-symbols-outlined">close</span> Cancelar';
+  }
+
+  function saveProfile() {
+    toggleEdit();
+    showToast({ message: 'Perfil actualizado correctamente', type: 'success' });
+  }
+
+  initPage({ route: 'estudiante.perfil', pageTitle: 'Mi Perfil' });
+  initTabs('profile-tabs');
+</script>
+</body>
+</html>

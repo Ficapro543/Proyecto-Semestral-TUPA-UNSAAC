@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TUPA UNSAAC — Portal de Procedimientos Administrativos</title>
+  <meta name="description" content="Portal digital de Trámites Únicos de Procedimientos Administrativos de la Universidad Nacional de San Antonio Abad del Cusco." />
+  <link rel="stylesheet" href="shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--sp-3xl) var(--sp-lg); background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%); color: var(--clr-on-primary); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 40%, rgba(137,245,231,0.15) 0%, transparent 70%); pointer-events: none; }
+    .hero-orb-1 { position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%; background: rgba(137,245,231,0.08); }
+    .hero-orb-2 { position: absolute; bottom: -60px; left: -60px; width: 240px; height: 240px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+    .hero-content { position: relative; z-index: 1; max-width: 720px; }
+    .hero-logo { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.25); border-radius: var(--radius-2xl); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--sp-lg); backdrop-filter: blur(8px); }
+    .hero-logo .material-symbols-outlined { font-size: 44px; color: var(--clr-tertiary-fixed); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; background: rgba(137,245,231,0.15); border: 1px solid rgba(137,245,231,0.3); border-radius: var(--radius-full); font-size: 12px; font-weight: 600; color: var(--clr-tertiary-fixed); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: var(--sp-lg); }
+    .hero h1 { font-family: 'Hanken Grotesk', sans-serif; font-size: clamp(32px,5vw,52px); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: var(--sp-md); }
+    .hero p { font-size: 18px; opacity: 0.8; max-width: 520px; margin: 0 auto var(--sp-2xl); line-height: 1.6; }
+    .hero-actions { display: flex; gap: var(--sp-md); justify-content: center; flex-wrap: wrap; }
+    .entry-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; border-radius: var(--radius-xl); font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .entry-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .entry-btn:active { transform: scale(0.97); }
+    .entry-btn-primary { background: var(--clr-tertiary-fixed); color: var(--clr-on-tertiary-fixed); }
+    .entry-btn-outline { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px); }
+    .entry-btn .material-symbols-outlined { font-size: 20px; }
+    .portals { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: var(--sp-lg); max-width: 960px; margin: var(--sp-2xl) auto 0; width: 100%; }
+    .portal-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-xl); padding: var(--sp-xl); text-align: left; cursor: pointer; transition: background 0.2s, transform 0.2s; backdrop-filter: blur(8px); }
+    .portal-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-3px); }
+    .portal-card .p-icon { width: 48px; height: 48px; border-radius: var(--radius-lg); background: rgba(137,245,231,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-md); }
+    .portal-card .p-icon .material-symbols-outlined { font-size: 26px; color: var(--clr-tertiary-fixed); }
+    .portal-card .p-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: white; margin-bottom: 6px; }
+    .portal-card .p-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; margin-bottom: var(--sp-md); }
+    .portal-card .p-cta { font-size: 13px; font-weight: 600; color: var(--clr-tertiary-fixed); display: flex; align-items: center; gap: 4px; }
+    .dev-panel { background: var(--clr-surface-container-lowest); border-top: 1px solid var(--clr-outline-variant); padding: var(--sp-lg); }
+    .dev-panel-inner { max-width: 1200px; margin: 0 auto; }
+    .dev-panel h2 { font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--clr-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--sp-md); }
+    .screen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-sm); }
+    .screen-link { display: flex; flex-direction: column; gap: 4px; padding: var(--sp-md); background: var(--clr-surface-container-low); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-lg); text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .screen-link:hover { border-color: var(--clr-primary); box-shadow: var(--shadow-sm); }
+    .screen-link .s-group { font-size: 10px; font-weight: 700; color: var(--clr-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+    .screen-link .s-name { font-size: 13px; font-weight: 600; color: var(--clr-primary); }
+    .screen-link .s-file { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--clr-outline); }
+    .group-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--clr-primary); padding: var(--sp-md) 0 var(--sp-xs); border-bottom: 1px solid var(--clr-outline-variant); margin-bottom: var(--sp-sm); margin-top: var(--sp-lg); }
+    .group-title:first-child { margin-top: 0; }
+  </style>
+</head>
+<body>
+
+<!-- HERO ENTRY ─────────────────────────────────────────── -->
+<section class="hero" role="main" aria-labelledby="hero-title">
+  <div class="hero-orb-1" aria-hidden="true"></div>
+  <div class="hero-orb-2" aria-hidden="true"></div>
+
+  <div class="hero-content animate-slide-up">
+    <div class="hero-logo" aria-hidden="true">
+      <span class="material-symbols-outlined icon-filled">account_balance</span>
+    </div>
+    <div class="hero-badge" aria-label="Prototipo del sistema">
+      <span class="material-symbols-outlined" style="font-size:12px">verified</span>
+      Prototipo Sistema TUPA · UNSAAC
+    </div>
+    <h1 id="hero-title">Portal de Trámites<br />Administrativos</h1>
+    <p>Accede al catálogo completo de procedimientos universitarios. Inicia, rastrea y gestiona tus trámites de forma digital.</p>
+    <div class="hero-actions">
+      <a class="entry-btn entry-btn-primary" href="tupa_central_home/code.html" id="btn-home">
+        <span class="material-symbols-outlined">home</span>
+        Ver Portal Principal
+      </a>
+      <a class="entry-btn entry-btn-outline" href="login_tupa_central/code.html" id="btn-login">
+        <span class="material-symbols-outlined">login</span>
+        Iniciar Sesión
+      </a>
+    </div>
+
+    <!-- Quick access portals -->
+    <div class="portals" role="list" aria-label="Acceso rápido a portales">
+      <div class="portal-card" onclick="location.href='student_dashboard_overview/code.html'" role="listitem" tabindex="0" aria-label="Portal Estudiantil">
+        <div class="p-icon"><span class="material-symbols-outlined icon-filled">school</span></div>
+        <div class="p-title">Portal Estudiantil</div>
+        <div class="p-desc">Dashboard, trámites, notificaciones y seguimiento de expedientes para estudiantes.</div>
+        <div class="p-cta"><span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span> Acceder</div>
+      </div>
+      <div class="portal-card" onclick="location.href='admin_dashboard/code.html'" role="listitem" tabindex="0" aria-label="Portal Administrativo">
+        <div class="p-icon"><span class="material-symbols-outlined icon-filled">admin_panel_settings</span></div>
+        <div class="p-title">Portal Administrativo</div>
+        <div class="p-desc">Gestión de trámites, validación de documentos, reportes y administración de usuarios.</div>
+        <div class="p-cta"><span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span> Acceder</div>
+      </div>
+      <div class="portal-card" onclick="location.href='tupa_catalog_public_portal/code.html'" role="listitem" tabindex="0" aria-label="Catálogo Público">
+        <div class="p-icon"><span class="material-symbols-outlined icon-filled">menu_book</span></div>
+        <div class="p-title">Catálogo Público</div>
+        <div class="p-desc">Consulta el catálogo completo de procedimientos administrativos sin necesidad de cuenta.</div>
+        <div class="p-cta"><span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span> Explorar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEV NAVIGATION PANEL ─────────────────────────────── -->
+<section class="dev-panel" aria-labelledby="dev-panel-title">
+  <div class="dev-panel-inner">
+    <h2 id="dev-panel-title">🗺 Panel de Navegación — Todas las Pantallas del Prototipo</h2>
+
+    <p class="group-title">Grupo 1 — Acceso Público &amp; Login</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="tupa_central_home/code.html">
+        <span class="s-group">Público</span>
+        <span class="s-name">🏠 Inicio / Home</span>
+        <span class="s-file">tupa_central_home</span>
+      </a>
+      <a class="screen-link" href="login_tupa_central/code.html">
+        <span class="s-group">Autenticación</span>
+        <span class="s-name">🔐 Iniciar Sesión</span>
+        <span class="s-file">login_tupa_central</span>
+      </a>
+      <a class="screen-link" href="create_account_user_type_selection/code.html">
+        <span class="s-group">Autenticación</span>
+        <span class="s-name">👤 Crear Cuenta</span>
+        <span class="s-file">create_account_user_type_selection</span>
+      </a>
+      <a class="screen-link" href="help_guidance_tupa_portal/code.html">
+        <span class="s-group">Público</span>
+        <span class="s-name">❓ Centro de Ayuda</span>
+        <span class="s-file">help_guidance_tupa_portal</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 2 — Catálogo TUPA</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="tupa_catalog_public_portal/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">📖 Catálogo Público</span>
+        <span class="s-file">tupa_catalog_public_portal</span>
+      </a>
+      <a class="screen-link" href="cat_logo_escalar_de_procedimientos_tupa/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">📋 Vista Lista / Escalera</span>
+        <span class="s-file">cat_logo_escalar_de_procedimientos_tupa</span>
+      </a>
+      <a class="screen-link" href="cat_logo_tupa_variante_acorde_n_es/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">🗂 Vista Acordeón</span>
+        <span class="s-file">cat_logo_tupa_variante_acorde_n_es</span>
+      </a>
+      <a class="screen-link" href="cat_logo_tupa_variante_cuadr_cula_es/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">⊞ Vista Cuadrícula</span>
+        <span class="s-file">cat_logo_tupa_variante_cuadr_cula_es</span>
+      </a>
+      <a class="screen-link" href="institutional_administrative_framework/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">🏛 Marco Institucional</span>
+        <span class="s-file">institutional_administrative_framework</span>
+      </a>
+      <a class="screen-link" href="procedure_detail_diploma_certification/code.html">
+        <span class="s-group">Catálogo</span>
+        <span class="s-name">📄 Detalle Procedimiento</span>
+        <span class="s-file">procedure_detail_diploma_certification</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 3 — Asistente de Trámite (Wizard)</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="paso_1_seleccionar_procedimiento_es_1/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">① Seleccionar Trámite</span>
+        <span class="s-file">paso_1_seleccionar_procedimiento_es_1</span>
+      </a>
+      <a class="screen-link" href="paso_2_revisar_requisitos_es/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">② Revisar Requisitos</span>
+        <span class="s-file">paso_2_revisar_requisitos_es</span>
+      </a>
+      <a class="screen-link" href="paso_3_confirmaci_n_de_pago_es/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">③ Confirmación de Pago</span>
+        <span class="s-file">paso_3_confirmaci_n_de_pago_es</span>
+      </a>
+      <a class="screen-link" href="paso_4_subir_documentos_es/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">④ Subir Documentos</span>
+        <span class="s-file">paso_4_subir_documentos_es</span>
+      </a>
+      <a class="screen-link" href="paso_5_revisar_y_enviar_es/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">⑤ Revisar y Enviar</span>
+        <span class="s-file">paso_5_revisar_y_enviar_es</span>
+      </a>
+      <a class="screen-link" href="paso_6_env_o_exitoso_es/code.html">
+        <span class="s-group">Wizard</span>
+        <span class="s-name">⑥ Envío Exitoso</span>
+        <span class="s-file">paso_6_env_o_exitoso_es</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 4 — Detalle de Procedimiento</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="new_procedure_request/code.html">
+        <span class="s-group">Procedimiento</span>
+        <span class="s-name">➕ Nueva Solicitud</span>
+        <span class="s-file">new_procedure_request</span>
+      </a>
+      <a class="screen-link" href="procedure_detail_review/code.html">
+        <span class="s-group">Procedimiento</span>
+        <span class="s-name">🔍 Revisión Detalle (Admin)</span>
+        <span class="s-file">procedure_detail_review</span>
+      </a>
+      <a class="screen-link" href="observation_detail_pending_actions/code.html">
+        <span class="s-group">Procedimiento</span>
+        <span class="s-name">⚠️ Observación Pendiente</span>
+        <span class="s-file">observation_detail_pending_actions</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 5 — Dashboard Estudiantil</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="student_dashboard_overview/code.html">
+        <span class="s-group">Estudiante</span>
+        <span class="s-name">🎓 Dashboard Estudiante</span>
+        <span class="s-file">student_dashboard_overview</span>
+      </a>
+      <a class="screen-link" href="my_procedures_tracker/code.html">
+        <span class="s-group">Estudiante</span>
+        <span class="s-name">📋 Mis Trámites</span>
+        <span class="s-file">my_procedures_tracker</span>
+      </a>
+      <a class="screen-link" href="my_requests_tracker/code.html">
+        <span class="s-group">Estudiante</span>
+        <span class="s-name">📝 Mis Solicitudes</span>
+        <span class="s-file">my_requests_tracker</span>
+      </a>
+      <a class="screen-link" href="notifications_center/code.html">
+        <span class="s-group">Estudiante</span>
+        <span class="s-name">🔔 Notificaciones</span>
+        <span class="s-file">notifications_center</span>
+      </a>
+      <a class="screen-link" href="my_profile_settings/code.html">
+        <span class="s-group">Estudiante</span>
+        <span class="s-name">⚙️ Mi Perfil</span>
+        <span class="s-file">my_profile_settings</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 6 — Seguimiento y Expediente</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="track_my_procedure_search/code.html">
+        <span class="s-group">Seguimiento</span>
+        <span class="s-name">🔎 Rastrear Trámite</span>
+        <span class="s-file">track_my_procedure_search</span>
+      </a>
+      <a class="screen-link" href="search_results_procedure_tracking/code.html">
+        <span class="s-group">Seguimiento</span>
+        <span class="s-name">📊 Resultados de Búsqueda</span>
+        <span class="s-file">search_results_procedure_tracking</span>
+      </a>
+      <a class="screen-link" href="procedure_detail_status_timeline/code.html">
+        <span class="s-group">Seguimiento</span>
+        <span class="s-name">⏱ Estado del Expediente</span>
+        <span class="s-file">procedure_detail_status_timeline</span>
+      </a>
+    </div>
+
+    <p class="group-title">Grupo 7 — Dashboard Administrativo</p>
+    <div class="screen-grid">
+      <a class="screen-link" href="admin_dashboard/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">🛡 Dashboard Admin</span>
+        <span class="s-file">admin_dashboard</span>
+      </a>
+      <a class="screen-link" href="pending_procedures_queue/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">📥 Cola de Pendientes</span>
+        <span class="s-file">pending_procedures_queue</span>
+      </a>
+      <a class="screen-link" href="document_validation_screen/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">✅ Validar Documentos</span>
+        <span class="s-file">document_validation_screen</span>
+      </a>
+      <a class="screen-link" href="procedure_management/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">🗃 Gestión de Trámites</span>
+        <span class="s-file">procedure_management</span>
+      </a>
+      <a class="screen-link" href="user_management/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">👥 Usuarios</span>
+        <span class="s-file">user_management</span>
+      </a>
+      <a class="screen-link" href="reports_and_statistics/code.html">
+        <span class="s-group">Admin</span>
+        <span class="s-name">📈 Reportes y Estadísticas</span>
+        <span class="s-file">reports_and_statistics</span>
+      </a>
+    </div>
+
+    <div style="margin-top:var(--sp-xl);padding-top:var(--sp-lg);border-top:1px solid var(--clr-outline-variant);display:flex;justify-content:center">
+      <p class="text-body-sm" style="color:var(--clr-secondary)">
+        TUPA UNSAAC · Prototipo Front-End · 2024 · Universidad Nacional de San Antonio Abad del Cusco
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="shared/navigation.js"></script>
+<script>
+  // Keyboard navigation for portal cards
+  document.querySelectorAll('.portal-card').forEach(card => {
+    card.addEventListener('keypress', e => { if (e.key === 'Enter') card.click(); });
+  });
+</script>
+</body>
+</html>

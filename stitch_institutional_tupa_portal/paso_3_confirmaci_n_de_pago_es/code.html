@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso 3 — Confirmación de Pago | TUPA UNSAAC</title>
+  <meta name="description" content="Asistente de trámites TUPA — Paso 3: Confirma tu pago y sube el voucher." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--clr-background); }
+    .payment-method {
+      padding: var(--sp-lg); border: 2px solid var(--clr-outline-variant); border-radius: var(--radius-xl);
+      cursor: pointer; display: flex; align-items: center; gap: var(--sp-md);
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+    .payment-method:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+    .payment-method.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+    .pay-icon { width: 52px; height: 52px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div style="background:var(--clr-primary);padding:var(--sp-md) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:var(--sp-md)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined icon-filled" style="font-size:20px;color:var(--clr-tertiary-fixed)">account_balance</span>
+      </div>
+      <span style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">TUPA UNSAAC — Asistente de Trámites</span>
+    </div>
+    <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7)" onclick="navigate('estudiante.dashboard')">
+      <span class="material-symbols-outlined">close</span> Cancelar
+    </button>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:var(--sp-lg);flex:1;width:100%;display:flex;flex-direction:column;gap:var(--sp-lg)">
+  <div id="wizard-stepper"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:var(--sp-xl)">
+    <div>
+      <h1 class="text-headline-md" style="color:var(--clr-primary);margin-bottom:var(--sp-xs)">Confirmación de Pago</h1>
+      <p class="text-body-md" style="color:var(--clr-secondary);margin-bottom:var(--sp-xl)">Realiza el pago de la tasa y sube tu voucher de pago para continuar con el trámite.</p>
+
+      <!-- Payment amount -->
+      <div style="background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-container));border-radius:var(--radius-xl);padding:var(--sp-xl);color:white;margin-bottom:var(--sp-xl);position:relative;overflow:hidden">
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(137,245,231,0.12);pointer-events:none"></div>
+        <div style="font-size:14px;opacity:0.75;margin-bottom:var(--sp-sm)">Total a pagar por: Diploma de Bachiller (P001)</div>
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:48px;font-weight:800;color:var(--clr-tertiary-fixed);line-height:1">S/. 120.00</div>
+        <div style="font-size:13px;opacity:0.65;margin-top:var(--sp-sm)">Referencia: TUPA-2024-P001-8902</div>
+      </div>
+
+      <!-- Payment methods -->
+      <h2 class="text-headline-sm" style="color:var(--clr-on-surface);margin-bottom:var(--sp-md)">Método de pago</h2>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+        <div class="payment-method selected" id="pay-banco" onclick="selectPay('banco')" role="radio" aria-checked="true">
+          <div class="pay-icon" style="background:var(--clr-primary-fixed)">
+            <span class="material-symbols-outlined icon-filled" style="color:var(--clr-primary)">account_balance</span>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700;color:var(--clr-on-surface)">Banco de la Nación</div>
+            <div style="font-size:13px;color:var(--clr-secondary)">Cuenta corriente N.° 000-000-000000-0-00 · Presencial o agencia bancaria</div>
+          </div>
+          <span class="badge badge-success">Recomendado</span>
+        </div>
+        <div class="payment-method" id="pay-agente" onclick="selectPay('agente')" role="radio" aria-checked="false">
+          <div class="pay-icon" style="background:#d1fae5">
+            <span class="material-symbols-outlined icon-filled" style="color:#065f46">point_of_sale</span>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700;color:var(--clr-on-surface)">Agente Bancario</div>
+            <div style="font-size:13px;color:var(--clr-secondary)">Cualquier agente autorizado del Banco de la Nación</div>
+          </div>
+        </div>
+        <div class="payment-method" id="pay-tesoreria" onclick="selectPay('tesoreria')" role="radio" aria-checked="false">
+          <div class="pay-icon" style="background:#fef3c7">
+            <span class="material-symbols-outlined icon-filled" style="color:#92400e">payments</span>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700;color:var(--clr-on-surface)">Caja de Tesorería UNSAAC</div>
+            <div style="font-size:13px;color:var(--clr-secondary)">Pago presencial en la Oficina de Tesorería · Lunes a Viernes 8:00 – 16:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voucher upload -->
+      <h2 class="text-headline-sm" style="color:var(--clr-on-surface);margin-bottom:var(--sp-md)">Subir voucher de pago</h2>
+      <div class="file-upload-area" id="voucher-drop" onclick="triggerUpload()">
+        <span class="material-symbols-outlined icon-2xl" style="color:var(--clr-outline)">upload_file</span>
+        <div style="font-size:15px;font-weight:600;color:var(--clr-on-surface);margin-top:var(--sp-sm)">Arrastra tu voucher aquí</div>
+        <div style="font-size:13px;color:var(--clr-secondary);margin-top:4px">o haz clic para seleccionar · PDF o JPG · máx. 5 MB</div>
+        <input type="file" id="voucher-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleVoucherUpload(this)" />
+      </div>
+      <div id="voucher-preview" style="display:none;margin-top:var(--sp-md)"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Datos de depósito</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm);font-size:14px">
+          <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Beneficiario</div><div style="font-weight:600">UNSAAC</div></div>
+          <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">N.° de cuenta</div><div class="text-mono-sm" style="color:var(--clr-primary)">000-000-000000-0-00</div></div>
+          <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Concepto</div><div style="font-weight:600">Derecho de tramitación P001</div></div>
+          <div><div style="color:var(--clr-secondary);font-size:12px;margin-bottom:2px">Referencia</div><div class="text-mono-sm" style="color:var(--clr-primary)">TUPA-2024-P001-8902</div></div>
+          <div style="padding:var(--sp-md);background:var(--clr-surface-container-low);border-radius:var(--radius-lg);text-align:center">
+            <div style="font-family:'Hanken Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--clr-primary)">S/. 120.00</div>
+            <div style="font-size:12px;color:var(--clr-secondary)">Monto exacto a depositar</div>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        <span class="material-symbols-outlined">info</span>
+        <div>Guarda tu voucher de pago. Lo necesitarás para subir en este paso. El número de referencia es único para tu expediente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;padding-top:var(--sp-lg);border-top:1px solid var(--clr-outline-variant)">
+    <button class="btn btn-outline" onclick="wizardBack(3)">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Paso anterior
+    </button>
+    <button class="btn btn-primary btn-lg" onclick="wizardNext(3)">
+      Ir a Subir Documentos
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  renderWizardStepper(3);
+
+  function selectPay(method) {
+    document.querySelectorAll('.payment-method').forEach(m => {
+      m.classList.remove('selected');
+      m.setAttribute('aria-checked', 'false');
+    });
+    const el = document.getElementById(`pay-${method}`);
+    el.classList.add('selected');
+    el.setAttribute('aria-checked', 'true');
+  }
+
+  function triggerUpload() {
+    document.getElementById('voucher-file').click();
+  }
+
+  function handleVoucherUpload(input) {
+    if (!input.files.length) return;
+    const f = input.files[0];
+    document.getElementById('voucher-preview').style.display = 'block';
+    document.getElementById('voucher-preview').innerHTML = DocumentItem({
+      name: f.name, size: (f.size / 1024).toFixed(0) + ' KB', status: 'uploaded', required: true,
+      description: 'Voucher de pago cargado correctamente'
+    });
+    document.getElementById('voucher-drop').style.borderColor = 'var(--clr-primary)';
+    showToast({ message: 'Voucher cargado correctamente', type: 'success' });
+  }
+
+  // Drag and drop
+  const drop = document.getElementById('voucher-drop');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('drag-over');
+    const dt = e.dataTransfer;
+    if (dt.files.length) {
+      document.getElementById('voucher-file').files = dt.files;
+      handleVoucherUpload(document.getElementById('voucher-file'));
+    }
+  });
+
+  initPage({ route: 'tramite.paso3', pageTitle: 'Paso 3 — Confirmación de Pago' });
+</script>
+</body>
+</html>

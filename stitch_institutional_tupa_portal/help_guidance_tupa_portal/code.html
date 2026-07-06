@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Ayuda | TUPA UNSAAC</title>
+  <meta name="description" content="Guías, tutoriales y preguntas frecuentes para gestionar tus trámites administrativos en el Portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .help-hero {
+      background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%);
+      padding: var(--sp-3xl) var(--sp-lg); text-align: center; position: relative; overflow: hidden;
+    }
+    .help-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 80%, rgba(137,245,231,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .help-hero-inner { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
+
+    .help-search-bar {
+      display: flex; gap: var(--sp-sm);
+      max-width: 580px; margin: var(--sp-lg) auto 0;
+    }
+    .help-search-input {
+      flex: 1; height: 52px;
+      padding: 0 var(--sp-md) 0 48px;
+      background: white; border: none;
+      border-radius: var(--radius-xl); font-size: 15px;
+      outline: none; box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .help-search-wrap { position: relative; flex: 1; }
+    .help-search-wrap .material-symbols-outlined { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 22px; color: var(--clr-outline); }
+
+    .faq-item {
+      border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-lg);
+      overflow: hidden; transition: box-shadow var(--transition-fast);
+    }
+    .faq-item:hover { box-shadow: var(--shadow-sm); }
+    .faq-question {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--sp-lg); cursor: pointer; user-select: none;
+      background: var(--clr-surface-container-lowest);
+      transition: background var(--transition-fast);
+    }
+    .faq-question:hover { background: var(--clr-surface-container-low); }
+    .faq-question h3 { font-size: 15px; font-weight: 600; color: var(--clr-on-surface); }
+    .faq-question .material-symbols-outlined { font-size: 20px; color: var(--clr-secondary); transition: transform 0.3s; flex-shrink: 0; }
+    .faq-item.open .faq-question .material-symbols-outlined { transform: rotate(180deg); }
+    .faq-answer {
+      padding: 0 var(--sp-lg); max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      background: var(--clr-surface-container-lowest);
+      font-size: 14px; color: var(--clr-secondary); line-height: 1.65;
+    }
+    .faq-item.open .faq-answer { max-height: 300px; padding: 0 var(--sp-lg) var(--sp-lg); }
+
+    .guide-card {
+      display: flex; flex-direction: column;
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl);
+      overflow: hidden; cursor: pointer;
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+    }
+    .guide-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .guide-card-banner { height: 8px; }
+    .guide-card-body { padding: var(--sp-lg); flex: 1; }
+    .guide-icon { width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-md); }
+    .guide-icon .material-symbols-outlined { font-size: 24px; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .guide-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--clr-primary); margin-bottom: var(--sp-xs); }
+    .guide-desc { font-size: 13px; color: var(--clr-secondary); line-height: 1.55; }
+    .guide-cta { padding: var(--sp-md) var(--sp-lg); border-top: 1px solid var(--clr-outline-variant); display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--clr-primary); }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar-mount"></div>
+
+<!-- HERO -->
+<section class="help-hero" aria-labelledby="help-heading">
+  <div class="help-hero-inner animate-slide-up">
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:var(--sp-md);padding:4px 14px;background:rgba(137,245,231,0.12);border:1px solid rgba(137,245,231,0.3);border-radius:9999px;font-size:12px;font-weight:600;color:var(--clr-tertiary-fixed);letter-spacing:0.05em;text-transform:uppercase">
+      <span class="material-symbols-outlined" style="font-size:12px">support_agent</span>
+      Centro de Ayuda
+    </div>
+    <h1 id="help-heading" style="font-family:'Hanken Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:800;color:white;line-height:1.1;margin-bottom:var(--sp-md)">
+      ¿Cómo podemos ayudarte?
+    </h1>
+    <p style="font-size:16px;color:rgba(255,255,255,0.75);line-height:1.65;margin-bottom:0">
+      Encuentra guías paso a paso, preguntas frecuentes y tutoriales sobre todos los trámites TUPA.
+    </p>
+    <div class="help-search-bar">
+      <div class="help-search-wrap">
+        <span class="material-symbols-outlined">search</span>
+        <input class="help-search-input" type="text" id="help-search"
+               placeholder="Buscar en la ayuda... ej: cómo subir documentos" aria-label="Buscar en el centro de ayuda" />
+      </div>
+      <button class="btn btn-teal" onclick="filterHelp()">Buscar</button>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<main style="flex:1;background:var(--clr-background)">
+  <div style="max-width:1280px;margin:0 auto;padding:var(--sp-3xl) var(--sp-lg)">
+
+    <!-- QUICK TOPICS -->
+    <section aria-labelledby="topics-heading" style="margin-bottom:var(--sp-3xl)">
+      <h2 id="topics-heading" class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Temas frecuentes</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--sp-sm)">
+        <button class="filter-chip active" onclick="filterTopic('todos')">Todos</button>
+        <button class="filter-chip" onclick="filterTopic('wizard')">
+          <span class="material-symbols-outlined">fact_check</span> Iniciar trámite
+        </button>
+        <button class="filter-chip" onclick="filterTopic('pago')">
+          <span class="material-symbols-outlined">payments</span> Pagos
+        </button>
+        <button class="filter-chip" onclick="filterTopic('documentos')">
+          <span class="material-symbols-outlined">upload_file</span> Documentos
+        </button>
+        <button class="filter-chip" onclick="filterTopic('seguimiento')">
+          <span class="material-symbols-outlined">location_searching</span> Seguimiento
+        </button>
+        <button class="filter-chip" onclick="filterTopic('cuenta')">
+          <span class="material-symbols-outlined">person</span> Mi cuenta
+        </button>
+      </div>
+    </section>
+
+    <!-- GUIDES GRID -->
+    <section aria-labelledby="guides-heading" style="margin-bottom:var(--sp-3xl)">
+      <h2 id="guides-heading" class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Guías paso a paso</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--sp-lg)">
+        <div class="guide-card animate-on-load" onclick="navigate('tramite.paso1')">
+          <div class="guide-card-banner" style="background:var(--clr-primary)"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:var(--clr-primary-fixed)">
+              <span class="material-symbols-outlined" style="color:var(--clr-primary)">rocket_launch</span>
+            </div>
+            <div class="guide-title">Cómo iniciar un trámite</div>
+            <p class="guide-desc">Guía completa del asistente de trámites: selección, requisitos, pago, documentos y envío.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+        <div class="guide-card animate-on-load stagger-1" onclick="navigate('tramite.paso3')">
+          <div class="guide-card-banner" style="background:var(--clr-tertiary-fixed)"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:rgba(137,245,231,0.2)">
+              <span class="material-symbols-outlined" style="color:var(--clr-tertiary-container)">payments</span>
+            </div>
+            <div class="guide-title">Cómo realizar el pago</div>
+            <p class="guide-desc">Métodos de pago disponibles, tasas y cómo cargar tu voucher de pago al sistema.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+        <div class="guide-card animate-on-load stagger-2" onclick="navigate('tramite.paso4')">
+          <div class="guide-card-banner" style="background:#f59e0b"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:#fef3c7">
+              <span class="material-symbols-outlined" style="color:#92400e">upload_file</span>
+            </div>
+            <div class="guide-title">Subir documentos correctamente</div>
+            <p class="guide-desc">Formatos aceptados, tamaño máximo, cómo escanear y subir requisitos al portal.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+        <div class="guide-card animate-on-load stagger-3" onclick="navigate('seguimiento')">
+          <div class="guide-card-banner" style="background:#10b981"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:#d1fae5">
+              <span class="material-symbols-outlined" style="color:#065f46">location_searching</span>
+            </div>
+            <div class="guide-title">Rastrear mi expediente</div>
+            <p class="guide-desc">Cómo usar el código de expediente para conocer el estado actual de tu trámite.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+        <div class="guide-card animate-on-load stagger-4" onclick="navigate('estudiante.observacion')">
+          <div class="guide-card-banner" style="background:var(--clr-error)"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:var(--clr-error-container)">
+              <span class="material-symbols-outlined" style="color:var(--clr-error)">warning</span>
+            </div>
+            <div class="guide-title">Resolver una observación</div>
+            <p class="guide-desc">Qué hacer cuando tu trámite tiene una observación: cómo corregir y reenviar documentos.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+        <div class="guide-card animate-on-load stagger-5" onclick="navigate('estudiante.perfil')">
+          <div class="guide-card-banner" style="background:var(--clr-secondary)"></div>
+          <div class="guide-card-body">
+            <div class="guide-icon" style="background:var(--clr-secondary-container)">
+              <span class="material-symbols-outlined" style="color:var(--clr-secondary)">manage_accounts</span>
+            </div>
+            <div class="guide-title">Gestionar mi perfil</div>
+            <p class="guide-desc">Actualizar datos de contacto, cambiar contraseña y configurar notificaciones.</p>
+          </div>
+          <div class="guide-cta"><span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span> Ver guía</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section aria-labelledby="faq-heading" style="margin-bottom:var(--sp-3xl)">
+      <h2 id="faq-heading" class="text-headline-sm" style="color:var(--clr-primary);margin-bottom:var(--sp-lg)">Preguntas frecuentes</h2>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-sm)" id="faq-list">
+
+        <div class="faq-item" id="faq-1">
+          <div class="faq-question" onclick="toggleFAQ('faq-1')" aria-expanded="false">
+            <h3>¿Cuánto tiempo tarda en procesarse mi trámite?</h3>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            Los plazos varían según el tipo de trámite. La mayoría de los procedimientos académicos tienen un plazo de 1 a 15 días hábiles. Puedes revisar el plazo específico en el catálogo TUPA o en el detalle de tu expediente.
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-2">
+          <div class="faq-question" onclick="toggleFAQ('faq-2')" aria-expanded="false">
+            <h3>¿Qué formatos de archivo acepta el portal?</h3>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            El portal acepta archivos en formato PDF, JPG y PNG. El tamaño máximo por archivo es de 5 MB. Para documentos con múltiples páginas, se recomienda subir un único PDF.
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-3">
+          <div class="faq-question" onclick="toggleFAQ('faq-3')" aria-expanded="false">
+            <h3>¿Cómo puedo saber si mi pago fue recibido?</h3>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            Una vez que subes el voucher de pago, el sistema envía una confirmación a tu correo institucional en un plazo de 1 a 2 días hábiles. También puedes consultar el estado en la sección "Seguimiento" del portal.
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-4">
+          <div class="faq-question" onclick="toggleFAQ('faq-4')" aria-expanded="false">
+            <h3>¿Puedo cancelar o modificar un trámite ya enviado?</h3>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            Puedes solicitar la cancelación de un trámite mientras está en estado "Pendiente" o "En Revisión". Una vez aprobado o completado, no es posible modificarlo. Comunícate con la oficina administrativa correspondiente para casos especiales.
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-5">
+          <div class="faq-question" onclick="toggleFAQ('faq-5')" aria-expanded="false">
+            <h3>¿Cómo accedo si olvidé mi contraseña?</h3>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            En la pantalla de inicio de sesión, haz clic en "¿Olvidaste tu contraseña?". Se enviará un enlace de recuperación a tu correo institucional UNSAAC. Si no tienes acceso a ese correo, comunícate con la Mesa de Ayuda al interno 1234.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section aria-labelledby="contact-heading">
+      <div class="card animate-on-load">
+        <div style="background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-container));padding:var(--sp-2xl);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-lg)">
+          <div style="position:relative;z-index:1">
+            <h2 id="contact-heading" style="font-family:'Hanken Grotesk',sans-serif;font-size:22px;font-weight:700;color:white;margin-bottom:var(--sp-sm)">¿No encontraste lo que buscabas?</h2>
+            <p style="font-size:14px;color:rgba(255,255,255,0.75);max-width:400px;line-height:1.6">
+              Nuestro equipo de soporte está disponible de lunes a viernes de 8:00 a 17:00 horas.
+            </p>
+            <div style="display:flex;gap:var(--sp-md);margin-top:var(--sp-lg);flex-wrap:wrap">
+              <a href="mailto:tupa@unsaac.edu.pe" class="btn btn-teal">
+                <span class="material-symbols-outlined">email</span>
+                tupa@unsaac.edu.pe
+              </a>
+              <a href="tel:+5184222271" class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)">
+                <span class="material-symbols-outlined">phone</span>
+                (084) 22-2271 Int. 1234
+              </a>
+            </div>
+          </div>
+          <div aria-hidden="true">
+            <span class="material-symbols-outlined" style="font-size:80px;color:rgba(137,245,231,0.25)">support_agent</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'ayuda' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+  initPage({ route: 'ayuda', pageTitle: 'Centro de Ayuda' });
+
+  function toggleFAQ(id) {
+    const item = document.getElementById(id);
+    const isOpen = item.classList.toggle('open');
+    item.querySelector('.faq-question').setAttribute('aria-expanded', isOpen.toString());
+  }
+
+  function filterTopic(topic) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  function filterHelp() {
+    const q = document.getElementById('help-search').value.toLowerCase().trim();
+    if (q) showToast({ message: `Buscando: "${q}"`, type: 'info' });
+  }
+</script>
+</body>
+</html>

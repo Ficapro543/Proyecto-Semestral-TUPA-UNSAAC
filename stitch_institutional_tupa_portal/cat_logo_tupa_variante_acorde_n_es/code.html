@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Acordeón | TUPA UNSAAC</title>
+  <meta name="description" content="Vista acordeón de procedimientos administrativos TUPA agrupados por categoría." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .acc-group { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--sp-md); }
+    .acc-header {
+      display: flex; align-items: center; gap: var(--sp-md); padding: var(--sp-lg);
+      cursor: pointer; user-select: none;
+      transition: background var(--transition-fast);
+    }
+    .acc-header:hover { background: var(--clr-surface-container-low); }
+    .acc-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .acc-icon .material-symbols-outlined { font-size: 22px; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .acc-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 17px; font-weight: 700; color: var(--clr-primary); flex: 1; }
+    .acc-count { font-size: 13px; color: var(--clr-secondary); }
+    .acc-chevron { font-size: 22px; color: var(--clr-secondary); transition: transform 0.3s; }
+    .acc-group.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; border-top: 1px solid var(--clr-outline-variant); }
+    .acc-group.open .acc-body { display: block; }
+    .acc-item {
+      display: flex; align-items: center; gap: var(--sp-md);
+      padding: var(--sp-md) var(--sp-lg); cursor: pointer;
+      border-bottom: 1px solid var(--clr-outline-variant);
+      transition: background var(--transition-fast);
+    }
+    .acc-item:last-child { border-bottom: none; }
+    .acc-item:hover { background: var(--clr-surface-container-low); }
+    .acc-item-title { flex: 1; font-size: 14px; font-weight: 500; color: var(--clr-on-surface); }
+    .acc-item-cost { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--clr-primary); font-weight: 600; white-space: nowrap; }
+    .acc-item-time { font-size: 12px; color: var(--clr-secondary); white-space: nowrap; min-width: 80px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div id="topbar-mount"></div>
+
+<div style="background:var(--clr-primary);padding:var(--sp-xl) var(--sp-lg)">
+  <div style="max-width:900px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md)">
+      <div>
+        <h1 style="font-family:'Hanken Grotesk',sans-serif;font-size:28px;font-weight:800;color:white">Catálogo TUPA — Vista Acordeón</h1>
+        <p style="font-size:14px;color:rgba(255,255,255,0.65);margin-top:4px">Procedimientos agrupados por categoría</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo')">
+          <span class="material-symbols-outlined">grid_view</span> Cuadrícula
+        </button>
+        <button class="btn btn-outline" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)" onclick="navigate('catalogo.lista')">
+          <span class="material-symbols-outlined">view_list</span> Lista
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main style="flex:1;background:var(--clr-background);padding:var(--sp-xl) var(--sp-lg)">
+  <div style="max-width:900px;margin:0 auto" id="accordion-container"></div>
+</main>
+
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'catalogo' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+
+  const groups = [
+    {
+      id:'g1', icon:'school', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)',
+      title:'Grados y Títulos', count: 8,
+      items:[
+        {t:'Diploma de Bachiller', cost:'S/. 120', time:'15 días'},
+        {t:'Título Profesional', cost:'S/. 250', time:'30 días'},
+        {t:'Segunda Especialización', cost:'S/. 180', time:'25 días'},
+        {t:'Grado de Maestro', cost:'S/. 300', time:'30 días'},
+        {t:'Grado de Doctor', cost:'S/. 350', time:'45 días'},
+      ]
+    },
+    {
+      id:'g2', icon:'description', iconBg:'#d1fae5', iconColor:'#065f46',
+      title:'Certificaciones Académicas', count: 12,
+      items:[
+        {t:'Certificado de Matrícula', cost:'Gratuito', time:'2 días'},
+        {t:'Récord Académico', cost:'S/. 15', time:'1 día'},
+        {t:'Constancia de Egresado', cost:'S/. 30', time:'3 días'},
+        {t:'Constancia de Notas', cost:'S/. 10', time:'1 día'},
+        {t:'Certificado de Estudios', cost:'S/. 20', time:'2 días'},
+        {t:'Certificado Tercio Superior', cost:'S/. 25', time:'2 días'},
+      ]
+    },
+    {
+      id:'g3', icon:'manage_accounts', iconBg:'#fef3c7', iconColor:'#92400e',
+      title:'Trámites Administrativos', count: 15,
+      items:[
+        {t:'Traslado Externo', cost:'S/. 180', time:'20 días'},
+        {t:'Cambio de Especialidad', cost:'S/. 60', time:'10 días'},
+        {t:'Reserva de Matrícula', cost:'S/. 20', time:'2 días'},
+        {t:'Duplicado de Carné', cost:'S/. 25', time:'3 días'},
+        {t:'Convalidación de Cursos', cost:'S/. 35', time:'5 días'},
+      ]
+    },
+    {
+      id:'g4', icon:'favorite', iconBg:'var(--clr-error-container)', iconColor:'var(--clr-error)',
+      title:'Bienestar Universitario', count: 9,
+      items:[
+        {t:'Beca Comedor Universitario', cost:'Gratuito', time:'5 días'},
+        {t:'Beca de Transporte', cost:'Gratuito', time:'7 días'},
+        {t:'Seguro Estudiantil', cost:'Gratuito', time:'1 día'},
+        {t:'Apoyo Económico Emergencial', cost:'Gratuito', time:'3 días'},
+      ]
+    },
+    {
+      id:'g5', icon:'science', iconBg:'var(--clr-surface-container-highest)', iconColor:'var(--clr-primary)',
+      title:'Investigación y Posgrado', count: 11,
+      items:[
+        {t:'Registro de Proyecto de Tesis', cost:'S/. 40', time:'5 días'},
+        {t:'Informe de Investigación', cost:'S/. 30', time:'3 días'},
+        {t:'Dictamen de Tesis', cost:'S/. 50', time:'10 días'},
+      ]
+    },
+  ];
+
+  document.getElementById('accordion-container').innerHTML = groups.map((g, gi) => `
+    <div class="acc-group animate-on-load stagger-${gi + 1}" id="${g.id}">
+      <div class="acc-header" onclick="toggleGroup('${g.id}')" role="button" aria-expanded="false" aria-controls="${g.id}-body">
+        <div class="acc-icon" style="background:${g.iconBg}">
+          <span class="material-symbols-outlined" style="color:${g.iconColor}">${g.icon}</span>
+        </div>
+        <div class="acc-title">${g.title}</div>
+        <div class="acc-count">${g.count} procedimientos</div>
+        <span class="material-symbols-outlined acc-chevron">expand_more</span>
+      </div>
+      <div class="acc-body" id="${g.id}-body">
+        ${g.items.map(item => `
+          <div class="acc-item" onclick="navigate('catalogo.detalle')" role="listitem" tabindex="0"
+               onkeypress="if(event.key==='Enter') navigate('catalogo.detalle')">
+            <span class="material-symbols-outlined" style="font-size:18px;color:var(--clr-outline)">chevron_right</span>
+            <div class="acc-item-title">${item.t}</div>
+            <div class="acc-item-cost">${item.cost}</div>
+            <div class="acc-item-time">${item.time}</div>
+          </div>
+        `).join('')}
+        <div style="padding:var(--sp-md) var(--sp-lg);background:var(--clr-surface-container-low)">
+          <button class="btn btn-outline btn-sm" onclick="navigate('catalogo')">
+            Ver todos los procedimientos de esta categoría
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  function toggleGroup(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+    const header = el.querySelector('.acc-header');
+    header.setAttribute('aria-expanded', el.classList.contains('open').toString());
+  }
+
+  // Open first group by default
+  toggleGroup('g1');
+
+  initPage({ route: 'catalogo.acordeon', pageTitle: 'Catálogo — Vista Acordeón' });
+</script>
+</body>
+</html>

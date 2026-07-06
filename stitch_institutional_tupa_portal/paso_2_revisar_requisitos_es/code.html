@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso 2 — Revisar Requisitos | TUPA UNSAAC</title>
+  <meta name="description" content="Asistente de trámites TUPA — Paso 2: Revisa los requisitos necesarios para tu trámite." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--clr-background); }
+    .req-check-item {
+      display: flex; align-items: center; gap: var(--sp-md);
+      padding: var(--sp-md) var(--sp-lg);
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+    .req-check-item.checked { background: var(--clr-surface-container-low); border-color: var(--clr-primary); }
+    .req-check-item .material-symbols-outlined.status { font-size: 22px; transition: color var(--transition-fast); color: var(--clr-outline); }
+    .req-check-item.checked .status { color: var(--clr-primary); }
+  </style>
+</head>
+<body>
+
+<div style="background:var(--clr-primary);padding:var(--sp-md) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:var(--sp-md)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined icon-filled" style="font-size:20px;color:var(--clr-tertiary-fixed)">account_balance</span>
+      </div>
+      <span style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">TUPA UNSAAC — Asistente de Trámites</span>
+    </div>
+    <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7)" onclick="navigate('estudiante.dashboard')">
+      <span class="material-symbols-outlined">close</span> Cancelar
+    </button>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:var(--sp-lg);flex:1;width:100%;display:flex;flex-direction:column;gap:var(--sp-lg)">
+  <div id="wizard-stepper"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:var(--sp-xl)">
+    <div>
+      <div style="margin-bottom:var(--sp-lg)">
+        <h1 class="text-headline-md" style="color:var(--clr-primary);margin-bottom:var(--sp-xs)">Revisar Requisitos</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary)">Confirma que tienes todos los documentos necesarios. Marca cada ítem para registrar que lo tienes listo.</p>
+      </div>
+
+      <!-- Procedure summary -->
+      <div style="background:var(--clr-primary);border-radius:var(--radius-xl);padding:var(--sp-md) var(--sp-lg);display:flex;align-items:center;gap:var(--sp-md);margin-bottom:var(--sp-lg)">
+        <span class="material-symbols-outlined icon-filled" style="font-size:28px;color:var(--clr-tertiary-fixed)">workspace_premium</span>
+        <div>
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">Diploma de Bachiller</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.65)">Procedimiento P001 · S/. 120.00 · 15 días hábiles</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--clr-tertiary-fixed)" onclick="wizardBack(2)">Cambiar</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--sp-sm)" id="req-list">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="alert alert-warning" style="margin-top:var(--sp-lg)">
+        <span class="material-symbols-outlined">warning</span>
+        <div>Todos los documentos marcados como obligatorios son necesarios para continuar. El sistema los verificará durante la revisión administrativa.</div>
+      </div>
+    </div>
+
+    <!-- Summary sidebar -->
+    <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Progreso de preparación</span></div>
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:var(--sp-sm)">
+            <span style="font-size:14px;color:var(--clr-secondary)">Documentos confirmados</span>
+            <span id="progress-text" style="font-weight:700;color:var(--clr-primary)">0 / 7</span>
+          </div>
+          <div class="progress" style="height:8px;margin-bottom:var(--sp-md)">
+            <div class="progress-bar" id="req-progress" style="width:0%"></div>
+          </div>
+          <div id="ready-badge"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Resumen del trámite</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm);font-size:14px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Procedimiento</span><span style="font-weight:600">Diploma de Bachiller</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Código</span><span class="text-mono-sm" style="color:var(--clr-primary)">P001</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Costo total</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--clr-primary)">S/. 120.00</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Plazo estimado</span><span style="font-weight:600">15 días hábiles</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;padding-top:var(--sp-lg);border-top:1px solid var(--clr-outline-variant)">
+    <button class="btn btn-outline" onclick="wizardBack(2)">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Paso anterior
+    </button>
+    <button class="btn btn-primary btn-lg" id="btn-continue" onclick="wizardNext(2)">
+      Ir a Confirmación de Pago
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  renderWizardStepper(2);
+
+  const reqs = [
+    { id:'r1', text:'Solicitud de diploma (Formato F-001)', sub:'PDF · Disponible en el portal', required:true },
+    { id:'r2', text:'Certificado de estudios original', sub:'PDF digitalizado', required:true },
+    { id:'r3', text:'Copia del DNI vigente', sub:'JPG o PDF, ambas caras', required:true },
+    { id:'r4', text:'Constancia de no adeudar (Dirección Económica)', sub:'PDF', required:true },
+    { id:'r5', text:'Constancia de no adeudar biblioteca', sub:'PDF', required:true },
+    { id:'r6', text:'Voucher de pago S/. 120.00', sub:'Banco de la Nación · PDF o JPG', required:true },
+    { id:'r7', text:'Foto tamaño carné (fondo blanco)', sub:'JPG, 3×4 cm', required:true },
+    { id:'r8', text:'Certificado SERUMS (solo Medicina)', sub:'PDF — opcional si no aplica', required:false },
+  ];
+
+  let checked = new Set();
+  const TOTAL_REQUIRED = reqs.filter(r => r.required).length;
+
+  function toggleReq(id) {
+    if (checked.has(id)) checked.delete(id);
+    else checked.add(id);
+    document.getElementById(`req-${id}`).classList.toggle('checked', checked.has(id));
+    document.getElementById(`req-${id}`).querySelector('.status').textContent = checked.has(id) ? 'check_circle' : 'radio_button_unchecked';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const requiredChecked = reqs.filter(r => r.required && checked.has(r.id)).length;
+    const pct = Math.round((requiredChecked / TOTAL_REQUIRED) * 100);
+    document.getElementById('req-progress').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `${requiredChecked} / ${TOTAL_REQUIRED}`;
+    const badge = document.getElementById('ready-badge');
+    if (requiredChecked === TOTAL_REQUIRED) {
+      badge.innerHTML = '<div class="badge badge-success" style="font-size:13px"><span class="material-symbols-outlined">check_circle</span>¡Listo para continuar!</div>';
+    } else {
+      badge.innerHTML = `<div class="badge badge-warning" style="font-size:13px"><span class="material-symbols-outlined">hourglass_empty</span>Faltan ${TOTAL_REQUIRED - requiredChecked} documento${TOTAL_REQUIRED - requiredChecked !== 1 ? 's' : ''}</div>`;
+    }
+  }
+
+  document.getElementById('req-list').innerHTML = reqs.map(r => `
+    <div class="req-check-item" id="req-${r.id}" onclick="toggleReq('${r.id}')" role="checkbox" aria-checked="false" tabindex="0"
+         onkeypress="if(event.key==='Enter'||event.key===' ') toggleReq('${r.id}')">
+      <span class="material-symbols-outlined status">radio_button_unchecked</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--clr-on-surface)">${r.text}</div>
+        <div style="font-size:12px;color:var(--clr-secondary);margin-top:2px">${r.sub}</div>
+      </div>
+      <span class="badge ${r.required ? 'badge-error' : 'badge-neutral'}" style="font-size:10px">${r.required ? 'Obligatorio' : 'Opcional'}</span>
+    </div>
+  `).join('');
+
+  updateProgress();
+  initPage({ route: 'tramite.paso2', pageTitle: 'Paso 2 — Revisar Requisitos' });
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar Sesión | TUPA UNSAAC</title>
+  <meta name="description" content="Accede al portal de Trámites Administrativos de la Universidad Nacional de San Antonio Abad del Cusco." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    /* ── Split layout ── */
+    .login-left {
+      display: none;
+      width: 45%;
+      background: linear-gradient(150deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%);
+      color: var(--clr-on-primary);
+      padding: var(--sp-3xl) var(--sp-2xl);
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 900px) { .login-left { display: flex; } }
+
+    .login-left::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 70%, rgba(137,245,231,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .login-left-orb {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.08;
+    }
+    .login-left-brand {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: var(--sp-md);
+    }
+    .brand-logo {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: var(--radius-xl);
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .brand-logo .material-symbols-outlined { font-size: 30px; color: var(--clr-tertiary-fixed); }
+    .brand-text-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 22px; font-weight: 800; }
+    .brand-text-sub { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+
+    .login-left-content { position: relative; z-index: 1; }
+    .login-left-content h2 {
+      font-family: 'Hanken Grotesk', sans-serif;
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin-bottom: var(--sp-md);
+    }
+    .login-left-content p { font-size: 16px; opacity: 0.75; line-height: 1.65; max-width: 340px; }
+    .login-features { display: flex; flex-direction: column; gap: var(--sp-md); margin-top: var(--sp-xl); }
+    .login-feature { display: flex; align-items: center; gap: var(--sp-md); }
+    .login-feature-icon {
+      width: 40px; height: 40px;
+      background: rgba(137,245,231,0.15);
+      border: 1px solid rgba(137,245,231,0.25);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .login-feature-icon .material-symbols-outlined { font-size: 20px; color: var(--clr-tertiary-fixed); }
+    .login-feature-text .label { font-size: 14px; font-weight: 600; }
+    .login-feature-text .sublabel { font-size: 12px; opacity: 0.65; margin-top: 1px; }
+
+    .login-left-footer {
+      position: relative; z-index: 1;
+      display: flex; gap: var(--sp-md);
+    }
+    .left-footer-stat {
+      flex: 1; padding: var(--sp-md);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    .left-footer-stat .num { font-family: 'Hanken Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--clr-tertiary-fixed); }
+    .left-footer-stat .lbl { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+
+    /* ── Right panel (form) ── */
+    .login-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-xl) var(--sp-lg);
+      background: var(--clr-background);
+      overflow-y: auto;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+    }
+    .login-card-header {
+      text-align: center;
+      margin-bottom: var(--sp-xl);
+    }
+    .login-card-icon {
+      width: 64px; height: 64px;
+      background: var(--clr-primary);
+      border-radius: var(--radius-xl);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--sp-lg);
+      box-shadow: 0 8px 24px rgba(0,32,69,0.25);
+    }
+    .login-card-icon .material-symbols-outlined { font-size: 36px; color: var(--clr-on-primary); }
+    .login-card-header h1 {
+      font-family: 'Hanken Grotesk', sans-serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--clr-primary); letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .login-card-header p { font-size: 14px; color: var(--clr-secondary); }
+
+    .login-form { display: flex; flex-direction: column; gap: var(--sp-md); }
+
+    .login-divider {
+      display: flex; align-items: center; gap: var(--sp-md);
+      margin: var(--sp-md) 0;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--clr-outline-variant);
+    }
+    .login-divider span { font-size: 12px; color: var(--clr-secondary); white-space: nowrap; }
+
+    .sso-btn {
+      width: 100%; height: 44px;
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center; gap: var(--sp-md);
+      font-size: 14px; font-weight: 600; color: var(--clr-on-surface);
+      cursor: pointer;
+      transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .sso-btn:hover { background: var(--clr-surface-container-low); box-shadow: var(--shadow-sm); }
+    .sso-btn img { width: 20px; height: 20px; }
+
+    .login-footer { text-align: center; margin-top: var(--sp-lg); font-size: 13px; color: var(--clr-secondary); }
+    .login-footer a { color: var(--clr-primary); font-weight: 600; text-decoration: none; }
+    .login-footer a:hover { text-decoration: underline; }
+
+    .security-badges {
+      display: flex; align-items: center; justify-content: center; gap: var(--sp-xl);
+      margin-top: var(--sp-xl); opacity: 0.55;
+    }
+    .sec-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--clr-secondary); }
+    .sec-badge .material-symbols-outlined { font-size: 16px; }
+
+    /* Role selector */
+    .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-sm); }
+    .role-btn {
+      padding: var(--sp-md);
+      border: 1.5px solid var(--clr-outline-variant);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      text-align: center;
+    }
+    .role-btn:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+    .role-btn.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+    .role-btn .material-symbols-outlined { font-size: 28px; color: var(--clr-primary); }
+    .role-btn .role-label { font-size: 13px; font-weight: 600; color: var(--clr-on-surface); }
+    .role-btn .role-desc  { font-size: 11px; color: var(--clr-secondary); }
+  </style>
+</head>
+<body>
+
+<!-- ── LEFT PANEL ─────────────────────────────────────── -->
+<div class="login-left" aria-hidden="true">
+  <div class="login-left-orb" style="top:-120px;right:-120px;width:400px;height:400px;background:rgba(255,255,255,1)"></div>
+  <div class="login-left-orb" style="bottom:-80px;left:-80px;width:280px;height:280px;background:rgba(137,245,231,1)"></div>
+
+  <div class="login-left-brand">
+    <div class="brand-logo">
+      <span class="material-symbols-outlined icon-filled">account_balance</span>
+    </div>
+    <div>
+      <div class="brand-text-title">TUPA UNSAAC</div>
+      <div class="brand-text-sub">Portal Administrativo Digital</div>
+    </div>
+  </div>
+
+  <div class="login-left-content">
+    <h2>Gestiona tus trámites universitarios en un solo lugar</h2>
+    <p>Accede al catálogo completo de procedimientos, rastrea el estado de tus expedientes y recibe notificaciones en tiempo real.</p>
+    <div class="login-features">
+      <div class="login-feature">
+        <div class="login-feature-icon"><span class="material-symbols-outlined">bolt</span></div>
+        <div class="login-feature-text">
+          <div class="label">Trámites 100% Digitales</div>
+          <div class="sublabel">Sin colas, sin papel, sin esperas</div>
+        </div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon"><span class="material-symbols-outlined">timeline</span></div>
+        <div class="login-feature-text">
+          <div class="label">Seguimiento en Tiempo Real</div>
+          <div class="sublabel">Estado actualizado de cada expediente</div>
+        </div>
+      </div>
+      <div class="login-feature">
+        <div class="login-feature-icon"><span class="material-symbols-outlined">verified_user</span></div>
+        <div class="login-feature-text">
+          <div class="label">Acceso Seguro e Institucional</div>
+          <div class="sublabel">Cifrado SSL y autenticación UNSAAC</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-left-footer">
+    <div class="left-footer-stat">
+      <div class="num">103+</div>
+      <div class="lbl">Procedimientos</div>
+    </div>
+    <div class="left-footer-stat">
+      <div class="num">24/7</div>
+      <div class="lbl">Disponibilidad</div>
+    </div>
+    <div class="left-footer-stat">
+      <div class="num">15K+</div>
+      <div class="lbl">Usuarios</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── RIGHT PANEL (FORM) ─────────────────────────────── -->
+<div class="login-right">
+  <div class="login-card animate-slide-up">
+
+    <div class="login-card-header">
+      <div class="login-card-icon">
+        <span class="material-symbols-outlined icon-filled">account_balance</span>
+      </div>
+      <h1>TUPA Central</h1>
+      <p>Gestión de Procedimientos Administrativos · UNSAAC</p>
+    </div>
+
+    <!-- Role Selector -->
+    <p class="text-label-sm" style="color:var(--clr-secondary);margin-bottom:var(--sp-sm);text-align:center;text-transform:uppercase;letter-spacing:0.06em">Tipo de acceso</p>
+    <div class="role-selector" role="group" aria-label="Seleccionar tipo de usuario">
+      <div class="role-btn selected" id="role-estudiante" onclick="selectRole('estudiante')"
+           role="radio" aria-checked="true" tabindex="0">
+        <span class="material-symbols-outlined icon-filled">school</span>
+        <span class="role-label">Estudiante</span>
+        <span class="role-desc">Pregrado / Posgrado</span>
+      </div>
+      <div class="role-btn" id="role-admin" onclick="selectRole('admin')"
+           role="radio" aria-checked="false" tabindex="0">
+        <span class="material-symbols-outlined icon-filled">admin_panel_settings</span>
+        <span class="role-label">Administrativo</span>
+        <span class="role-desc">Personal UNSAAC</span>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form" id="login-form" onsubmit="handleLogin(event)" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="username">Correo institucional o CUI</label>
+        <div class="form-input-icon">
+          <span class="material-symbols-outlined">person</span>
+          <input class="form-input" type="text" id="username" name="username"
+                 placeholder="ej. e.rodriguez@unsaac.edu.pe"
+                 autocomplete="username" required aria-required="true" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <label class="form-label" for="password">Contraseña</label>
+          <a href="#" style="font-size:12px;color:var(--clr-primary);font-weight:600">¿Olvidaste tu contraseña?</a>
+        </div>
+        <div class="form-input-icon">
+          <span class="material-symbols-outlined">lock</span>
+          <input class="form-input" type="password" id="password" name="password"
+                 placeholder="••••••••"
+                 autocomplete="current-password" required aria-required="true" />
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+        <label class="form-check" for="remember">
+          <input type="checkbox" id="remember" name="remember" />
+          <span style="font-size:13px;color:var(--clr-secondary)">Mantener sesión iniciada</span>
+        </label>
+      </div>
+
+      <button class="btn btn-primary w-full btn-lg" type="submit" id="login-btn" aria-label="Iniciar sesión">
+        <span id="btn-text">Iniciar Sesión</span>
+        <span class="material-symbols-outlined" id="btn-icon">login</span>
+      </button>
+    </form>
+
+    <div class="login-divider"><span>o continuar con</span></div>
+
+    <button class="sso-btn" type="button" aria-label="Iniciar sesión con Google Workspace UNSAAC">
+      <img src="https://www.google.com/favicon.ico" alt="" aria-hidden="true" />
+      <span>Google Workspace UNSAAC</span>
+    </button>
+
+    <div class="login-footer">
+      ¿No tienes cuenta?
+      <a href="../create_account_user_type_selection/code.html" id="link-registro">Solicitar acceso institucional</a>
+    </div>
+
+    <div class="security-badges" aria-label="Indicadores de seguridad">
+      <div class="sec-badge">
+        <span class="material-symbols-outlined icon-filled">verified_user</span>
+        Acceso SSL Seguro
+      </div>
+      <div class="sec-badge">
+        <span class="material-symbols-outlined">gavel</span>
+        Uso Institucional
+      </div>
+      <div class="sec-badge">
+        <span class="material-symbols-outlined">privacy_tip</span>
+        Datos Protegidos
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:var(--sp-md)">
+      <a href="../index.html" style="font-size:12px;color:var(--clr-outline)">
+        ← Volver al portal principal
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  let selectedRole = 'estudiante';
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      const isActive = btn.id === `role-${role}`;
+      btn.classList.toggle('selected', isActive);
+      btn.setAttribute('aria-checked', isActive.toString());
+    });
+  }
+
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('keypress', e => {
+      if (e.key === 'Enter' || e.key === ' ') btn.click();
+    });
+  });
+
+  function handleLogin(e) {
+    e.preventDefault();
+    const btn    = document.getElementById('login-btn');
+    const btnTxt = document.getElementById('btn-text');
+    const btnIco = document.getElementById('btn-icon');
+
+    // Simulate loading
+    btn.disabled = true;
+    btnTxt.textContent = 'Verificando...';
+    btnIco.innerHTML   = '';
+    btn.insertAdjacentHTML('beforeend',
+      `<svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.416" stroke-dashoffset="10"/>
+       </svg>`
+    );
+
+    setTimeout(() => {
+      showToast({ message: '¡Bienvenido al sistema TUPA!', type: 'success' });
+      setTimeout(() => {
+        if (selectedRole === 'admin') {
+          navigate('admin.dashboard');
+        } else {
+          navigate('estudiante.dashboard');
+        }
+      }, 800);
+    }, 1500);
+  }
+
+  // Parallax watermark effect
+  document.addEventListener('mousemove', e => {
+    const x = (e.clientX / window.innerWidth  - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    document.querySelectorAll('.login-left-orb').forEach(orb => {
+      orb.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+    });
+  });
+</script>
+</body>
+</html>

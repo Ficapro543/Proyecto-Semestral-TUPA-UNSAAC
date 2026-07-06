@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notificaciones | TUPA UNSAAC</title>
+  <meta name="description" content="Centro de notificaciones del Portal TUPA UNSAAC. Alertas sobre tus trámites y expedientes." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .notif-item {
+      display: flex; align-items: flex-start; gap: var(--sp-md);
+      padding: var(--sp-lg); border-bottom: 1px solid var(--clr-outline-variant);
+      cursor: pointer; transition: background var(--transition-fast);
+      position: relative;
+    }
+    .notif-item:hover { background: var(--clr-surface-container-low); }
+    .notif-item.unread { background: var(--clr-primary-fixed); }
+    .notif-item.unread:hover { background: var(--clr-primary-container); opacity:0.8; }
+    .notif-item:last-child { border-bottom: none; }
+    .unread-dot { position: absolute; top: 18px; left: 8px; width: 8px; height: 8px; background: var(--clr-primary); border-radius: 50%; }
+    .notif-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .notif-avatar .material-symbols-outlined { font-size: 22px; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Notificaciones</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">Tienes <strong id="unread-count">3</strong> notificaciones sin leer</p>
+      </div>
+      <button class="btn btn-outline" onclick="markAllRead()">
+        <span class="material-symbols-outlined">done_all</span>
+        Marcar todas como leídas
+      </button>
+    </div>
+
+    <!-- Filter chips -->
+    <div style="display:flex;gap:var(--sp-sm);flex-wrap:wrap;margin-bottom:var(--sp-lg)">
+      <button class="filter-chip active" onclick="filterNotifs('todos',this)">Todas</button>
+      <button class="filter-chip" onclick="filterNotifs('no-leidas',this)">
+        <span class="material-symbols-outlined">circle</span> No leídas (3)
+      </button>
+      <button class="filter-chip" onclick="filterNotifs('tramites',this)">
+        <span class="material-symbols-outlined">description</span> Trámites
+      </button>
+      <button class="filter-chip" onclick="filterNotifs('pagos',this)">
+        <span class="material-symbols-outlined">payments</span> Pagos
+      </button>
+      <button class="filter-chip" onclick="filterNotifs('observaciones',this)">
+        <span class="material-symbols-outlined">warning</span> Observaciones
+      </button>
+    </div>
+
+    <div class="card animate-on-load">
+      <div id="notif-full-list"></div>
+      <div style="padding:var(--sp-lg);text-align:center;border-top:1px solid var(--clr-outline-variant)">
+        <button class="btn btn-outline">Cargar más notificaciones</button>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = StudentSidebar({ activeRoute: 'estudiante.notificaciones', notifCount: 3 });
+  document.getElementById('topbar-mount').outerHTML  = StudentTopbar({ title: 'Notificaciones' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  const notifications = [
+    { icon:'warning', iconBg:'var(--clr-error-container)', iconColor:'var(--clr-error)',
+      title:'Observación en tu expediente EXP-2024-8902',
+      description:'La Oficina de Grados y Títulos ha emitido una observación en tu trámite de Diploma de Bachiller. Debes resubir el Anexo B antes del 30 de octubre.',
+      time:'Hace 2 horas', unread:true, targetRoute:'estudiante.observacion', type:'observaciones' },
+    { icon:'payments', iconBg:'var(--clr-tertiary-fixed)', iconColor:'var(--clr-on-tertiary-fixed)',
+      title:'Pago verificado — EXP-2024-1102',
+      description:'El pago de S/. 15.00 para tu Récord Académico fue confirmado por el sistema. Tu trámite avanza al siguiente paso.',
+      time:'Ayer, 15:30', unread:true, targetRoute:'seguimiento.detalle', type:'pagos' },
+    { icon:'check_circle', iconBg:'#d1fae5', iconColor:'#065f46',
+      title:'Trámite aprobado — Certificado de Matrícula',
+      description:'Tu solicitud de Certificado de Matrícula (EXP-2024-0891) fue aprobada. Puedes descargarlo desde el portal.',
+      time:'Ayer, 10:15', unread:true, targetRoute:'seguimiento.detalle', type:'tramites' },
+    { icon:'schedule', iconBg:'var(--clr-surface-container)', iconColor:'var(--clr-secondary)',
+      title:'Recordatorio — Plazo de observación próximo a vencer',
+      description:'El plazo para subsanar la observación en EXP-2024-8902 vence el 30 de octubre. Tienes 5 días restantes.',
+      time:'Hace 3 días', unread:false, targetRoute:'estudiante.observacion', type:'observaciones' },
+    { icon:'notification_important', iconBg:'#fef3c7', iconColor:'#92400e',
+      title:'Nueva política de trámites 2024',
+      description:'La UNSAAC actualizó los requisitos para los trámites de Grados y Títulos. Revisa el catálogo actualizado.',
+      time:'Hace 5 días', unread:false, targetRoute:'catalogo', type:'tramites' },
+    { icon:'info', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)',
+      title:'Tu cuenta ha sido verificada',
+      description:'Tu correo institucional e.rodriguez@unsaac.edu.pe ha sido verificado satisfactoriamente.',
+      time:'Hace 2 semanas', unread:false, targetRoute:'estudiante.perfil', type:'tramites' },
+  ];
+
+  function renderNotifications(items) {
+    document.getElementById('notif-full-list').innerHTML = items.map(n => `
+      <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="navigate('${n.targetRoute}')">
+        ${n.unread ? '<div class="unread-dot"></div>' : ''}
+        <div class="notif-avatar" style="background:${n.iconBg}">
+          <span class="material-symbols-outlined" style="color:${n.iconColor}">${n.icon}</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:${n.unread ? '700' : '500'};color:var(--clr-on-surface);margin-bottom:4px">${n.title}</div>
+          <p style="font-size:13px;color:var(--clr-secondary);line-height:1.55;margin-bottom:var(--sp-xs)">${n.description}</p>
+          <div style="font-size:12px;color:var(--clr-outline)">${n.time}</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline);flex-shrink:0">chevron_right</span>
+      </div>
+    `).join('');
+  }
+
+  renderNotifications(notifications);
+
+  let currentFilter = 'todos';
+  function filterNotifs(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = f === 'todos' ? notifications :
+                     f === 'no-leidas' ? notifications.filter(n => n.unread) :
+                     notifications.filter(n => n.type === f);
+    renderNotifications(filtered);
+  }
+
+  function markAllRead() {
+    notifications.forEach(n => n.unread = false);
+    renderNotifications(notifications);
+    document.getElementById('unread-count').textContent = '0';
+    showToast({ message: 'Todas las notificaciones marcadas como leídas', type: 'success' });
+  }
+
+  initPage({ route: 'estudiante.notificaciones', pageTitle: 'Notificaciones' });
+</script>
+</body>
+</html>

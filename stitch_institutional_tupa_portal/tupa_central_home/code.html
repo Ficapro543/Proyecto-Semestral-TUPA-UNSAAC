@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio | TUPA UNSAAC — Portal de Trámites Administrativos</title>
+  <meta name="description" content="Portal digital de Trámites Únicos de Procedimientos Administrativos de la UNSAAC. Gestiona tus trámites universitarios de forma rápida y segura." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── Hero ── */
+    .home-hero {
+      background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-container) 60%, #0d3a6b 100%);
+      color: var(--clr-on-primary);
+      padding: var(--sp-3xl) var(--sp-lg);
+      position: relative; overflow: hidden;
+    }
+    .home-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 75% 40%, rgba(137,245,231,0.18) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-20px); }
+    }
+    .hero-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3xl); align-items: center; }
+    @media (max-width: 900px) { .hero-split { grid-template-columns: 1fr; } }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px;
+      background: rgba(137,245,231,0.12); border: 1px solid rgba(137,245,231,0.3);
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 600;
+      color: var(--clr-tertiary-fixed); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: var(--sp-lg);
+    }
+    .hero-title {
+      font-family: 'Hanken Grotesk', sans-serif;
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: var(--sp-lg);
+    }
+    .hero-title .accent { color: var(--clr-tertiary-fixed); }
+    .hero-desc { font-size: 18px; opacity: 0.8; line-height: 1.65; margin-bottom: var(--sp-xl); max-width: 500px; }
+    .hero-ctas { display: flex; gap: var(--sp-md); flex-wrap: wrap; }
+    .hero-cta-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; background: var(--clr-tertiary-fixed); color: var(--clr-on-tertiary-fixed);
+      border-radius: var(--radius-xl); font-size: 15px; font-weight: 700;
+      cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(137,245,231,0.3); }
+    .hero-cta-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; background: rgba(255,255,255,0.1); color: white;
+      border: 1px solid rgba(255,255,255,0.25); border-radius: var(--radius-xl);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(8px); transition: background 0.2s, transform 0.2s;
+    }
+    .hero-cta-secondary:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+    .hero-cta-primary .material-symbols-outlined,
+    .hero-cta-secondary .material-symbols-outlined { font-size: 20px; }
+
+    .hero-stats {
+      display: flex; gap: var(--sp-xl); margin-top: var(--sp-2xl);
+      padding-top: var(--sp-xl); border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .hero-stat-item .num {
+      font-family: 'Hanken Grotesk', sans-serif; font-size: 32px; font-weight: 800;
+      color: var(--clr-tertiary-fixed); line-height: 1;
+    }
+    .hero-stat-item .lbl { font-size: 13px; opacity: 0.65; margin-top: 4px; }
+
+    /* Hero right — visual */
+    .hero-visual {
+      display: flex; flex-direction: column; gap: var(--sp-md);
+    }
+    .hero-card {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-xl); padding: var(--sp-lg);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s; cursor: pointer;
+    }
+    .hero-card:hover { transform: translateX(6px); background: rgba(255,255,255,0.12); }
+    .hero-card-head { display: flex; align-items: center; gap: var(--sp-md); margin-bottom: var(--sp-sm); }
+    .hero-card-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; background: rgba(137,245,231,0.15); }
+    .hero-card-icon .material-symbols-outlined { font-size: 22px; color: var(--clr-tertiary-fixed); }
+    .hero-card-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: white; }
+    .hero-card-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-full); }
+
+    /* ── Features Section ── */
+    .features { padding: var(--sp-3xl) var(--sp-lg); background: var(--clr-background); }
+    .features-inner { max-width: 1280px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; color: var(--clr-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--sp-sm); }
+    .section-title { font-family: 'Hanken Grotesk', sans-serif; font-size: clamp(26px,3vw,36px); font-weight: 700; color: var(--clr-primary); margin-bottom: var(--sp-md); line-height: 1.2; }
+    .section-desc { font-size: 16px; color: var(--clr-secondary); max-width: 560px; line-height: 1.65; margin-bottom: var(--sp-2xl); }
+
+    .feature-card {
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl); padding: var(--sp-xl);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast);
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }
+    .feature-icon {
+      width: 56px; height: 56px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--sp-md);
+    }
+    .feature-icon .material-symbols-outlined { font-size: 28px; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .feature-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--clr-primary); margin-bottom: var(--sp-xs); }
+    .feature-desc { font-size: 14px; color: var(--clr-secondary); line-height: 1.6; }
+
+    /* ── Procedimientos highlight ── */
+    .procedures-section { padding: var(--sp-3xl) var(--sp-lg); background: var(--clr-surface-container-low); }
+    .procedures-inner { max-width: 1280px; margin: 0 auto; }
+
+    .proc-highlight-card {
+      background: var(--clr-surface-container-lowest);
+      border: 1px solid var(--clr-outline-variant);
+      border-left: 4px solid var(--clr-primary);
+      border-radius: var(--radius-xl); padding: var(--sp-lg);
+      display: flex; align-items: center; gap: var(--sp-lg);
+      cursor: pointer;
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+    }
+    .proc-highlight-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .proc-highlight-icon { width: 52px; height: 52px; background: var(--clr-primary-fixed); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .proc-highlight-icon .material-symbols-outlined { font-size: 26px; color: var(--clr-primary); font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-tertiary-container) 100%);
+      padding: var(--sp-3xl) var(--sp-lg); text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 60%, rgba(137,245,231,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- PUBLIC TOPBAR -->
+<div id="topbar-mount"></div>
+
+<!-- ── HERO ─────────────────────────────────── -->
+<section class="home-hero" aria-labelledby="hero-heading">
+  <div class="hero-orb" style="top:-100px;right:-100px;width:400px;height:400px;background:rgba(137,245,231,0.05);animation-delay:0s"></div>
+  <div class="hero-orb" style="bottom:-80px;left:-80px;width:300px;height:300px;background:rgba(255,255,255,0.04);animation-delay:3s"></div>
+
+  <div class="hero-inner">
+    <div class="hero-split">
+      <div class="animate-slide-up">
+        <div class="hero-eyebrow">
+          <span class="material-symbols-outlined" style="font-size:12px">verified</span>
+          Portal Oficial UNSAAC 2024
+        </div>
+        <h1 class="hero-title" id="hero-heading">
+          Gestiona tus trámites<br />
+          <span class="accent">sin filas,</span> sin papel
+        </h1>
+        <p class="hero-desc">
+          Accede al catálogo completo de procedimientos universitarios, inicia solicitudes,
+          sube documentos y rastrea el estado de tus expedientes en tiempo real.
+        </p>
+        <div class="hero-ctas">
+          <button class="hero-cta-primary" onclick="navigate('catalogo')" aria-label="Ver catálogo de trámites">
+            <span class="material-symbols-outlined">menu_book</span>
+            Explorar Catálogo
+          </button>
+          <button class="hero-cta-secondary" onclick="navigate('login')" aria-label="Iniciar sesión">
+            <span class="material-symbols-outlined">login</span>
+            Ingresar al Portal
+          </button>
+        </div>
+        <div class="hero-stats" aria-label="Estadísticas del portal">
+          <div class="hero-stat-item">
+            <div class="num">103+</div>
+            <div class="lbl">Procedimientos</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="num">15K+</div>
+            <div class="lbl">Usuarios activos</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="num">24/7</div>
+            <div class="lbl">Disponibilidad</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual animate-fade-in stagger-2" aria-hidden="true">
+        <div class="hero-card" onclick="navigate('seguimiento.detalle')">
+          <div class="hero-card-head">
+            <div class="hero-card-icon"><span class="material-symbols-outlined">timeline</span></div>
+            <div class="hero-card-title">EXP-2024-8902 · Diploma de Bachiller</div>
+            <span class="hero-card-badge badge-in-review badge">En Revisión</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="height:4px;background:rgba(255,255,255,0.15);border-radius:4px;overflow:hidden">
+              <div style="height:100%;width:62%;background:var(--clr-tertiary-fixed);border-radius:4px"></div>
+            </div>
+            <div style="font-size:12px;opacity:0.6">Paso 4/6 — Revisión administrativa</div>
+          </div>
+        </div>
+        <div class="hero-card" onclick="navigate('tramite.paso1')">
+          <div class="hero-card-head">
+            <div class="hero-card-icon"><span class="material-symbols-outlined">rocket_launch</span></div>
+            <div class="hero-card-title">Iniciar nuevo trámite</div>
+          </div>
+          <div style="font-size:13px;opacity:0.65">Certif. de Matrícula · Constancia de Egresado · Diploma · y 100+ más</div>
+        </div>
+        <div class="hero-card" onclick="navigate('catalogo')">
+          <div class="hero-card-head">
+            <div class="hero-card-icon"><span class="material-symbols-outlined">notifications</span></div>
+            <div class="hero-card-title">Observación resuelta</div>
+            <span class="hero-card-badge badge-success badge">✓</span>
+          </div>
+          <div style="font-size:12px;opacity:0.6">Ayer, 15:32 · Trámite de Grado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ───────────────────────────── -->
+<section class="features" aria-labelledby="features-heading">
+  <div class="features-inner">
+    <div class="section-label">¿Por qué TUPA Digital?</div>
+    <h2 class="section-title" id="features-heading">Todo en un solo portal</h2>
+    <p class="section-desc">Eliminamos las barreras burocráticas. Realiza tus trámites universitarios desde cualquier dispositivo, en cualquier momento.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--sp-lg)">
+      <div class="feature-card animate-on-load">
+        <div class="feature-icon" style="background:var(--clr-primary-fixed)">
+          <span class="material-symbols-outlined" style="color:var(--clr-primary)">bolt</span>
+        </div>
+        <div class="feature-title">100% Digital</div>
+        <p class="feature-desc">Sin desplazamientos ni filas. Completa todos tus trámites desde tu computadora o teléfono en minutos.</p>
+      </div>
+      <div class="feature-card animate-on-load stagger-1">
+        <div class="feature-icon" style="background:rgba(137,245,231,0.2)">
+          <span class="material-symbols-outlined" style="color:var(--clr-tertiary-container)">location_searching</span>
+        </div>
+        <div class="feature-title">Seguimiento en Tiempo Real</div>
+        <p class="feature-desc">Conoce el estado exacto de cada expediente en cada etapa del proceso administrativo.</p>
+      </div>
+      <div class="feature-card animate-on-load stagger-2">
+        <div class="feature-icon" style="background:#d1fae5">
+          <span class="material-symbols-outlined" style="color:#065f46">verified_user</span>
+        </div>
+        <div class="feature-title">Seguro e Institucional</div>
+        <p class="feature-desc">Autenticación UNSAAC con cifrado SSL. Tus documentos y datos personales siempre protegidos.</p>
+      </div>
+      <div class="feature-card animate-on-load stagger-3">
+        <div class="feature-icon" style="background:#fef3c7">
+          <span class="material-symbols-outlined" style="color:#92400e">notifications_active</span>
+        </div>
+        <div class="feature-title">Notificaciones Instantáneas</div>
+        <p class="feature-desc">Recibe alertas cuando tu trámite avanza, cuando se requiere documentación adicional o cuando sea aprobado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCEDIMIENTOS DESTACADOS ─────────── -->
+<section class="procedures-section" aria-labelledby="procs-heading">
+  <div class="procedures-inner">
+    <div class="section-label">Procedimientos más solicitados</div>
+    <h2 class="section-title" id="procs-heading">Lo que más buscan los estudiantes</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div class="proc-highlight-card animate-on-load" onclick="navigate('catalogo.detalle')">
+        <div class="proc-highlight-icon"><span class="material-symbols-outlined">workspace_premium</span></div>
+        <div style="flex:1">
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-primary)">Diploma de Bachiller</div>
+          <div style="font-size:13px;color:var(--clr-secondary);margin-top:2px">Acad. · S/. 120 · 15 días hábiles</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline)">chevron_right</span>
+      </div>
+      <div class="proc-highlight-card animate-on-load stagger-1" onclick="navigate('catalogo.detalle')">
+        <div class="proc-highlight-icon"><span class="material-symbols-outlined">school</span></div>
+        <div style="flex:1">
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-primary)">Certificado de Matrícula</div>
+          <div style="font-size:13px;color:var(--clr-secondary);margin-top:2px">Acad. · Gratuito · 2 días hábiles</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline)">chevron_right</span>
+      </div>
+      <div class="proc-highlight-card animate-on-load stagger-2" onclick="navigate('catalogo.detalle')">
+        <div class="proc-highlight-icon"><span class="material-symbols-outlined">description</span></div>
+        <div style="flex:1">
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-primary)">Constancia de Egresado</div>
+          <div style="font-size:13px;color:var(--clr-secondary);margin-top:2px">Acad. · S/. 30 · 3 días hábiles</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline)">chevron_right</span>
+      </div>
+      <div class="proc-highlight-card animate-on-load stagger-3" onclick="navigate('catalogo.detalle')">
+        <div class="proc-highlight-icon"><span class="material-symbols-outlined">receipt_long</span></div>
+        <div style="flex:1">
+          <div style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--clr-primary)">Récord Académico</div>
+          <div style="font-size:13px;color:var(--clr-secondary);margin-top:2px">Acad. · S/. 15 · 1 día hábil</div>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--clr-outline)">chevron_right</span>
+      </div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="btn btn-primary btn-lg" onclick="navigate('catalogo')">
+        <span class="material-symbols-outlined">menu_book</span>
+        Ver catálogo completo (103 procedimientos)
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ─────────────────────────── -->
+<section class="cta-banner" aria-labelledby="cta-heading">
+  <div style="position:relative;z-index:1;max-width:680px;margin:0 auto">
+    <h2 class="text-headline-lg" style="color:white;margin-bottom:var(--sp-md)" id="cta-heading">
+      ¿Listo para gestionar tus trámites digitalmente?
+    </h2>
+    <p style="font-size:16px;color:rgba(255,255,255,0.75);margin-bottom:var(--sp-xl);line-height:1.6">
+      Crea tu cuenta institucional y accede al portal en menos de 2 minutos.
+    </p>
+    <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-teal btn-lg" onclick="navigate('registro')">
+        <span class="material-symbols-outlined">person_add</span>
+        Crear cuenta
+      </button>
+      <button class="btn btn-outline btn-lg" onclick="navigate('seguimiento')"
+              style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)">
+        <span class="material-symbols-outlined">location_searching</span>
+        Rastrear expediente
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div id="footer-mount"></div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('topbar-mount').outerHTML = PublicTopbar({ activeNav: 'home' });
+  document.getElementById('footer-mount').outerHTML = SharedFooter();
+  initPage({ route: 'home', pageTitle: 'Inicio' });
+</script>
+</body>
+</html>

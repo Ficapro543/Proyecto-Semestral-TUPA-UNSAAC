@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Usuarios | TUPA UNSAAC Admin</title>
+  <meta name="description" content="Administración de usuarios del Portal TUPA UNSAAC. Gestión de cuentas estudiantiles y administrativas." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .user-row {
+      display: grid; grid-template-columns: 40px 1fr 120px 120px 100px 80px;
+      gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+      border-bottom: 1px solid var(--clr-outline-variant); align-items: center;
+      transition: background var(--transition-fast);
+    }
+    .user-row:hover { background: var(--clr-surface-container-low); }
+    .user-avatar-sm { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Gestión de Usuarios</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">2,341 usuarios registrados en el sistema</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" onclick="showToast({message:'Exportando usuarios...',type:'info'})">
+          <span class="material-symbols-outlined">download</span> Exportar
+        </button>
+        <button class="btn btn-primary" onclick="showModal('modal-new-user')">
+          <span class="material-symbols-outlined">person_add</span>
+          Nuevo usuario
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div class="card" style="text-align:center;padding:var(--sp-lg)">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:36px;font-weight:800;color:var(--clr-primary)">2,341</div>
+        <div style="font-size:13px;color:var(--clr-secondary)">Usuarios totales</div>
+      </div>
+      <div class="card" style="text-align:center;padding:var(--sp-lg)">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:36px;font-weight:800;color:#065f46">2,298</div>
+        <div style="font-size:13px;color:var(--clr-secondary)">Estudiantes</div>
+      </div>
+      <div class="card" style="text-align:center;padding:var(--sp-lg)">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:36px;font-weight:800;color:#92400e">43</div>
+        <div style="font-size:13px;color:var(--clr-secondary)">Administrativos</div>
+      </div>
+      <div class="card" style="text-align:center;padding:var(--sp-lg)">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:36px;font-weight:800;color:var(--clr-error)">12</div>
+        <div style="font-size:13px;color:var(--clr-secondary)">Cuentas suspendidas</div>
+      </div>
+    </div>
+
+    <!-- Filter tabs + table -->
+    <div class="card animate-on-load">
+      <div class="card-header" style="flex-wrap:wrap;gap:var(--sp-md)">
+        <div style="display:flex;gap:var(--sp-sm)">
+          <button class="filter-chip active" onclick="filterUsers('todos',this)">Todos</button>
+          <button class="filter-chip" onclick="filterUsers('estudiante',this)">Estudiantes</button>
+          <button class="filter-chip" onclick="filterUsers('admin',this)">Administrativos</button>
+          <button class="filter-chip" onclick="filterUsers('suspendido',this)">Suspendidos</button>
+        </div>
+        <div style="margin-left:auto;position:relative">
+          <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--clr-outline)">search</span>
+          <input id="user-search" type="text" placeholder="Buscar usuario..."
+                 style="height:36px;padding:0 var(--sp-md) 0 34px;border:1px solid var(--clr-outline-variant);border-radius:var(--radius-lg);font-size:13px;outline:none" />
+        </div>
+      </div>
+      <!-- Table header -->
+      <div class="user-row" style="background:var(--clr-surface-container-low);cursor:default;font-size:11px;font-weight:700;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em">
+        <div></div>
+        <div>Usuario</div>
+        <div>Rol</div>
+        <div>Último acceso</div>
+        <div>Estado</div>
+        <div></div>
+      </div>
+      <div id="user-list"></div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<div class="modal-overlay" id="modal-new-user" onclick="if(event.target===this)closeModal('modal-new-user')">
+  <div class="modal" role="dialog">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Usuario</div>
+      <button class="modal-close" onclick="closeModal('modal-new-user')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md);margin-bottom:var(--sp-md)">
+        <div class="form-group"><label class="form-label required" for="nu-nombres">Nombres</label><input class="form-input" id="nu-nombres" /></div>
+        <div class="form-group"><label class="form-label required" for="nu-apellidos">Apellidos</label><input class="form-input" id="nu-apellidos" /></div>
+      </div>
+      <div class="form-group" style="margin-bottom:var(--sp-md)">
+        <label class="form-label required" for="nu-email">Correo institucional</label>
+        <input class="form-input" id="nu-email" type="email" placeholder="@unsaac.edu.pe" />
+      </div>
+      <div class="form-group" style="margin-bottom:var(--sp-md)">
+        <label class="form-label required" for="nu-rol">Rol</label>
+        <select class="form-select w-full" id="nu-rol">
+          <option>Estudiante</option>
+          <option>Administrativo</option>
+          <option>Super Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="showToast({message:'Usuario creado. Se envió correo de bienvenida.',type:'success'});closeModal('modal-new-user')">
+        <span class="material-symbols-outlined">save</span> Crear usuario
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = AdminSidebar({ activeRoute: 'admin.usuarios' });
+  document.getElementById('topbar-mount').outerHTML  = AdminTopbar({ title: 'Gestión de Usuarios' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  const colors = ['#002045','#065f46','#92400e','#003d37','#1a365d'];
+  const users = [
+    { initials:'ER', color:colors[0], name:'Elena Rodríguez Quispe', email:'e.rodriguez@unsaac.edu.pe', code:'201900456', role:'estudiante', lastAccess:'Hace 2 horas', status:'activo' },
+    { initials:'JM', color:colors[1], name:'Juan Carlos Mamani', email:'j.mamani@unsaac.edu.pe', code:'201800321', role:'estudiante', lastAccess:'Ayer', status:'activo' },
+    { initials:'MC', color:colors[2], name:'María Lucía Ccoa', email:'m.ccoa@unsaac.edu.pe', code:'202000789', role:'estudiante', lastAccess:'Hace 3 días', status:'activo' },
+    { initials:'CQ', color:colors[3], name:'Dr. Carlos Quispe M.', email:'c.quispe@unsaac.edu.pe', code:'ADM-012', role:'admin', lastAccess:'Hoy', status:'activo' },
+    { initials:'RT', color:colors[4], name:'Rosa Ttito', email:'r.ttito@unsaac.edu.pe', code:'202100101', role:'estudiante', lastAccess:'Hace 1 semana', status:'suspendido' },
+    { initials:'LA', color:colors[0], name:'Luis Apaza', email:'l.apaza@unsaac.edu.pe', code:'201700634', role:'estudiante', lastAccess:'Hace 2 semanas', status:'activo' },
+  ];
+
+  function renderUsers(filter) {
+    const filtered = filter === 'todos' ? users : users.filter(u => u.role === filter || u.status === filter);
+    document.getElementById('user-list').innerHTML = filtered.map(u => `
+      <div class="user-row">
+        <div class="user-avatar-sm" style="background:${u.color}">${u.initials}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600">${u.name}</div>
+          <div style="font-size:12px;color:var(--clr-secondary)">${u.email} · ${u.code}</div>
+        </div>
+        <div><span class="badge ${u.role === 'admin' ? 'badge-blue' : 'badge-primary'}" style="font-size:11px">${u.role === 'admin' ? 'Administrativo' : 'Estudiante'}</span></div>
+        <div style="font-size:13px;color:var(--clr-secondary)">${u.lastAccess}</div>
+        <div><span class="badge ${u.status === 'activo' ? 'badge-success' : 'badge-error'}">${u.status === 'activo' ? 'Activo' : 'Suspendido'}</span></div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-sm" onclick="showToast({message:'Editando a ${u.name}',type:'info'})">
+            <span class="material-symbols-outlined icon-sm">edit</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="showToast({message:'${u.status === 'activo' ? 'Cuenta suspendida' : 'Cuenta reactivada'}',type:'warning'})">
+            <span class="material-symbols-outlined icon-sm">${u.status === 'activo' ? 'block' : 'check_circle'}</span>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterUsers(f, el) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderUsers(f);
+  }
+
+  renderUsers('todos');
+  initPage({ route: 'admin.usuarios', pageTitle: 'Gestión de Usuarios' });
+  initSearch('#user-search', '.user-row');
+</script>
+</body>
+</html>

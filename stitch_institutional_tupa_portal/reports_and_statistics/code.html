@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportes y Estadísticas | TUPA UNSAAC Admin</title>
+  <meta name="description" content="Reportes, estadísticas y análisis del portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .chart-bar { height: 180px; display: flex; align-items: flex-end; gap: 8px; padding: 0 var(--sp-sm); }
+    .bar { flex: 1; border-radius: 6px 6px 0 0; background: var(--clr-primary); position: relative; cursor: pointer; transition: opacity 0.2s; min-width: 20px; }
+    .bar:hover { opacity: 0.8; }
+    .bar-label { font-size: 10px; color: var(--clr-secondary); text-align: center; margin-top: 4px; }
+    .donut-ring { width: 160px; height: 160px; position: relative; margin: 0 auto; }
+    .donut-ring svg { transform: rotate(-90deg); }
+    .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Reportes y Estadísticas</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">Análisis de rendimiento del portal — Octubre 2024</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <select class="form-select" style="height:40px;font-size:13px">
+          <option>Octubre 2024</option>
+          <option>Septiembre 2024</option>
+          <option>Agosto 2024</option>
+          <option>2024 Completo</option>
+        </select>
+        <button class="btn btn-primary" onclick="showToast({message:'Generando PDF...',type:'info'})">
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)" id="report-kpis"></div>
+
+    <!-- Charts grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-xl);margin-bottom:var(--sp-xl)">
+
+      <!-- Monthly bar chart -->
+      <div class="card animate-on-load">
+        <div class="card-header"><span class="card-header-title">Trámites por mes (2024)</span></div>
+        <div class="card-body">
+          <div class="chart-bar" id="monthly-chart"></div>
+          <div style="display:flex;gap:8px;margin-top:4px" id="monthly-labels"></div>
+        </div>
+      </div>
+
+      <!-- Status donut -->
+      <div class="card animate-on-load stagger-1">
+        <div class="card-header"><span class="card-header-title">Distribución por estado</span></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:var(--sp-xl)">
+            <div class="donut-ring">
+              <svg viewBox="0 0 160 160" width="160" height="160">
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#e5e7eb" stroke-width="20"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#002045" stroke-width="20" stroke-dasharray="226 150" stroke-linecap="round"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#065f46" stroke-width="20" stroke-dasharray="75 301" stroke-dashoffset="-226" stroke-linecap="round"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#ba1a1a" stroke-width="20" stroke-dasharray="25 351" stroke-dashoffset="-301" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-center">
+                <div style="font-family:'Hanken Grotesk',sans-serif;font-size:28px;font-weight:800;color:var(--clr-primary)">128</div>
+                <div style="font-size:11px;color:var(--clr-secondary)">Total oct.</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:12px;height:12px;border-radius:3px;background:var(--clr-primary)"></div>
+                <span style="font-size:13px">En proceso <strong>60%</strong></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:12px;height:12px;border-radius:3px;background:#065f46"></div>
+                <span style="font-size:13px">Aprobados <strong>20%</strong></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:12px;height:12px;border-radius:3px;background:#ba1a1a"></div>
+                <span style="font-size:13px">Observados <strong>7%</strong></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--sp-sm)">
+                <div style="width:12px;height:12px;border-radius:3px;background:#e5e7eb"></div>
+                <span style="font-size:13px">Pendientes <strong>13%</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top procedures table -->
+    <div class="card animate-on-load stagger-2" style="margin-bottom:var(--sp-xl)">
+      <div class="card-header"><span class="card-header-title">Procedimientos más solicitados (octubre 2024)</span></div>
+      <div id="top-procs-table"></div>
+    </div>
+
+    <!-- Download section -->
+    <div class="card animate-on-load stagger-3">
+      <div class="card-header"><span class="card-header-title">Descargar reportes</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--sp-md)">
+          <div class="card" style="cursor:pointer" onclick="showToast({message:'Descargando reporte mensual...',type:'info'})">
+            <div class="card-body" style="display:flex;align-items:center;gap:var(--sp-md)">
+              <span class="material-symbols-outlined icon-filled" style="font-size:32px;color:var(--clr-error)">picture_as_pdf</span>
+              <div>
+                <div style="font-weight:700">Reporte mensual PDF</div>
+                <div style="font-size:12px;color:var(--clr-secondary)">Octubre 2024 · 2.4 MB</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="cursor:pointer" onclick="showToast({message:'Descargando datos Excel...',type:'info'})">
+            <div class="card-body" style="display:flex;align-items:center;gap:var(--sp-md)">
+              <span class="material-symbols-outlined icon-filled" style="font-size:32px;color:#065f46">table_chart</span>
+              <div>
+                <div style="font-weight:700">Datos Excel</div>
+                <div style="font-size:12px;color:var(--clr-secondary)">Todos los trámites · CSV</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="cursor:pointer" onclick="showToast({message:'Generando reporte anual...',type:'info'})">
+            <div class="card-body" style="display:flex;align-items:center;gap:var(--sp-md)">
+              <span class="material-symbols-outlined icon-filled" style="font-size:32px;color:#92400e">bar_chart</span>
+              <div>
+                <div style="font-weight:700">Reporte anual 2024</div>
+                <div style="font-size:12px;color:var(--clr-secondary)">Consolidado anual · PDF</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = AdminSidebar({ activeRoute: 'admin.reportes' });
+  document.getElementById('topbar-mount').outerHTML  = AdminTopbar({ title: 'Reportes y Estadísticas' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  // KPIs
+  const kpis = [
+    { icon:'assignment_turned_in', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)', value:'128', label:'Trámites resueltos', badge:'Oct 2024' },
+    { icon:'hourglass_empty', iconBg:'#fef3c7', iconColor:'#92400e', value:'4.2', label:'Días promedio resolución', badge:'Objetivo: 5' },
+    { icon:'star', iconBg:'#d1fae5', iconColor:'#065f46', value:'94%', label:'Tasa de aprobación', badge:'+3% vs sept.' },
+    { icon:'payments', iconBg:'rgba(137,245,231,0.2)', iconColor:'var(--clr-tertiary-container)', value:'S/. 12,480', label:'Ingresos por tasas', badge:'Mes actual' },
+  ];
+  document.getElementById('report-kpis').innerHTML = kpis.map(k => StatCard(k)).join('');
+
+  // Bar chart
+  const months = [
+    { label:'Ene', val:78 }, { label:'Feb', val:92 }, { label:'Mar', val:85 },
+    { label:'Abr', val:110 }, { label:'May', val:95 }, { label:'Jun', val:103 },
+    { label:'Jul', val:88 }, { label:'Ago', val:115 }, { label:'Sep', val:122 },
+    { label:'Oct', val:128 }, { label:'Nov', val:0 }, { label:'Dic', val:0 },
+  ];
+  const maxVal = Math.max(...months.map(m => m.val));
+  document.getElementById('monthly-chart').innerHTML = months.map(m => `
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+      <div class="bar" style="height:${m.val ? (m.val / maxVal) * 100 : 2}%;background:${m.label === 'Oct' ? 'var(--clr-tertiary-fixed)' : m.val > 0 ? 'var(--clr-primary)' : 'var(--clr-outline-variant)'};${m.val ? '' : 'opacity:0.3'}"
+           title="${m.label}: ${m.val} trámites"></div>
+      <div class="bar-label">${m.label}</div>
+    </div>
+  `).join('');
+
+  // Top procedures table
+  const topProcs = [
+    { rank:1, name:'Diploma de Bachiller', cat:'Académico', count:34, pct:27, change:'+12%', up:true },
+    { rank:2, name:'Certificado de Matrícula', cat:'Académico', count:28, pct:22, change:'+5%', up:true },
+    { rank:3, name:'Récord Académico', cat:'Académico', count:18, pct:14, change:'-3%', up:false },
+    { rank:4, name:'Constancia de Egresado', cat:'Académico', count:15, pct:12, change:'+8%', up:true },
+    { rank:5, name:'Traslado Externo', cat:'Administrativo', count:10, pct:8, change:'=', up:null },
+  ];
+
+  document.getElementById('top-procs-table').innerHTML = `
+    <div style="display:grid;grid-template-columns:40px 1fr 100px 80px 100px 100px;gap:var(--sp-md);padding:var(--sp-md) var(--sp-lg);background:var(--clr-surface-container-low);font-size:11px;font-weight:700;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em">
+      <div>#</div><div>Procedimiento</div><div>Categoría</div><div>Total</div><div>% del mes</div><div>Variación</div>
+    </div>
+    ${topProcs.map(p => `
+      <div style="display:grid;grid-template-columns:40px 1fr 100px 80px 100px 100px;gap:var(--sp-md);padding:var(--sp-md) var(--sp-lg);border-bottom:1px solid var(--clr-outline-variant);align-items:center">
+        <div style="font-family:'Hanken Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--clr-primary)">${p.rank}</div>
+        <div style="font-size:14px;font-weight:600">${p.name}</div>
+        <div><span class="badge badge-primary" style="font-size:11px">${p.cat}</span></div>
+        <div style="font-weight:700;color:var(--clr-primary)">${p.count}</div>
+        <div>
+          <div class="progress" style="height:6px;margin-bottom:4px"><div class="progress-bar" style="width:${p.pct}%"></div></div>
+          <span style="font-size:12px;color:var(--clr-secondary)">${p.pct}%</span>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:${p.up === true ? '#065f46' : p.up === false ? 'var(--clr-error)' : 'var(--clr-secondary)'}">
+          ${p.up === true ? '↑' : p.up === false ? '↓' : ''} ${p.change}
+        </div>
+      </div>
+    `).join('')}
+  `;
+
+  initPage({ route: 'admin.reportes', pageTitle: 'Reportes y Estadísticas' });
+</script>
+</body>
+</html>

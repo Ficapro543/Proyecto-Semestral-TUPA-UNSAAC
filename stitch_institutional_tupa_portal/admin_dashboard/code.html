@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Administrador | TUPA UNSAAC</title>
+  <meta name="description" content="Panel de administración del Portal TUPA UNSAAC. Gestiona trámites, usuarios y reportes." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .admin-metric {
+      background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant);
+      border-radius: var(--radius-xl); padding: var(--sp-lg);
+      display: flex; flex-direction: column; gap: var(--sp-sm);
+      transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+      cursor: pointer;
+    }
+    .admin-metric:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .admin-metric-value { font-family: 'Hanken Grotesk', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; }
+    .admin-metric-label { font-size: 14px; color: var(--clr-secondary); }
+    .admin-metric-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+
+    .queue-row {
+      display: grid; grid-template-columns: 1fr 140px 120px 100px 100px;
+      gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+      border-bottom: 1px solid var(--clr-outline-variant); align-items: center;
+      cursor: pointer; transition: background var(--transition-fast);
+    }
+    .queue-row:hover { background: var(--clr-surface-container-low); }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Dashboard Administrativo</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">
+          Panel de control · UNSAAC · <span id="admin-date"></span>
+        </p>
+      </div>
+      <div style="display:flex;gap:var(--sp-sm)">
+        <button class="btn btn-outline" onclick="navigate('admin.reportes')">
+          <span class="material-symbols-outlined">bar_chart</span>
+          Generar reporte
+        </button>
+        <button class="btn btn-primary" onclick="navigate('admin.cola')">
+          <span class="material-symbols-outlined">inbox</span>
+          Cola de pendientes
+        </button>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div class="admin-metric animate-on-load" onclick="navigate('admin.cola')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="admin-metric-value" style="color:var(--clr-primary)">47</div>
+            <div class="admin-metric-label">Trámites Pendientes</div>
+          </div>
+          <div style="width:44px;height:44px;background:var(--clr-primary-fixed);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:22px;color:var(--clr-primary)">pending_actions</span>
+          </div>
+        </div>
+        <div class="admin-metric-change" style="color:var(--clr-error)">
+          <span class="material-symbols-outlined" style="font-size:14px">arrow_upward</span>
+          +12% esta semana
+        </div>
+      </div>
+      <div class="admin-metric animate-on-load stagger-1" onclick="navigate('admin.validacion')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="admin-metric-value" style="color:#92400e">13</div>
+            <div class="admin-metric-label">Requieren Validación</div>
+          </div>
+          <div style="width:44px;height:44px;background:#fef3c7;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:22px;color:#92400e">fact_check</span>
+          </div>
+        </div>
+        <div class="admin-metric-change" style="color:#92400e">
+          <span class="material-symbols-outlined" style="font-size:14px">schedule</span>
+          5 con plazo hoy
+        </div>
+      </div>
+      <div class="admin-metric animate-on-load stagger-2" onclick="navigate('admin.cola')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="admin-metric-value" style="color:#065f46">128</div>
+            <div class="admin-metric-label">Aprobados este mes</div>
+          </div>
+          <div style="width:44px;height:44px;background:#d1fae5;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:22px;color:#065f46">check_circle</span>
+          </div>
+        </div>
+        <div class="admin-metric-change" style="color:#065f46">
+          <span class="material-symbols-outlined" style="font-size:14px">arrow_upward</span>
+          +8% vs mes anterior
+        </div>
+      </div>
+      <div class="admin-metric animate-on-load stagger-3" onclick="navigate('admin.usuarios')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="admin-metric-value" style="color:var(--clr-tertiary-container)">2,341</div>
+            <div class="admin-metric-label">Usuarios activos</div>
+          </div>
+          <div style="width:44px;height:44px;background:rgba(137,245,231,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:22px;color:var(--clr-tertiary-container)">group</span>
+          </div>
+        </div>
+        <div class="admin-metric-change" style="color:var(--clr-secondary)">
+          <span class="material-symbols-outlined" style="font-size:14px">person_add</span>
+          +34 nuevos hoy
+        </div>
+      </div>
+      <div class="admin-metric animate-on-load stagger-4">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="admin-metric-value" style="color:var(--clr-error)">8</div>
+            <div class="admin-metric-label">Observaciones activas</div>
+          </div>
+          <div style="width:44px;height:44px;background:var(--clr-error-container);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-filled" style="font-size:22px;color:var(--clr-error)">warning</span>
+          </div>
+        </div>
+        <div class="admin-metric-change" style="color:var(--clr-error)">
+          <span class="material-symbols-outlined" style="font-size:14px">priority_high</span>
+          3 con plazo venciendo
+        </div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--sp-xl)">
+      <!-- Queue preview -->
+      <div>
+        <div class="card animate-on-load">
+          <div class="card-header">
+            <span class="card-header-title">Trámites Pendientes — Urgentes</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('admin.cola')">Ver todos</button>
+          </div>
+          <div class="queue-row" style="background:var(--clr-surface-container-low);font-size:11px;font-weight:700;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em;cursor:default">
+            <div>Solicitante / Expediente</div>
+            <div>Trámite</div>
+            <div>Fecha</div>
+            <div>Estado</div>
+            <div></div>
+          </div>
+          <div id="urgent-queue"></div>
+          <div style="padding:var(--sp-md);text-align:center">
+            <button class="btn btn-outline btn-sm" onclick="navigate('admin.cola')">Ver toda la cola de pendientes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+        <!-- Quick actions -->
+        <div class="card animate-on-load stagger-1">
+          <div class="card-header"><span class="card-header-title">Acciones rápidas</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+            <button class="btn btn-primary w-full" onclick="navigate('admin.cola')">
+              <span class="material-symbols-outlined">inbox</span> Cola de pendientes (47)
+            </button>
+            <button class="btn btn-outline w-full" onclick="navigate('admin.validacion')">
+              <span class="material-symbols-outlined">fact_check</span> Validar documentos (13)
+            </button>
+            <button class="btn btn-ghost w-full" style="justify-content:flex-start" onclick="navigate('admin.usuarios')">
+              <span class="material-symbols-outlined">group</span> Gestión de usuarios
+            </button>
+            <button class="btn btn-ghost w-full" style="justify-content:flex-start" onclick="navigate('admin.reportes')">
+              <span class="material-symbols-outlined">bar_chart</span> Reportes y estadísticas
+            </button>
+            <button class="btn btn-ghost w-full" style="justify-content:flex-start" onclick="navigate('admin.procedimientos')">
+              <span class="material-symbols-outlined">list_alt</span> Gestión de trámites
+            </button>
+          </div>
+        </div>
+
+        <!-- System status -->
+        <div class="card animate-on-load stagger-2">
+          <div class="card-header"><span class="card-header-title">Estado del sistema</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Portal estudiantil</span>
+              <span class="badge badge-success">Operativo</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Verificación de pagos</span>
+              <span class="badge badge-success">Operativo</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Envío de notificaciones</span>
+              <span class="badge badge-warning">Lento</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">Carga de documentos</span>
+              <span class="badge badge-success">Operativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = AdminSidebar({ activeRoute: 'admin.dashboard' });
+  document.getElementById('topbar-mount').outerHTML  = AdminTopbar({ title: 'Dashboard' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+  document.getElementById('admin-date').textContent = new Date().toLocaleDateString('es-PE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  const urgentItems = [
+    { name:'Elena Rodríguez', exp:'EXP-2024-8902', tramite:'Diploma de Bachiller', date:'12 Oct', status:'En Revisión', sc:'badge-in-review' },
+    { name:'Juan Mamani', exp:'EXP-2024-8891', tramite:'Título Profesional', date:'10 Oct', status:'Obs. Pendiente', sc:'badge-error' },
+    { name:'María Ccoa', exp:'EXP-2024-8870', tramite:'Certif. de Matrícula', date:'08 Oct', status:'Verificando pago', sc:'badge-warning' },
+    { name:'Carlos Ttito', exp:'EXP-2024-8844', tramite:'Constancia de Egresado', date:'06 Oct', status:'En Revisión', sc:'badge-in-review' },
+    { name:'Rosa Quispe', exp:'EXP-2024-8801', tramite:'Récord Académico', date:'01 Oct', status:'Pendiente', sc:'badge-neutral' },
+  ];
+
+  document.getElementById('urgent-queue').innerHTML = urgentItems.map(item => `
+    <div class="queue-row" onclick="navigate('admin.detalle')" role="row">
+      <div>
+        <div style="font-size:14px;font-weight:600">${item.name}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--clr-secondary)">${item.exp}</div>
+      </div>
+      <div style="font-size:13px;color:var(--clr-secondary)">${item.tramite}</div>
+      <div style="font-size:13px;color:var(--clr-secondary)">${item.date}</div>
+      <div><span class="badge ${item.sc}">${item.status}</span></div>
+      <div><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();navigate('admin.detalle')">
+        <span class="material-symbols-outlined icon-sm">open_in_new</span>
+      </button></div>
+    </div>
+  `).join('');
+
+  initPage({ route: 'admin.dashboard', pageTitle: 'Dashboard Administrativo' });
+</script>
+</body>
+</html>

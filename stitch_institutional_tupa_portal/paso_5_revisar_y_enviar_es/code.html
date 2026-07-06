@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso 5 — Revisar y Enviar | TUPA UNSAAC</title>
+  <meta name="description" content="Asistente de trámites TUPA — Paso 5: Revisa tu solicitud antes de enviar definitivamente." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--clr-background); }
+    .review-section { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--sp-lg); }
+    .review-section-header { padding: var(--sp-md) var(--sp-lg); background: var(--clr-surface-container-low); border-bottom: 1px solid var(--clr-outline-variant); display: flex; align-items: center; justify-content: space-between; }
+    .review-section-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--clr-primary); }
+    .review-field { display: flex; padding: var(--sp-md) var(--sp-lg); border-bottom: 1px solid var(--clr-outline-variant); }
+    .review-field:last-child { border-bottom: none; }
+    .review-label { font-size: 13px; color: var(--clr-secondary); width: 200px; flex-shrink: 0; }
+    .review-value { font-size: 14px; font-weight: 500; color: var(--clr-on-surface); flex: 1; }
+  </style>
+</head>
+<body>
+
+<div style="background:var(--clr-primary);padding:var(--sp-md) var(--sp-lg)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:var(--sp-md)">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined icon-filled" style="font-size:20px;color:var(--clr-tertiary-fixed)">account_balance</span>
+      </div>
+      <span style="font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;color:white">TUPA UNSAAC — Asistente de Trámites</span>
+    </div>
+    <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7)" onclick="navigate('estudiante.dashboard')">
+      <span class="material-symbols-outlined">close</span> Cancelar
+    </button>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:var(--sp-lg);flex:1;width:100%;display:flex;flex-direction:column;gap:var(--sp-lg)">
+  <div id="wizard-stepper"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--sp-xl)">
+    <div>
+      <h1 class="text-headline-md" style="color:var(--clr-primary);margin-bottom:var(--sp-xs)">Revisar y Enviar</h1>
+      <p class="text-body-md" style="color:var(--clr-secondary);margin-bottom:var(--sp-xl)">Verifica que toda la información sea correcta antes de enviar tu solicitud. Una vez enviada, no podrás modificarla.</p>
+
+      <!-- Procedure info -->
+      <div class="review-section animate-on-load">
+        <div class="review-section-header">
+          <span class="review-section-title">Procedimiento seleccionado</span>
+          <button class="btn btn-ghost btn-sm" onclick="wizardBack(5)">
+            <span class="material-symbols-outlined">edit</span> Cambiar
+          </button>
+        </div>
+        <div class="review-field">
+          <div class="review-label">Nombre del trámite</div>
+          <div class="review-value" style="font-weight:700;color:var(--clr-primary)">Diploma de Bachiller</div>
+        </div>
+        <div class="review-field">
+          <div class="review-label">Código TUPA</div>
+          <div class="review-value"><span class="text-mono-sm" style="color:var(--clr-primary)">P001</span></div>
+        </div>
+        <div class="review-field">
+          <div class="review-label">Facultad</div>
+          <div class="review-value">Ing. Eléctrica, Electrónica, Informática y Mecánica</div>
+        </div>
+        <div class="review-field">
+          <div class="review-label">Modalidad</div>
+          <div class="review-value"><span class="badge badge-success">100% Digital</span></div>
+        </div>
+      </div>
+
+      <!-- Applicant info -->
+      <div class="review-section animate-on-load stagger-1">
+        <div class="review-section-header">
+          <span class="review-section-title">Datos del solicitante</span>
+        </div>
+        <div class="review-field"><div class="review-label">Nombre completo</div><div class="review-value">Elena María Rodríguez Quispe</div></div>
+        <div class="review-field"><div class="review-label">CUI / DNI</div><div class="review-value"><span class="text-mono-sm">73456891</span></div></div>
+        <div class="review-field"><div class="review-label">Código UNSAAC</div><div class="review-value"><span class="text-mono-sm">201900456</span></div></div>
+        <div class="review-field"><div class="review-label">Correo</div><div class="review-value">e.rodriguez@unsaac.edu.pe</div></div>
+      </div>
+
+      <!-- Payment info -->
+      <div class="review-section animate-on-load stagger-2">
+        <div class="review-section-header">
+          <span class="review-section-title">Información de pago</span>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('tramite.paso3')">
+            <span class="material-symbols-outlined">edit</span> Editar
+          </button>
+        </div>
+        <div class="review-field"><div class="review-label">Método de pago</div><div class="review-value">Banco de la Nación</div></div>
+        <div class="review-field"><div class="review-label">Referencia de pago</div><div class="review-value"><span class="text-mono-sm">TUPA-2024-P001-8902</span></div></div>
+        <div class="review-field"><div class="review-label">Monto pagado</div><div class="review-value"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--clr-primary)">S/. 120.00</span></div></div>
+        <div class="review-field"><div class="review-label">Estado del pago</div><div class="review-value"><span class="badge badge-success"><span class="material-symbols-outlined">check_circle</span>Verificado</span></div></div>
+      </div>
+
+      <!-- Documents -->
+      <div class="review-section animate-on-load stagger-3">
+        <div class="review-section-header">
+          <span class="review-section-title">Documentos adjuntados</span>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('tramite.paso4')">
+            <span class="material-symbols-outlined">edit</span> Editar
+          </button>
+        </div>
+        <div id="doc-review-list"></div>
+      </div>
+
+      <!-- Declaration -->
+      <div class="card animate-on-load stagger-4">
+        <div class="card-body">
+          <label class="form-check" style="align-items:flex-start;gap:var(--sp-md)">
+            <input type="checkbox" id="declaration" style="margin-top:3px" />
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--clr-on-surface);margin-bottom:4px">Declaración Jurada</div>
+              <p style="font-size:13px;color:var(--clr-secondary);line-height:1.6">
+                Declaro bajo juramento que toda la información y documentos adjuntados en esta solicitud son auténticos y verídicos. 
+                Soy consciente que proporcionar información falsa o documentación adulterada es sancionado conforme a ley.
+              </p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div style="display:flex;flex-direction:column;gap:var(--sp-lg);align-self:start;position:sticky;top:80px">
+      <div class="card" style="border-color:var(--clr-primary)">
+        <div class="card-header"><span class="card-header-title">Resumen del envío</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:var(--sp-sm);font-size:14px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Trámite</span><span style="font-weight:700">Diploma de Bachiller</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Documentos</span><span style="font-weight:700;color:var(--clr-primary)">7 de 7</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Pago</span><span class="badge badge-success">Verificado</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--clr-secondary)">Plazo estimado</span><span style="font-weight:600">15 días hábiles</span></div>
+          <div class="divider"></div>
+          <div style="font-size:13px;color:var(--clr-secondary);line-height:1.5">
+            Al enviar, recibirás un código de expediente para rastrear el estado de tu trámite.
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-success">
+        <span class="material-symbols-outlined">check_circle</span>
+        <div>Tu solicitud está lista para ser enviada. Todos los documentos han sido verificados.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;padding-top:var(--sp-lg);border-top:1px solid var(--clr-outline-variant)">
+    <button class="btn btn-outline" onclick="wizardBack(5)">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Paso anterior
+    </button>
+    <button class="btn btn-primary btn-lg" id="btn-submit" onclick="handleSubmit()">
+      <span class="material-symbols-outlined">send</span>
+      Enviar Solicitud
+    </button>
+  </div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  renderWizardStepper(5);
+
+  const docNames = ['Solicitud F-001','Certificado de estudios','Copia DNI','Constancia no adeudo Econ.','Constancia no adeudo Biblioteca','Voucher de pago','Foto carné'];
+  document.getElementById('doc-review-list').innerHTML = docNames.map((name, i) => `
+    <div style="display:flex;align-items:center;gap:var(--sp-md);padding:var(--sp-md) var(--sp-lg);border-bottom:1px solid var(--clr-outline-variant)">
+      <span class="material-symbols-outlined icon-filled" style="color:var(--clr-primary)">check_circle</span>
+      <span style="font-size:14px;flex:1">${name}</span>
+      <span class="badge badge-success" style="font-size:10px">Cargado</span>
+    </div>
+  `).join('');
+
+  function handleSubmit() {
+    const decl = document.getElementById('declaration').checked;
+    if (!decl) {
+      showToast({ message: 'Debes aceptar la declaración jurada para continuar', type: 'warning' });
+      return;
+    }
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = LoadingSpinner(18) + ' <span>Enviando solicitud...</span>';
+    setTimeout(() => {
+      showToast({ message: 'Solicitud enviada correctamente', type: 'success' });
+      setTimeout(() => navigate('tramite.paso6'), 1000);
+    }, 2000);
+  }
+
+  initPage({ route: 'tramite.paso5', pageTitle: 'Paso 5 — Revisar y Enviar' });
+</script>
+</body>
+</html>

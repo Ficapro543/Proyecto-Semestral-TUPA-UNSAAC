@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Trámites | TUPA UNSAAC</title>
+  <meta name="description" content="Historial completo de trámites administrativos del estudiante en el Portal TUPA UNSAAC." />
+  <link rel="stylesheet" href="../shared/design-system.css" />
+  <style>
+    .procedure-row {
+      display: grid; grid-template-columns: 1fr 140px 120px 120px 100px;
+      gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+      border-bottom: 1px solid var(--clr-outline-variant);
+      align-items: center; cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .procedure-row:hover { background: var(--clr-surface-container-low); }
+    .procedure-row:last-child { border-bottom: none; }
+    .proc-title { font-size: 14px; font-weight: 600; color: var(--clr-on-surface); }
+    .proc-exp   { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--clr-secondary); margin-top: 2px; }
+  </style>
+</head>
+<body class="app-layout">
+
+<div id="sidebar-mount"></div>
+<div class="main-content">
+  <div id="topbar-mount"></div>
+  <div class="page-content">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Ruta de navegación"></nav>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-md);margin-bottom:var(--sp-xl)">
+      <div>
+        <h1 class="text-display-md" style="color:var(--clr-primary)">Mis Trámites</h1>
+        <p class="text-body-md" style="color:var(--clr-secondary);margin-top:4px">Historial completo de todas tus solicitudes administrativas</p>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('tramite.paso1')">
+        <span class="material-symbols-outlined">add</span>
+        Nuevo Trámite
+      </button>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-md);margin-bottom:var(--sp-xl)" id="tramite-stats"></div>
+
+    <!-- Filters + table -->
+    <div class="card animate-on-load">
+      <div class="card-header" style="flex-wrap:wrap;gap:var(--sp-md)">
+        <span class="card-header-title">Todos los trámites</span>
+        <div style="display:flex;gap:var(--sp-sm);align-items:center;flex-wrap:wrap">
+          <div style="position:relative">
+            <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--clr-outline)">search</span>
+            <input id="tramite-search" type="text" placeholder="Buscar trámite..."
+                   style="height:36px;padding:0 var(--sp-md) 0 34px;border:1px solid var(--clr-outline-variant);border-radius:var(--radius-lg);font-size:13px;outline:none;background:var(--clr-background)" />
+          </div>
+          <select class="form-select" style="height:36px;font-size:13px;width:140px" id="status-filter">
+            <option value="">Todos los estados</option>
+            <option value="activo">En proceso</option>
+            <option value="observado">Observado</option>
+            <option value="aprobado">Aprobado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+        </div>
+      </div>
+      <!-- Table header -->
+      <div class="procedure-row" style="background:var(--clr-surface-container-low);font-size:12px;font-weight:700;color:var(--clr-secondary);text-transform:uppercase;letter-spacing:0.06em;cursor:default">
+        <div>Trámite</div>
+        <div>Estado</div>
+        <div>Fecha</div>
+        <div>Costo</div>
+        <div></div>
+      </div>
+      <div id="tramite-list"></div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" style="margin-top:var(--sp-lg)" aria-label="Paginación">
+      <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+
+<script src="../shared/navigation.js"></script>
+<script src="../shared/components.js"></script>
+<script>
+  document.getElementById('sidebar-mount').outerHTML = StudentSidebar({ activeRoute: 'estudiante.tramites', notifCount: 2 });
+  document.getElementById('topbar-mount').outerHTML  = StudentTopbar({ title: 'Mis Trámites' });
+  document.getElementById('footer-mount').outerHTML  = SharedFooter();
+
+  // Stats
+  const statDefs = [
+    { icon:'pending_actions', iconBg:'var(--clr-primary-fixed)', iconColor:'var(--clr-primary)', value:'3', label:'En Proceso', badge:'Activo', badgeClass:'badge-blue' },
+    { icon:'check_circle', iconBg:'#d1fae5', iconColor:'#065f46', value:'12', label:'Aprobados', badge:'Completado', badgeClass:'badge-success' },
+    { icon:'warning', iconBg:'var(--clr-error-container)', iconColor:'var(--clr-error)', value:'1', label:'Observados', badge:'Atención', badgeClass:'badge-error' },
+    { icon:'block', iconBg:'var(--clr-surface-container)', iconColor:'var(--clr-outline)', value:'2', label:'Anulados', badge:'Cerrado', badgeClass:'badge-neutral' },
+  ];
+  document.getElementById('tramite-stats').innerHTML = statDefs.map(s => StatCard({ ...s })).join('');
+
+  // Tramites
+  const tramites = [
+    { exp:'EXP-2024-8902', title:'Diploma de Bachiller', status:'En Revisión', statusClass:'badge-in-review', date:'12 Oct 2024', cost:'S/. 120.00' },
+    { exp:'EXP-2024-1102', title:'Certificado de Matrícula', status:'Aprobado', statusClass:'badge-success', date:'15 Sep 2024', cost:'Gratuito' },
+    { exp:'EXP-2024-0891', title:'Récord Académico', status:'Aprobado', statusClass:'badge-success', date:'20 Ago 2024', cost:'S/. 15.00' },
+    { exp:'EXP-2024-0442', title:'Constancia de Egresado', status:'Observado', statusClass:'badge-error', date:'05 Jul 2024', cost:'S/. 30.00' },
+    { exp:'EXP-2024-0201', title:'Reserva de Matrícula', status:'Aprobado', statusClass:'badge-success', date:'10 Jun 2024', cost:'S/. 20.00' },
+    { exp:'EXP-2024-0089', title:'Duplicado de Carné', status:'Aprobado', statusClass:'badge-success', date:'02 Mar 2024', cost:'S/. 25.00' },
+    { exp:'EXP-2023-9901', title:'Convalidación de Cursos', status:'Anulado', statusClass:'badge-neutral', date:'18 Nov 2023', cost:'S/. 35.00' },
+  ];
+
+  document.getElementById('tramite-list').innerHTML = tramites.map(t => `
+    <div class="procedure-row animate-on-load" onclick="navigate('seguimiento.detalle')" role="row" tabindex="0">
+      <div>
+        <div class="proc-title">${t.title}</div>
+        <div class="proc-exp">${t.exp}</div>
+      </div>
+      <div><span class="badge ${t.statusClass}">${t.status}</span></div>
+      <div style="font-size:13px;color:var(--clr-secondary)">${t.date}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--clr-primary)">${t.cost}</div>
+      <div style="text-align:right">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();navigate('seguimiento.detalle')">
+          <span class="material-symbols-outlined icon-sm">open_in_new</span>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  initPage({ route: 'estudiante.tramites', pageTitle: 'Mis Trámites' });
+  initSearch('#tramite-search', '.procedure-row');
+</script>
+</body>
+</html>
