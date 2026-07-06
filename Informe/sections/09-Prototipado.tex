@@ -20,71 +20,166 @@ interfaces que no satisfagan las necesidades reales de los actores del sistema.
 
 \subsubsection{Herramienta utilizada}
 
-El prototipo dinámico se elaborará utilizando \textbf{Figma}, herramienta estándar del
+El prototipo dinámico fue elaborado utilizando \textbf{Figma}, herramienta estándar del
 sector para diseño de interfaces y prototipado interactivo. Figma permite crear
 componentes reutilizables, establecer enlaces de navegación entre pantallas y compartir
 el prototipo mediante un enlace web para su revisión, sin instalación de software
-adicional por parte del evaluador.
+adicional por parte del evaluador. El equipo trabajó de forma colaborativa en un mismo
+archivo compartido, lo que facilitó la coordinación entre los cuatro integrantes durante
+el proceso de diseño.
+
+\subsubsection{Guía de estilo visual}
+
+Antes del diseño de las pantallas, el equipo definió una guía de estilo visual que
+establece los lineamientos de identidad gráfica de la plataforma. La paleta de colores
+se construyó a partir de una base azul institucional, acompañada de tonos que favorecen
+la legibilidad, la jerarquía visual y la accesibilidad en pantalla:
+
+\begin{itemize}
+  \item \textbf{Primario (\texttt{\#1A365D}):} azul oscuro institucional, utilizado en
+        encabezados, barra de navegación y elementos de identidad principal.
+  \item \textbf{Secundario (\texttt{\#F8FAFC}):} blanco grisáceo claro, empleado como
+        color de fondo general para maximizar el contraste con el texto y los
+        componentes interactivos.
+  \item \textbf{Terciario (\texttt{\#0D9488}):} verde azulado (teal), destinado a
+        botones de acción, indicadores de progreso y elementos interactivos que
+        requieren destacar visualmente.
+  \item \textbf{Neutro (\texttt{\#64748B}):} gris azulado, aplicado a textos
+        secundarios, bordes, íconos auxiliares y elementos de menor jerarquía visual.
+\end{itemize}
+
+La tipografía seleccionada es \textbf{Hanken Grotesk}, fuente sans-serif de estilo
+moderno y alta legibilidad en pantalla, utilizada en todos los elementos textuales de la
+interfaz con variaciones de peso para establecer jerarquía (regular para cuerpo de
+texto, semibold para subtítulos y bold para encabezados).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado1.png}
+  \caption{Guía de estilo visual del proyecto --- paleta de colores y tipografía}
+  \label{fig:guia-estilo}
+\end{figure}
 
 \subsubsection{Vistas y flujos prototipados}
 
-El prototipo dinámico contempla las siguientes pantallas y flujos de interacción
-principales:
+El prototipo dinámico contempla las siguientes vistas principales, cada una
+correspondiente a un módulo funcional del sistema:
 
-\begin{table}[H]
-\centering
-\small
-\caption{Vistas contempladas en el prototipo dinámico}
-\begin{tabular}{C{0.5cm} L{3.8cm} L{8.8cm}}
-\toprule
-\rowcolor{unsaacRed}
-\color{white}\textbf{N.º} &
-\color{white}\textbf{Vista / Módulo} &
-\color{white}\textbf{Descripción} \\
-\midrule
-1 & Página de inicio &
-Portal principal de la plataforma con acceso a la consulta del TUPA,
-inicio de sesión y novedades institucionales. \\
-\addlinespace[3pt]
-2 & Consulta del TUPA &
-Buscador y listado de procedimientos con filtros por tipo, área
-responsable y costo; detalle de cada procedimiento con requisitos y
-plazos. \\
-\addlinespace[3pt]
-3 & Registro / Inicio de sesión &
-Formulario de acceso para estudiantes y personal administrativo, con
-opción de recuperación de contraseña. \\
-\addlinespace[3pt]
-4 & Registro de solicitud &
-Formulario paso a paso para iniciar un trámite, incluyendo la carga
-de documentos digitales adjuntos. \\
-\addlinespace[3pt]
-5 & Seguimiento de trámites &
-Panel del usuario con historial de solicitudes, estado actual
-(recibido, en proceso, observado, resuelto) y línea de tiempo del
-trámite. \\
-\addlinespace[3pt]
-6 & Centro de notificaciones &
-Vista de alertas sobre cambios de estado en los trámites del usuario,
-con marcadores de leído/no leído. \\
-\addlinespace[3pt]
-7 & Panel administrativo &
-Bandeja de trámites recibidos para el personal de oficina, con
-herramientas de validación documental y cambio de estado. \\
-\addlinespace[3pt]
-8 & Módulo de reportes &
-Gráficas y tablas con estadísticas de trámites procesados, filtrables
-por período, tipo y estado de resolución. \\
-\bottomrule
-\end{tabular}
-\end{table}
+\medskip
+\textbf{Vista 1 --- Página de inicio}
+
+Portal principal de la plataforma que funciona como punto de entrada público al sistema.
+Presenta una barra de navegación superior con la identidad institucional, un buscador
+prominente de procedimientos del TUPA y accesos directos al catálogo de trámites, al
+inicio de sesión y a información institucional relevante. Esta vista es accesible sin
+autenticación, permitiendo a cualquier usuario consultar los procedimientos disponibles
+antes de registrarse en el sistema.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado2.png}
+  \caption{Vista ``Página de inicio'' del prototipo dinámico}
+  \label{fig:proto-inicio}
+\end{figure}
+
+\medskip
+\textbf{Vista 2 --- Catálogo público del TUPA}
+
+Interfaz de búsqueda y listado del catálogo completo de procedimientos administrativos,
+accesible sin necesidad de inicio de sesión. Incluye filtros por categoría (Académicos,
+Facultad, Investigación, Bienestar, entre otros), permitiendo localizar rápidamente
+cualquier trámite. Cada procedimiento muestra su nombre, descripción, precio, plazo en
+días hábiles y base legal. Al seleccionar un trámite, se despliega la ficha completa con
+los requisitos documentales específicos y la unidad orgánica responsable de su resolución.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado3.png}
+  \caption{Vista ``Catálogo público del TUPA'' del prototipo dinámico}
+  \label{fig:proto-tupa}
+\end{figure}
+
+\medskip
+\textbf{Vista 3 --- Registro e inicio de sesión}
+
+Formulario de acceso al sistema con autenticación por credenciales (correo electrónico
+y contraseña). La plataforma distingue dos tipos de usuario: \textbf{usuario general}
+(estudiantes y docentes que realizan trámites) y \textbf{usuario administrador}
+(personal que gestiona y resuelve solicitudes), cada uno con acceso diferenciado a los
+módulos del sistema. La interfaz incluye opciones de registro para nuevos usuarios
+generales, vinculación con la especialidad académica correspondiente y funcionalidad
+de recuperación de contraseña.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado4.png}
+  \caption{Vista ``Inicio de sesión'' del prototipo dinámico}
+  \label{fig:proto-login}
+\end{figure}
+
+\medskip
+\textbf{Vista 4 --- Registro de solicitud (wizard de 6 pasos)}
+
+Formulario guiado para iniciar un trámite, estructurado como un asistente (\emph{wizard})
+de seis pasos secuenciales: (1)~selección del trámite del catálogo, (2)~ingreso de datos
+del solicitante, (3)~carga de documentos vinculados a cada requisito específico del
+procedimiento, (4)~confirmación de pago, (5)~revisión final de la solicitud y
+(6)~envío definitivo. La interfaz incluye indicadores de progreso para orientar al
+usuario en cada etapa. El sistema registra el paso actual de cada solicitud, lo que
+permite al usuario retomar el proceso desde el punto donde lo dejó en caso de cerrar
+el navegador.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado5.png}
+  \caption{Vista ``Registro de solicitud'' del prototipo dinámico}
+  \label{fig:proto-solicitud}
+\end{figure}
+
+\medskip
+\textbf{Vista 5 --- Seguimiento de trámites}
+
+Panel del usuario con el historial completo de solicitudes registradas. Cada trámite
+presenta una línea de tiempo visual que refleja las etapas del proceso: \emph{Recibido},
+\emph{Evaluación técnica}, \emph{Pago verificado}, \emph{Resolución} y
+\emph{Completado} (o \emph{Anulado}). En caso de que el administrador emita una
+observación sobre algún documento, el trámite pasa a estado de \emph{Subsanación} y el
+usuario visualiza la acción pendiente con la descripción del problema señalado,
+pudiendo corregir y volver a cargar la documentación desde esta misma vista.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado6.png}
+  \caption{Vista ``Seguimiento de trámites'' del prototipo dinámico}
+  \label{fig:proto-seguimiento}
+\end{figure}
+
+\medskip
+\textbf{Vista 6 --- Panel administrativo}
+
+Interfaz de gestión destinada al personal administrativo, que presenta una bandeja
+con las solicitudes recibidas y herramientas para su procesamiento. Desde este panel,
+el administrador puede revisar los documentos adjuntos de cada solicitud, aprobar o
+rechazar documentos individuales, emitir observaciones vinculadas a documentos
+específicos, cambiar el estado de los trámites y registrar comentarios internos. La
+vista incluye un \emph{dashboard} con indicadores clave de rendimiento (KPIs):
+total de trámites por tipo, solicitudes completadas, anuladas y en curso, monto
+recaudado y tiempo promedio de resolución por procedimiento.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado7.png}
+  \caption{Vista ``Panel administrativo'' del prototipo dinámico}
+  \label{fig:proto-admin}
+\end{figure}
 
 \subsubsection{Flujos de interacción prototipados}
 
-El prototipo dinámico representará los dos flujos principales del sistema:
+El prototipo representa los dos flujos principales del sistema, conectando las vistas
+descritas anteriormente mediante transiciones interactivas en Figma:
 
 \medskip
-\textbf{Flujo del usuario estudiante:}
+\textbf{Flujo del usuario estudiante/docente:}
 
 \begin{center}
 \begin{tikzpicture}[
@@ -96,9 +191,9 @@ El prototipo dinámico representará los dos flujos principales del sistema:
   arr/.style={->, >=stealth, draw=unsaacGray, thick}
 ]
   \node[box] (A) {Inicio de sesión};
-  \node[box, right=of A] (B) {Búsqueda de procedimiento};
+  \node[box, right=of A] (B) {Catálogo del TUPA};
   \node[box, right=of B] (C) {Consulta de requisitos};
-  \node[box, right=of C] (D) {Registro de solicitud};
+  \node[box, right=of C] (D) {Wizard de solicitud};
   \node[box, right=of D] (E) {Seguimiento del trámite};
   \draw[arr] (A)--(B);
   \draw[arr] (B)--(C);
@@ -122,7 +217,7 @@ El prototipo dinámico representará los dos flujos principales del sistema:
   \node[box] (A) {Acceso al panel};
   \node[box, right=of A] (B) {Revisión de solicitudes};
   \node[box, right=of B] (C) {Validación de documentos};
-  \node[box, right=of C] (D) {Cambio de estado};
+  \node[box, right=of C] (D) {Observaciones o aprobación};
   \node[box, right=of D] (E) {Cierre del trámite};
   \draw[arr] (A)--(B);
   \draw[arr] (B)--(C);
@@ -131,31 +226,20 @@ El prototipo dinámico representará los dos flujos principales del sistema:
 \end{tikzpicture}
 \end{center}
 
-\subsubsection{Alcance dentro del primer entregable}
-
-En el marco del presente primer entregable, el prototipo dinámico se presenta como
-una propuesta inicial de diseño que acompaña al plan de proyecto. Su alcance incluye:
-
-\begin{itemize}
-  \item La definición de la paleta de colores, tipografía y guía de estilo visual de
-        la plataforma, con identidad afín a los colores institucionales de la UNSAAC.
-  \item El diseño de las vistas descritas en la tabla anterior, con navegación funcional
-        entre pantallas mediante los prototipos interactivos de Figma.
-  \item La representación del flujo principal del usuario estudiante y del flujo del
-        administrador, tal como se detallan en los diagramas anteriores.
-\end{itemize}
-
-El prototipo no constituye la implementación final de la plataforma; su función es
-servir como artefacto de comunicación y validación entre el equipo de desarrollo, el
-docente y los usuarios potenciales, sentando las bases para el diseño definitivo que
-se elaborará en el segundo entregable semestral.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/Prototipado8.png}
+  \caption{Mapa de pantallas y flujo de interacción general del prototipo}
+  \label{fig:proto-mapa}
+\end{figure}
 
 \subsubsection{Enlace al prototipo}
 
-\begin{supuesto}
-\small\textbf{Propuesta inicial:} El enlace al prototipo interactivo en Figma será
-incluido aquí una vez concluido su diseño. Se recomienda publicarlo en modalidad
-\emph{View Only} para facilitar la revisión por parte del docente y los usuarios
-de prueba:\\[4pt]
-\texttt{[Enlace al prototipo Figma --- por completar antes de la entrega formal]}
-\end{supuesto}
+El prototipo interactivo se encuentra publicado en Figma en modalidad de solo lectura
+(\emph{View Only}), accesible mediante el siguiente enlace para su revisión por parte
+del docente y los usuarios de prueba:
+
+\begin{center}
+\small
+\url{https://www.figma.com/design/PsfoxVoyh6v3UdapMo3aw8/Sistema-TUPA?node-id=0-1&t=Ab0uVvL3wPCtyAwZ-1}
+\end{center}
