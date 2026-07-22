@@ -3,6 +3,8 @@ aux/
 node_modules/
 Portal/backend/node_modules/
 Portal/frontend/node_modules/
+backend/node_modules/
+frontend/node_modules/
 .env
 Portal/backend/.env
 Portal/frontend/.env
