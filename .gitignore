@@ -1,5 +1,12 @@
 # Archivos auxiliares de LaTeX
 aux/
+node_modules/
+Portal/backend/node_modules/
+Portal/frontend/node_modules/
+.env
+Portal/backend/.env
+Portal/frontend/.env
+
 
 # Otros archivos comunes de LaTeX (por si acaso)
 *.log
