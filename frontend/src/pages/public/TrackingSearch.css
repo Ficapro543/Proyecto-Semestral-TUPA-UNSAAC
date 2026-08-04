@@ -1,0 +1,4 @@
+.track-hero { background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%); padding: var(--sp-3xl) var(--sp-lg); position: relative; overflow: hidden; }
+.track-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 40%, rgba(137,245,231,0.15) 0%, transparent 70%); pointer-events: none; }
+.search-hero-bar { display: flex; gap: var(--sp-sm); max-width: 600px; margin: var(--sp-xl) auto 0; position: relative; z-index: 1; }
+.search-hero-input { flex: 1; height: 56px; padding: 0 var(--sp-lg); background: white; border: none; border-radius: var(--radius-xl); font-size: 16px; outline: none; box-shadow: var(--shadow-lg); }

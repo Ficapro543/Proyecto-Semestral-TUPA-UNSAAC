@@ -1,0 +1,2 @@
+.result-card { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); padding: var(--sp-lg); cursor: pointer; transition: transform var(--transition-spring), box-shadow var(--transition-normal), border-color var(--transition-fast); }
+.result-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--clr-primary); }

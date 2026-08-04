@@ -1,18 +1,25 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import PublicLayout from './components/layout/PublicLayout'
-import StudentLayout from './components/layout/StudentLayout'
-import AdminLayout from './components/layout/AdminLayout'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import PublicLayout from './components/layout/PublicLayout';
+import StudentLayout from './components/layout/StudentLayout';
+import AdminLayout from './components/layout/AdminLayout';
 
-import LandingPage from './pages/public/LandingPage'
-import Login from './pages/auth/Login'
-import Catalog from './pages/public/Catalog'
-import StudentDashboard from './pages/student/Dashboard'
-import MyProfile from './pages/student/MyProfile'
-import Notifications from './pages/student/Notifications'
-import MyProcedures from './pages/student/MyProcedures'
-import MyRequests from './pages/student/MyRequests'
+import LandingPage from './pages/public/LandingPage';
+import Login from './pages/auth/Login';
+import Catalog from './pages/public/Catalog';
+import TrackingSearch from './pages/public/TrackingSearch';
+import TrackingResults from './pages/public/TrackingResults';
+import ProcedureTimeline from './pages/public/ProcedureTimeline';
+import StudentDashboard from './pages/student/Dashboard';
+import MyProfile from './pages/student/MyProfile';
+import Notifications from './pages/student/Notifications';
+import MyProcedures from './pages/student/MyProcedures';
+import MyRequests from './pages/student/MyRequests';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import PendingQueue from './pages/admin/PendingQueue';
+import DocumentValidation from './pages/admin/DocumentValidation';
+import ProcedureManagement from './pages/admin/ProcedureManagement';
+import UserManagement from './pages/admin/UserManagement';
+import Reports from './pages/admin/Reports';
 
 import WizardLayout from './components/layout/WizardLayout';
 import Step1 from './pages/student/wizard/Step1';
@@ -29,6 +36,9 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/seguimiento" element={<TrackingSearch />} />
+        <Route path="/seguimiento/resultados" element={<TrackingResults />} />
+        <Route path="/seguimiento/detalle" element={<ProcedureTimeline />} />
       </Route>
 
       {/* Student Portal */}
@@ -54,12 +64,15 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
         <Route path="cola" element={<PendingQueue />} />
+        <Route path="validacion" element={<DocumentValidation />} />
+        <Route path="procedimientos" element={<ProcedureManagement />} />
+        <Route path="usuarios" element={<UserManagement />} />
+        <Route path="reportes" element={<Reports />} />
       </Route>
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }
 
-export default App
-
+export default App;
