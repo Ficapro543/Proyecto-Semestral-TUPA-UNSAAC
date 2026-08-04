@@ -1,23 +1,32 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth, DEMO_ACCOUNTS } from '../../context/AuthContext';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Login.css';
+
+const ROLE_MAP = {
+  estudiante: 'USER',
+  admin: 'ADMIN',
+};
 
 export default function Login() {
   const [selectedRole, setSelectedRole] = useState('estudiante');
-  const [identifier, setIdentifier] = useState(DEMO_ACCOUNTS.estudiante.identifier);
-  const [password, setPassword] = useState(DEMO_ACCOUNTS.estudiante.password);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, isAuthenticated, user } = useAuth();
 
-  // Al cambiar de rol se recargan las credenciales de la cuenta de demo
-  // correspondiente: el acceso sigue siendo "simulado por rol".
+  // Si ya está autenticado, redirigir al panel correcto
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(user.role === 'ADMIN' ? '/admin' : '/estudiante', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const selectRole = (role) => {
     setSelectedRole(role);
-    setIdentifier(DEMO_ACCOUNTS[role].identifier);
-    setPassword(DEMO_ACCOUNTS[role].password);
     setError(null);
   };
 
@@ -40,8 +49,9 @@ export default function Login() {
     setError(null);
 
     try {
-      const { user } = await login(identifier, password, DEMO_ACCOUNTS[selectedRole].role);
-      navigate(user.role === 'ADMIN' ? '/admin' : '/estudiante');
+      const { user } = await login(identifier, password, ROLE_MAP[selectedRole]);
+      const from = location.state?.from;
+      navigate(from || (user.role === 'ADMIN' ? '/admin' : '/estudiante'), { replace: true });
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -145,12 +155,15 @@ export default function Login() {
 
           <form className="login-form" onSubmit={handleLogin} noValidate>
             <div className="form-group">
-              <label className="form-label" htmlFor="username">Correo institucional o CUI</label>
+              <label className="form-label" htmlFor="username">
+                {selectedRole === 'admin' ? 'Correo institucional o código de trabajador' : 'Correo institucional o CUI'}
+              </label>
               <div className="form-input-icon">
                 <span className="material-symbols-outlined">person</span>
                 <input
                   className="form-input" type="text" id="username" name="username"
-                  placeholder="ej. e.rodriguez@unsaac.edu.pe" autoComplete="username" required
+                  placeholder={selectedRole === 'admin' ? 'ej. admin@unsaac.edu.pe' : 'ej. nombre.apellido@unsaac.edu.pe'}
+                  autoComplete="username" required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                 />
@@ -160,7 +173,9 @@ export default function Login() {
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label className="form-label" htmlFor="password">Contraseña</label>
-                <a href="#" style={{ fontSize: '12px', color: 'var(--clr-primary)', fontWeight: 600 }}>¿Olvidaste tu contraseña?</a>
+                <Link to="/recuperar-password" style={{ fontSize: '12px', color: 'var(--clr-primary)', fontWeight: 600, textDecoration: 'none' }}>
+                  ¿Olvidaste tu contraseña?
+                </Link>
               </div>
               <div className="form-input-icon">
                 <span className="material-symbols-outlined">lock</span>
@@ -187,7 +202,7 @@ export default function Login() {
               </label>
             </div>
 
-            <button className="btn btn-primary w-full btn-lg" type="submit" disabled={loading}>
+            <button className="btn btn-primary w-full btn-lg" type="submit" disabled={loading || !identifier.trim() || !password}>
               {loading ? 'Verificando...' : 'Iniciar Sesión'}
               {!loading && <span className="material-symbols-outlined">login</span>}
               {loading && (

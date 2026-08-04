@@ -1,7 +1,10 @@
 -- ============================================================
---  TUPA UNSAAC  –  v5  (PostgreSQL)
+--  TUPA UNSAAC  –  v5.1  (PostgreSQL + Auth Tables)
 -- ============================================================
 
+DROP TABLE IF EXISTS password_reset_token CASCADE;
+DROP TABLE IF EXISTS activation_token CASCADE;
+DROP TABLE IF EXISTS refresh_token CASCADE;
 DROP TABLE IF EXISTS notificacion CASCADE;
 DROP TABLE IF EXISTS seguimiento CASCADE;
 DROP TABLE IF EXISTS observacion CASCADE;
@@ -64,7 +67,43 @@ CREATE TABLE usuario_admin (
 );
 
 -- ============================================================
---  4. CATEGORIA
+--  4. TABLAS DE AUTENTICACIÓN (TOKENS)
+-- ============================================================
+CREATE TABLE refresh_token (
+    id_refresh      SERIAL        PRIMARY KEY,
+    id_usuario      INT           NOT NULL,
+    rol             VARCHAR(10)   NOT NULL CHECK (rol IN ('USER', 'ADMIN')),
+    token           TEXT          NOT NULL UNIQUE,
+    expires_at      TIMESTAMP     NOT NULL,
+    created_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    revoked         BOOLEAN       NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE activation_token (
+    id_activacion   SERIAL        PRIMARY KEY,
+    id_usuario      INT           NOT NULL REFERENCES usuario_general(id_usuario) ON DELETE CASCADE,
+    token           UUID          NOT NULL UNIQUE,
+    expires_at      TIMESTAMP     NOT NULL,
+    created_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    used            BOOLEAN       NOT NULL DEFAULT FALSE,
+    used_at         TIMESTAMP
+);
+
+CREATE TABLE password_reset_token (
+    id_reset        SERIAL        PRIMARY KEY,
+    id_usuario      INT           NOT NULL,
+    rol             VARCHAR(10)   NOT NULL CHECK (rol IN ('USER', 'ADMIN')),
+    codigo          VARCHAR(6)    NOT NULL,
+    reset_token     UUID,
+    intentos        SMALLINT      NOT NULL DEFAULT 0,
+    expires_at      TIMESTAMP     NOT NULL,
+    created_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    used            BOOLEAN       NOT NULL DEFAULT FALSE,
+    used_at         TIMESTAMP
+);
+
+-- ============================================================
+--  5. CATEGORIA
 -- ============================================================
 CREATE TABLE categoria (
     id_categoria         SERIAL        PRIMARY KEY,
@@ -74,7 +113,7 @@ CREATE TABLE categoria (
 );
 
 -- ============================================================
---  5. TRAMITE
+--  6. TRAMITE
 -- ============================================================
 CREATE TABLE tramite (
     cod_tramite          VARCHAR(20)   PRIMARY KEY,
@@ -89,7 +128,7 @@ CREATE TABLE tramite (
 );
 
 -- ============================================================
---  6. REQUISITO
+--  7. REQUISITO
 -- ============================================================
 CREATE TABLE requisito (
     id_requisito         SERIAL        PRIMARY KEY,
@@ -100,7 +139,7 @@ CREATE TABLE requisito (
 );
 
 -- ============================================================
---  7. SOLICITUD
+--  8. SOLICITUD
 -- ============================================================
 CREATE TABLE solicitud (
     id_solicitud        SERIAL         PRIMARY KEY,
@@ -132,7 +171,7 @@ CREATE TABLE solicitud (
 );
 
 -- ============================================================
---  8. DOCUMENTO
+--  9. DOCUMENTO
 -- ============================================================
 CREATE TABLE documento (
     id_documento        SERIAL         PRIMARY KEY,
@@ -151,7 +190,7 @@ CREATE TABLE documento (
 );
 
 -- ============================================================
---  9. OBSERVACION
+--  10. OBSERVACION
 -- ============================================================
 CREATE TABLE observacion (
     id_observacion      SERIAL         PRIMARY KEY,
@@ -171,7 +210,7 @@ CREATE TABLE observacion (
 );
 
 -- ============================================================
---  10. SEGUIMIENTO
+--  11. SEGUIMIENTO
 -- ============================================================
 CREATE TABLE seguimiento (
     id_seguimiento      SERIAL         PRIMARY KEY,
@@ -185,7 +224,7 @@ CREATE TABLE seguimiento (
 );
 
 -- ============================================================
---  11. NOTIFICACION
+--  12. NOTIFICACION
 -- ============================================================
 CREATE TABLE notificacion (
     id_notificacion     SERIAL         PRIMARY KEY,
@@ -214,6 +253,15 @@ CREATE INDEX idx_usuario_general_codigo ON usuario_general(codigo_universitario)
 CREATE INDEX idx_usuario_admin_dni ON usuario_admin(dni);
 CREATE INDEX idx_usuario_admin_email ON usuario_admin(email_institucional);
 CREATE INDEX idx_usuario_admin_codigo ON usuario_admin(codigo_trabajador);
+
+CREATE INDEX idx_refresh_token_token ON refresh_token(token);
+CREATE INDEX idx_refresh_token_usuario ON refresh_token(id_usuario, rol);
+
+CREATE INDEX idx_activation_token_token ON activation_token(token);
+CREATE INDEX idx_activation_token_usuario ON activation_token(id_usuario);
+
+CREATE INDEX idx_password_reset_usuario ON password_reset_token(id_usuario, rol);
+CREATE INDEX idx_password_reset_token ON password_reset_token(reset_token);
 
 CREATE INDEX idx_tramite_categoria ON tramite(id_categoria);
 CREATE INDEX idx_tramite_vigente ON tramite(vigente);

@@ -5,6 +5,10 @@ import AdminLayout from './components/layout/AdminLayout';
 
 import LandingPage from './pages/public/LandingPage';
 import Login from './pages/auth/Login';
+import Registro from './pages/auth/Registro';
+import ActivarCuenta from './pages/auth/ActivarCuenta';
+import RecuperarPassword from './pages/auth/RecuperarPassword';
+
 import Catalog from './pages/public/Catalog';
 import TrackingSearch from './pages/public/TrackingSearch';
 import TrackingResults from './pages/public/TrackingResults';
@@ -38,6 +42,10 @@ function App() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+        <Route path="/activar-cuenta/:token" element={<ActivarCuenta />} />
+        <Route path="/activar/:token" element={<ActivarCuenta />} />
+        <Route path="/recuperar-password" element={<RecuperarPassword />} />
         <Route path="/catalogo" element={<Catalog />} />
         <Route path="/seguimiento" element={<TrackingSearch />} />
         <Route path="/seguimiento/resultados" element={<TrackingResults />} />
