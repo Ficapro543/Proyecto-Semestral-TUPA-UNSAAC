@@ -1,0 +1,20 @@
+{
+  "name": "proyecto-semestral-tupa-unsaac",
+  "version": "1.0.0",
+  "description": "Repositorio para desarrollar una Plataforma Web para la Optimización de la Gestión del TUPA de la UNSAAC.\r Como proyecto semestral para el curso de Desarrollo de Software I",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ficapro543/Proyecto-Semestral-TUPA-UNSAAC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ficapro543/Proyecto-Semestral-TUPA-UNSAAC/issues"
+  },
+  "homepage": "https://github.com/Ficapro543/Proyecto-Semestral-TUPA-UNSAAC#readme"
+}

@@ -1,14 +1,14 @@
 # Archivos auxiliares de LaTeX
 aux/
+
+# Node modules
 node_modules/
-Portal/backend/node_modules/
-Portal/frontend/node_modules/
 backend/node_modules/
 frontend/node_modules/
-.env
-Portal/backend/.env
-Portal/frontend/.env
 
+# Variables de entorno
+backend/.env
+frontend/.env
 
 # Otros archivos comunes de LaTeX (por si acaso)
 *.log
@@ -30,3 +30,10 @@ Portal/frontend/.env
 
 # Archivos de compilación de PDF
 build/
+
+#vsCode
+.vscode/
+
+# Build
+frontend/dist/
+backend/dist/
