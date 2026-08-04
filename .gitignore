@@ -33,6 +33,7 @@ build/
 
 #vsCode
 .vscode/
+analisis.md
 
 # Build
 frontend/dist/
