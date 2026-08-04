@@ -131,6 +131,18 @@ vista, pero con una estructura más detallada que la descrita de forma general:
 
 \subsection{Modelo de Base de Datos}
 
+\subsubsection{Diagrama Entidad-Relación}
+La Figura~\ref{fig:diagrama-entidad-relacion} presenta el diagrama
+entidad-relación completo del modelo, generado a partir del esquema real de
+PostgreSQL. Incluye las columnas \texttt{BYTEA} (\texttt{contenido},
+\texttt{avatar\_contenido}) donde se almacena el contenido binario de
+documentos y avatares directamente en la base de datos, en lugar de en el
+disco del servidor.
+
+\apafigure[p]{%
+\includegraphics[width=\linewidth]{images/diagrama-entidad-relacion.png}%
+}{Diagrama entidad-relación del modelo de base de datos de TUPA UNSAAC.}{fig:diagrama-entidad-relacion}
+
 \subsubsection{Diccionario de Datos}
 El modelo relacional está compuesto por once entidades. La
 Tabla~\ref{tab:diccionario} resume su propósito dentro del sistema.
