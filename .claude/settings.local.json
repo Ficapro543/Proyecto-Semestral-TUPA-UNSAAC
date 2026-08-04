@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 40 node -e ' *)",
+      "Bash(npm install *)",
+      "Bash(timeout 60 node -e ' *)",
+      "Bash(timeout 120 node -e ' *)",
+      "Bash(npx playwright *)",
+      "Bash(npm init *)",
+      "Bash(npm i *)",
+      "Bash(BASE_URL=http://localhost:5174 OUT_DIR=__TRACKED_VAR__ node e2e.mjs)",
+      "Bash(python3 -)",
+      "Bash(BASE_URL=http://localhost:5173 OUT_DIR=__TRACKED_VAR__ node e2e.mjs)",
+      "Bash(ACCION=OBSERVAR BASE_URL=http://localhost:5173 OUT_DIR=__TRACKED_VAR__ node e2e.mjs)",
+      "Bash(curl -s http://localhost:3000/api/health)",
+      "Bash(BASE_URL=http://localhost:5173 node sweep.mjs)",
+      "Bash(curl -s \"http://localhost:5173/src/pages/admin/UserManagement.jsx\")",
+      "Bash(ps -eo pid,lstart,cmd)",
+      "Bash(curl -s \"http://localhost:5173/src/pages/admin/Reports.jsx\")",
+      "Bash(git check-ignore *)",
+      "Bash(grep -c \"backend/.env$\")",
+      "Bash(xargs -I{} echo \"rastreado en git: {}\")",
+      "Bash(ip -4 addr show eth0)",
+      "Bash(awk '{print $2}')"
+    ]
+  }
+}

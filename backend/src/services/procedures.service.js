@@ -1,22 +1,18 @@
 const pool = require('../db/pool');
+const { parsePagination, httpError } = require('../utils/validate');
 
 async function listProcedures(filters = {}) {
-  const {
-    search,
-    category,
-    cost_min,
-    cost_max,
-    days_max,
-    limit = 50,
-    offset = 0,
-    active_only = true,
-  } = filters;
+  const { search, category, cost_min, cost_max, days_max, active_only } = filters;
+  const { limit, offset } = parsePagination(filters, { defaultLimit: 50, maxLimit: 200 });
 
   const conditions = [];
   const params = [];
   let paramIndex = 1;
 
-  if (active_only) {
+  // Los query params llegan como texto: 'false' es truthy, así que
+  // ?active_only=false seguía filtrando por vigentes.
+  const soloVigentes = active_only === undefined || !['false', '0'].includes(String(active_only));
+  if (soloVigentes) {
     conditions.push(`t.vigente = true`);
   }
 
@@ -76,19 +72,23 @@ async function listProcedures(filters = {}) {
     ORDER BY t.nombre_tramite ASC
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
   `;
-  params.push(parseInt(limit, 10), parseInt(offset, 10));
+  params.push(limit, offset);
 
   const dataResult = await pool.query(dataQuery, params);
 
   return {
     total,
-    limit: parseInt(limit, 10),
-    offset: parseInt(offset, 10),
+    limit,
+    offset,
     data: dataResult.rows,
   };
 }
 
 async function getProcedureById(cod_tramite) {
+  if (!cod_tramite || typeof cod_tramite !== 'string') {
+    throw httpError("El parámetro 'cod_tramite' es requerido", 400);
+  }
+
   const tramiteQuery = `
     SELECT t.cod_tramite, t.id_categoria, t.nombre_tramite, t.descripcion, 
            t.base_legal, t.precio, t.dias_habiles, t.unidad_responsable, t.vigente,

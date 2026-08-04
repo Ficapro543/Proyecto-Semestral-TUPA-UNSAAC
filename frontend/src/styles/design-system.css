@@ -1286,3 +1286,149 @@ ul, ol { list-style: none; }
   .main-content{ margin-left: 0 !important; }
 }
 
+
+/* ============================================================
+   PANTALLAS DE DETALLE (estudiante y admin)
+   ============================================================ */
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--sp-xl);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+.detail-sticky { position: sticky; top: var(--sp-lg); }
+@media (max-width: 1100px) {
+  .detail-sticky { position: static; }
+}
+
+.detail-label {
+  font-size: 12px;
+  color: var(--clr-secondary);
+  margin-bottom: 2px;
+}
+
+.doc-review-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-md);
+  padding: var(--sp-md);
+  border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+}
+
+/* Botón destructivo — faltaba en el sistema y las pantallas lo usaban. */
+.btn-danger {
+  background: var(--clr-error);
+  color: #fff;
+}
+.btn-danger:hover { filter: brightness(0.92); }
+
+/* Indicador "en vivo" para las vistas que se refrescan por polling. */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 0 rgba(22,163,74,0.6);
+  animation: livePulse 2s infinite;
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}
+
+/* ============================================================
+   RESPONSIVE — correcciones
+   ============================================================ */
+
+/* Las tablas y grids anchos desbordaban horizontalmente el layout en pantallas
+   estrechas porque .main-content no tenía min-width:0 dentro del flex. */
+.main-content { min-width: 0; }
+.page-content, .page-content-wide { min-width: 0; }
+
+/* El asistente de trámites usaba grid-template-columns fijos en línea; esta
+   clase permite colapsar a una columna en pantallas angostas. */
+.wizard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--sp-xl);
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .wizard-grid { grid-template-columns: 1fr; }
+}
+
+/* Botón para abrir la barra lateral en móvil. */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  bottom: var(--sp-lg);
+  right: var(--sp-lg);
+  z-index: 120;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  color: var(--clr-on-primary);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+}
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.is-open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+  .sidebar-backdrop.is-open { display: block; }
+  .main-content { margin-left: 0; }
+}
+
+/* En <=640px la regla anterior ocultaba la barra por completo con
+   `display:none !important`, dejando la navegación inaccesible en móvil.
+   Ahora se muestra como panel deslizante igual que en tablet. */
+@media (max-width: 640px) {
+  .sidebar { display: flex !important; }
+  .topbar-search { display: none; }
+}
+
+/* Tablas anchas: que scrollee el contenedor, no la página. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ============================================================
+   RESPONSIVE — correcciones de desborde horizontal
+   ============================================================ */
+
+/* El pie de página no envolvía sus enlaces y empujaba la página 10 px
+   a la derecha en TODAS las pantallas a 375 px de ancho. */
+.footer-links { flex-wrap: wrap; row-gap: var(--sp-sm); }
+
+/* `white-space: nowrap` en .btn hace que los botones con texto largo no
+   quepan en móvil. A partir de 640 px se permite que el texto envuelva. */
+@media (max-width: 640px) {
+  .btn { white-space: normal; text-align: center; }
+  .btn-lg { width: 100%; }
+}
+
+/* Los orbes decorativos del hero se salen del viewport: son puramente
+   ornamentales, así que se recortan contra su contenedor. */
+.hero, .hero-section, .catalog-hero, .track-hero { overflow: hidden; }
+.hero-orb { pointer-events: none; }
+
+/* Salvaguarda: ningún elemento debe forzar scroll horizontal del documento. */
+html, body { max-width: 100%; overflow-x: hidden; }

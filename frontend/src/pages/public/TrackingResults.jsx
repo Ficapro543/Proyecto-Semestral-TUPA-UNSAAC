@@ -1,107 +1,170 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import api from '../../lib/api';
+import usePolling from '../../hooks/usePolling';
+import { Loading, ErrorState, EmptyState, LiveBadge } from '../../components/ui/AsyncState';
+import { estadoInfo, formatFecha } from '../../lib/estados';
 import './TrackingResults.css';
 
+const POLL_MS = 6000;
+
+/**
+ * Resultado del seguimiento público. Recibe el expediente por router state
+ * desde la búsqueda; también acepta ?exp=... para poder compartir el enlace.
+ */
 export default function TrackingResults() {
   const navigate = useNavigate();
-  const [searchValue, setSearchValue] = useState('EXP-2024-8902');
+  const location = useLocation();
+
+  const inicial =
+    location.state?.tracking?.numero_expediente ||
+    new URLSearchParams(location.search).get('exp') ||
+    '';
+
+  const [expediente, setExpediente] = useState(inicial);
+  const [busqueda, setBusqueda] = useState(inicial);
+
+  useEffect(() => {
+    setBusqueda(inicial);
+    setExpediente(inicial);
+  }, [inicial]);
+
+  const fetcher = useCallback(
+    (opts) => api.trackByExpediente(expediente, opts),
+    [expediente]
+  );
+
+  const { data, error, loading } = usePolling(fetcher, {
+    intervalMs: POLL_MS,
+    enabled: Boolean(expediente),
+    deps: [expediente],
+  });
+
+  const buscar = () => {
+    const limpio = busqueda.trim().toUpperCase();
+    if (limpio.length >= 3) {
+      setExpediente(limpio);
+      navigate(`/seguimiento/resultados?exp=${encodeURIComponent(limpio)}`, { replace: true });
+    }
+  };
+
+  const info = data ? estadoInfo(data.estado) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <div style={{ background: 'var(--clr-primary)', padding: 'var(--sp-lg)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)' }}>
-            <button className="btn btn-ghost" style={{ color: 'rgba(255,255,255,0.7)' }} onClick={() => navigate('/seguimiento')}>
-              <span className="material-symbols-outlined">arrow_back</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)', flexWrap: 'wrap' }}>
+            <button className="btn btn-ghost" style={{ color: 'rgba(255,255,255,0.7)' }} onClick={() => navigate('/seguimiento')} aria-label="Volver a la búsqueda">
+              <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
             </button>
-            <div style={{ position: 'relative', flex: 1, maxWidth: '500px' }}>
-              <span className="material-symbols-outlined" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'var(--clr-outline)' }}>search</span>
-              <input 
-                type="text" 
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+            <div style={{ position: 'relative', flex: 1, minWidth: '200px', maxWidth: '500px' }}>
+              <span className="material-symbols-outlined" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'var(--clr-outline)' }} aria-hidden="true">search</span>
+              <input
+                type="text"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && buscar()}
+                placeholder="EXP-2026-000001"
                 style={{ width: '100%', height: '44px', padding: '0 var(--sp-md) 0 40px', background: 'white', border: 'none', borderRadius: 'var(--radius-lg)', fontSize: '14px', outline: 'none' }}
-                aria-label="Buscar otro expediente" 
+                aria-label="Buscar otro expediente"
               />
             </div>
-            <button className="btn btn-teal">Buscar</button>
+            <button className="btn btn-teal" onClick={buscar}>Buscar</button>
           </div>
         </div>
       </div>
 
       <main style={{ flex: 1, background: 'var(--clr-background)', padding: 'var(--sp-2xl) var(--sp-lg)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div className="alert alert-success animate-slide-up" style={{ marginBottom: 'var(--sp-xl)' }}>
-            <span className="material-symbols-outlined">check_circle</span>
-            <div>Se encontraron <strong>1 expediente</strong> para "{searchValue}"</div>
-          </div>
-
-          <div className="result-card animate-on-load" onClick={() => navigate('/seguimiento/detalle')} role="article" tabIndex="0">
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-md)', marginBottom: 'var(--sp-lg)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)' }}>
-                <div style={{ width: '52px', height: '52px', background: 'var(--clr-primary-fixed)', borderRadius: 'var(--radius-xl)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span className="material-symbols-outlined icon-filled" style={{ fontSize: '26px', color: 'var(--clr-primary)' }}>workspace_premium</span>
+          {!expediente ? (
+            <EmptyState
+              icon="search"
+              title="Ingresa un número de expediente"
+              description="Escribe el código en el buscador de arriba."
+            />
+          ) : loading ? (
+            <Loading label="Consultando expediente…" />
+          ) : error ? (
+            <ErrorState
+              error={
+                error.status === 404
+                  ? { ...error, message: `No se encontró ningún expediente con el código ${expediente}.` }
+                  : error
+              }
+            />
+          ) : data ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)', marginBottom: 'var(--sp-lg)', flexWrap: 'wrap' }}>
+                <div className="alert alert-success" style={{ flex: 1, minWidth: '260px', marginBottom: 0 }}>
+                  <span className="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                  <div>Expediente <strong>{data.numero_expediente}</strong> encontrado</div>
                 </div>
-                <div>
-                  <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '20px', fontWeight: 700, color: 'var(--clr-primary)' }}>Diploma de Bachiller</div>
-                  <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px', display: 'flex', gap: 'var(--sp-md)' }}>
-                    <span className="text-mono-sm" style={{ color: 'var(--clr-primary)' }}>EXP-2024-8902</span>
-                    <span>·</span>
-                    <span>Iniciado: 12 Oct 2024</span>
+                <LiveBadge intervalMs={POLL_MS} />
+              </div>
+
+              <div className="result-card" role="article">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-md)', marginBottom: 'var(--sp-lg)' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <h2 className="text-headline-sm" style={{ color: 'var(--clr-primary)' }}>
+                      {data.nombre_tramite}
+                    </h2>
+                    <div className="text-mono-sm" style={{ color: 'var(--clr-secondary)', marginTop: '4px' }}>
+                      {data.numero_expediente}
+                    </div>
+                  </div>
+                  <span className={`badge ${info.badge}`} style={{ fontSize: '14px' }}>
+                    <span className="material-symbols-outlined icon-sm" aria-hidden="true">{info.icon}</span>
+                    {info.label}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 'var(--sp-md)', marginBottom: 'var(--sp-lg)' }}>
+                  <div>
+                    <div className="detail-label">Solicitante</div>
+                    <div style={{ fontWeight: 600 }}>{data.solicitante}</div>
+                  </div>
+                  <div>
+                    <div className="detail-label">Etapa actual</div>
+                    <div style={{ fontWeight: 600 }}>{data.etapa_visible || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="detail-label">Fecha de ingreso</div>
+                    <div style={{ fontWeight: 600 }}>{formatFecha(data.fecha_solicitud)}</div>
+                  </div>
+                  <div>
+                    <div className="detail-label">Plazo</div>
+                    <div style={{ fontWeight: 600 }}>{data.dias_habiles} días hábiles</div>
+                  </div>
+                </div>
+
+                <div className="card">
+                  <div className="card-header"><span className="card-header-title">Historial público</span></div>
+                  <div className="card-body">
+                    {(data.historial || []).length === 0 ? (
+                      <div style={{ fontSize: '14px', color: 'var(--clr-secondary)' }}>
+                        Sin movimientos registrados todavía.
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-md)' }}>
+                        {data.historial.map((h, i) => (
+                          <div key={i} style={{ borderLeft: '3px solid var(--clr-primary)', paddingLeft: 'var(--sp-md)' }}>
+                            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--clr-primary)' }}>
+                              {estadoInfo(h.estado_nuevo).label}
+                            </div>
+                            {h.comentario && <div style={{ fontSize: '13px', marginTop: '2px' }}>{h.comentario}</div>}
+                            <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginTop: '2px' }}>
+                              {formatFecha(h.fecha_cambio, { conHora: true })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-              <span className="badge badge-in-review badge-lg">En Revisión</span>
-            </div>
-
-            {/* Progress */}
-            <div style={{ marginBottom: 'var(--sp-lg)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--sp-sm)' }}>
-                <span style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>Progreso del trámite</span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--clr-primary)' }}>Paso 3 de 5</span>
-              </div>
-              <div className="progress">
-                <div className="progress-bar" style={{ width: '60%' }}></div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--sp-md)', marginBottom: 'var(--sp-lg)' }}>
-              <div style={{ padding: 'var(--sp-md)', background: 'var(--clr-surface-container-low)', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginBottom: '2px' }}>Solicitante</div>
-                <div style={{ fontSize: '14px', fontWeight: 600 }}>Elena M. Rodríguez Q.</div>
-              </div>
-              <div style={{ padding: 'var(--sp-md)', background: 'var(--clr-surface-container-low)', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginBottom: '2px' }}>Área responsable</div>
-                <div style={{ fontSize: '14px', fontWeight: 600 }}>Ofic. de Grados y Títulos</div>
-              </div>
-              <div style={{ padding: 'var(--sp-md)', background: 'var(--clr-surface-container-low)', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginBottom: '2px' }}>Plazo estimado</div>
-                <div style={{ fontSize: '14px', fontWeight: 600 }}>05 Nov 2024</div>
-              </div>
-              <div style={{ padding: 'var(--sp-md)', background: 'var(--clr-surface-container-low)', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginBottom: '2px' }}>Costo</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 700, color: 'var(--clr-primary)' }}>S/. 120.00</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px', verticalAlign: 'middle' }}>schedule</span> Última actualización: hace 2 días
-              </div>
-              <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); navigate('/seguimiento/detalle'); }}>
-                Ver detalle completo
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-            </div>
-          </div>
-
-          <div style={{ marginTop: 'var(--sp-xl)', textAlign: 'center' }}>
-            <p style={{ fontSize: '14px', color: 'var(--clr-secondary)', marginBottom: 'var(--sp-md)' }}>¿No es el expediente que buscas?</p>
-            <button className="btn btn-outline" onClick={() => navigate('/seguimiento')}>
-              <span className="material-symbols-outlined">search</span>
-              Nueva búsqueda
-            </button>
-          </div>
+            </>
+          ) : null}
         </div>
       </main>
     </div>

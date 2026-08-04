@@ -2,11 +2,14 @@ async function generateExpedienteNumber(client) {
   const currentYear = new Date().getFullYear();
   const yearPrefix = `EXP-${currentYear}-`;
 
+  // Ordenar por numero_expediente y no por id_solicitud: el borrador se crea
+  // antes de asignarse el expediente, así que el id más alto no siempre tiene
+  // el correlativo más alto — y repetirlo viola el UNIQUE de la columna.
   const query = `
-    SELECT numero_expediente 
-    FROM solicitud 
-    WHERE numero_expediente LIKE $1 
-    ORDER BY id_solicitud DESC 
+    SELECT numero_expediente
+    FROM solicitud
+    WHERE numero_expediente LIKE $1
+    ORDER BY numero_expediente DESC
     LIMIT 1;
   `;
   

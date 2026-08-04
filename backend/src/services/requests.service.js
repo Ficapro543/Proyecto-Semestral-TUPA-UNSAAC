@@ -1,5 +1,25 @@
 const pool = require('../db/pool');
 const { generateExpedienteNumber } = require('../utils/generateExpediente');
+const { parseId, parsePagination, httpError } = require('../utils/validate');
+
+/**
+ * Comprueba que la solicitud existe y que pertenece al usuario.
+ * Devuelve 404 si no existe y 403 si existe pero es de otro usuario, en vez de
+ * confundir ambos casos bajo un único 404 como se hacía antes.
+ */
+async function assertOwnership(executor, requestId, userId) {
+  const { rows } = await executor.query(
+    `SELECT id_solicitud, id_usuario, estado, cod_tramite FROM solicitud WHERE id_solicitud = $1`,
+    [requestId]
+  );
+  if (rows.length === 0) {
+    throw httpError(`No existe una solicitud con id ${requestId}`, 404);
+  }
+  if (rows[0].id_usuario !== userId) {
+    throw httpError('Acceso denegado: la solicitud pertenece a otro usuario', 403);
+  }
+  return rows[0];
+}
 
 async function createRequest(userId, { cod_tramite }) {
   if (!cod_tramite) {
@@ -28,7 +48,10 @@ async function createRequest(userId, { cod_tramite }) {
   return rows[0];
 }
 
-async function getUserRequests(userId, { estado, limit = 20, offset = 0 }) {
+async function getUserRequests(userId, filters = {}) {
+  const { estado } = filters;
+  const { limit, offset } = parsePagination(filters, { defaultLimit: 20, maxLimit: 100 });
+
   const conditions = [`s.id_usuario = $1`];
   const params = [userId];
   let paramIdx = 2;
@@ -53,13 +76,15 @@ async function getUserRequests(userId, { estado, limit = 20, offset = 0 }) {
     ORDER BY s.fecha_solicitud DESC
     LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
   `;
-  params.push(parseInt(limit, 10), parseInt(offset, 10));
+  params.push(limit, offset);
 
   const { rows } = await pool.query(query, params);
   return rows;
 }
 
-async function getRequestDetail(requestId, userId = null, isAdmin = false) {
+async function getRequestDetail(rawRequestId, userId = null, isAdmin = false) {
+  const requestId = parseId(rawRequestId, 'id');
+
   const query = `
     SELECT s.id_solicitud, s.numero_expediente, s.id_usuario, s.cod_tramite, s.paso_actual, 
            s.fecha_solicitud, s.estado, s.prioridad, s.etapa_visible, 
@@ -75,17 +100,13 @@ async function getRequestDetail(requestId, userId = null, isAdmin = false) {
   const { rows } = await pool.query(query, [requestId]);
 
   if (rows.length === 0) {
-    const error = new Error('Solicitud no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw httpError(`No existe una solicitud con id ${requestId}`, 404);
   }
 
   const solicitud = rows[0];
 
   if (!isAdmin && solicitud.id_usuario !== userId) {
-    const error = new Error('Acceso denegado a esta solicitud');
-    error.statusCode = 403;
-    throw error;
+    throw httpError('Acceso denegado a esta solicitud', 403);
   }
 
   // Obtener documentos subidos
@@ -140,37 +161,35 @@ async function getRequestDetail(requestId, userId = null, isAdmin = false) {
   return solicitud;
 }
 
-async function updateStep(requestId, userId, paso_actual) {
-  const pasoNum = parseInt(paso_actual, 10);
-  if (isNaN(pasoNum) || pasoNum < 1 || pasoNum > 6) {
-    const error = new Error('El paso_actual debe ser un número entre 1 y 6');
-    error.statusCode = 400;
-    throw error;
+async function updateStep(rawRequestId, userId, paso_actual) {
+  const requestId = parseId(rawRequestId, 'id');
+
+  const pasoNum = Number(paso_actual);
+  if (!Number.isInteger(pasoNum) || pasoNum < 1 || pasoNum > 6) {
+    throw httpError('El paso_actual debe ser un número entero entre 1 y 6', 400);
   }
+
+  await assertOwnership(pool, requestId, userId);
 
   const query = `
     UPDATE solicitud
     SET paso_actual = $1
-    WHERE id_solicitud = $2 AND id_usuario = $3
+    WHERE id_solicitud = $2
     RETURNING id_solicitud, paso_actual, estado;
   `;
-  const { rows } = await pool.query(query, [pasoNum, requestId, userId]);
-  if (rows.length === 0) {
-    const error = new Error('Solicitud no encontrada o no autorizada');
-    error.statusCode = 404;
-    throw error;
-  }
-
+  const { rows } = await pool.query(query, [pasoNum, requestId]);
   return rows[0];
 }
 
-async function uploadVoucher(requestId, userId, { file, nro_recibo, monto_total }) {
-  const checkQuery = `SELECT id_solicitud FROM solicitud WHERE id_solicitud = $1 AND id_usuario = $2`;
-  const checkRes = await pool.query(checkQuery, [requestId, userId]);
-  if (checkRes.rows.length === 0) {
-    const error = new Error('Solicitud no encontrada o no autorizada');
-    error.statusCode = 404;
-    throw error;
+async function uploadVoucher(rawRequestId, userId, { file, nro_recibo, monto_total }) {
+  const requestId = parseId(rawRequestId, 'id');
+  await assertOwnership(pool, requestId, userId);
+
+  if (monto_total !== undefined && monto_total !== null && monto_total !== '') {
+    const monto = Number(monto_total);
+    if (Number.isNaN(monto) || monto < 0) {
+      throw httpError("El campo 'monto_total' debe ser un número mayor o igual a 0", 400);
+    }
   }
 
   const relativePath = `/uploads/${file.filename}`;
@@ -213,16 +232,24 @@ async function uploadVoucher(requestId, userId, { file, nro_recibo, monto_total 
   }
 }
 
-async function uploadDocument(requestId, userId, id_requisito, file) {
-  const reqIdNum = parseInt(id_requisito, 10);
+async function uploadDocument(rawRequestId, userId, id_requisito, file) {
+  const requestId = parseId(rawRequestId, 'id');
+  const reqIdNum = parseId(id_requisito, 'id_requisito');
 
-  // Verificar pertenencia
-  const checkQuery = `SELECT id_solicitud, cod_tramite FROM solicitud WHERE id_solicitud = $1 AND id_usuario = $2`;
-  const checkRes = await pool.query(checkQuery, [requestId, userId]);
-  if (checkRes.rows.length === 0) {
-    const error = new Error('Solicitud no encontrada o no autorizada');
-    error.statusCode = 404;
-    throw error;
+  const solicitud = await assertOwnership(pool, requestId, userId);
+
+  // El requisito debe pertenecer al trámite de esta solicitud: sin esta
+  // comprobación se podía adjuntar un documento contra el requisito de otro
+  // trámite y la validación del admin nunca lo encontraba.
+  const reqRes = await pool.query(
+    `SELECT id_requisito FROM requisito WHERE id_requisito = $1 AND cod_tramite = $2`,
+    [reqIdNum, solicitud.cod_tramite]
+  );
+  if (reqRes.rows.length === 0) {
+    throw httpError(
+      `El requisito ${reqIdNum} no existe o no corresponde al trámite ${solicitud.cod_tramite}`,
+      404
+    );
   }
 
   // Verificar si ya existe documento cargado para ese requisito
@@ -257,22 +284,49 @@ async function uploadDocument(requestId, userId, id_requisito, file) {
   }
 }
 
-async function submitRequest(requestId, userId) {
+async function submitRequest(rawRequestId, userId) {
+  const requestId = parseId(rawRequestId, 'id');
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
     // Verificar solicitud
-    const solQuery = `SELECT id_solicitud, estado, numero_expediente, cod_tramite FROM solicitud WHERE id_solicitud = $1 AND id_usuario = $2 FOR UPDATE`;
-    const solRes = await client.query(solQuery, [requestId, userId]);
+    const solQuery = `SELECT id_solicitud, id_usuario, estado, numero_expediente, cod_tramite FROM solicitud WHERE id_solicitud = $1 FOR UPDATE`;
+    const solRes = await client.query(solQuery, [requestId]);
 
     if (solRes.rows.length === 0) {
-      const error = new Error('Solicitud no encontrada o no autorizada');
-      error.statusCode = 404;
-      throw error;
+      throw httpError(`No existe una solicitud con id ${requestId}`, 404);
     }
 
     const sol = solRes.rows[0];
+
+    if (sol.id_usuario !== userId) {
+      throw httpError('Acceso denegado: la solicitud pertenece a otro usuario', 403);
+    }
+
+    // Reenviar una solicitud ya enviada duplicaría la notificación y
+    // reescribiría la fecha de ingreso al expediente.
+    if (sol.estado !== 'BORRADOR' && sol.estado !== 'VERIFICANDO_PAGO') {
+      throw httpError(
+        `La solicitud ya fue enviada (estado actual: ${sol.estado})`,
+        409
+      );
+    }
+
+    // Todos los requisitos obligatorios deben tener un documento adjunto.
+    const faltantesRes = await client.query(
+      `SELECT r.id_requisito, r.descripcion_requisito
+         FROM requisito r
+         LEFT JOIN documento d
+           ON d.id_requisito = r.id_requisito AND d.id_solicitud = $1
+        WHERE r.cod_tramite = $2 AND r.es_obligatorio = true AND d.id_documento IS NULL`,
+      [requestId, sol.cod_tramite]
+    );
+    if (faltantesRes.rows.length > 0) {
+      const nombres = faltantesRes.rows.map((r) => r.descripcion_requisito).join('; ');
+      throw httpError(`Faltan documentos obligatorios por adjuntar: ${nombres}`, 400);
+    }
 
     let nroExpediente = sol.numero_expediente;
     if (!nroExpediente) {

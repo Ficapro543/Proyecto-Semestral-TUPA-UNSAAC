@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const { parseId } = require('../utils/validate');
 
 async function getNotifications(userId) {
   const query = `
@@ -27,7 +28,9 @@ async function markAllAsRead(userId) {
   return { message: 'Todas las notificaciones marcadas como leídas' };
 }
 
-async function markAsRead(notificationId, userId) {
+async function markAsRead(rawNotificationId, userId) {
+  const notificationId = parseId(rawNotificationId, 'id');
+
   const query = `
     UPDATE notificacion
     SET leida = true
@@ -36,7 +39,7 @@ async function markAsRead(notificationId, userId) {
   `;
   const { rows } = await pool.query(query, [notificationId, userId]);
   if (rows.length === 0) {
-    const error = new Error('Notificación no encontrada');
+    const error = new Error(`No existe una notificación con id ${notificationId} para este usuario`);
     error.statusCode = 404;
     throw error;
   }

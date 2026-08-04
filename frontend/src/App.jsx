@@ -22,6 +22,9 @@ import UserManagement from './pages/admin/UserManagement';
 import Reports from './pages/admin/Reports';
 
 import WizardLayout from './components/layout/WizardLayout';
+import RequireAuth from './components/layout/RequireAuth';
+import RequestDetail from './pages/student/RequestDetail';
+import AdminRequestDetail from './pages/admin/RequestDetail';
 import Step1 from './pages/student/wizard/Step1';
 import Step2 from './pages/student/wizard/Step2';
 import Step3 from './pages/student/wizard/Step3';
@@ -42,16 +45,31 @@ function App() {
       </Route>
 
       {/* Student Portal */}
-      <Route path="/estudiante" element={<StudentLayout />}>
+      <Route
+        path="/estudiante"
+        element={
+          <RequireAuth role="USER">
+            <StudentLayout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<StudentDashboard />} />
         <Route path="perfil" element={<MyProfile />} />
         <Route path="notificaciones" element={<Notifications />} />
         <Route path="tramites" element={<MyProcedures />} />
         <Route path="solicitudes" element={<MyRequests />} />
+        <Route path="solicitudes/:id" element={<RequestDetail />} />
       </Route>
 
       {/* Wizard */}
-      <Route path="/tramite" element={<WizardLayout />}>
+      <Route
+        path="/tramite"
+        element={
+          <RequireAuth role="USER">
+            <WizardLayout />
+          </RequireAuth>
+        }
+      >
         <Route path="nuevo" element={<Step1 />} />
         <Route path="paso1" element={<Step1 />} />
         <Route path="paso2" element={<Step2 />} />
@@ -61,15 +79,23 @@ function App() {
         <Route path="paso6" element={<Step6 />} />
       </Route>
 
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth role="ADMIN">
+            <AdminLayout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<AdminDashboard />} />
         <Route path="cola" element={<PendingQueue />} />
         <Route path="validacion" element={<DocumentValidation />} />
+        <Route path="solicitudes/:id" element={<AdminRequestDetail />} />
         <Route path="procedimientos" element={<ProcedureManagement />} />
         <Route path="usuarios" element={<UserManagement />} />
         <Route path="reportes" element={<Reports />} />
       </Route>
-      
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

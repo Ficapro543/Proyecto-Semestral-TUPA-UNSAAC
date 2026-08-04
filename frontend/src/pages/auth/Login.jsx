@@ -1,11 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth, DEMO_ACCOUNTS } from '../../context/AuthContext';
 import './Login.css';
 
 export default function Login() {
   const [selectedRole, setSelectedRole] = useState('estudiante');
+  const [identifier, setIdentifier] = useState(DEMO_ACCOUNTS.estudiante.identifier);
+  const [password, setPassword] = useState(DEMO_ACCOUNTS.estudiante.password);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
+
+  // Al cambiar de rol se recargan las credenciales de la cuenta de demo
+  // correspondiente: el acceso sigue siendo "simulado por rol".
+  const selectRole = (role) => {
+    setSelectedRole(role);
+    setIdentifier(DEMO_ACCOUNTS[role].identifier);
+    setPassword(DEMO_ACCOUNTS[role].password);
+    setError(null);
+  };
 
   // Efecto Parallax para los orbes del panel izquierdo
   useEffect(() => {
@@ -20,21 +34,22 @@ export default function Login() {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    setTimeout(() => {
-      if (selectedRole === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/estudiante');
-      }
-    }, 1500);
+    try {
+      const { user } = await login(identifier, password, DEMO_ACCOUNTS[selectedRole].role);
+      navigate(user.role === 'ADMIN' ? '/admin' : '/estudiante');
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw', margin: '-20px -20px 0 -20px' }}>
+    <div className="login-shell">
       {/* ── LEFT PANEL ─────────────────────────────────────── */}
       <div className="login-left" aria-hidden="true">
         <div className="login-left-orb" style={{ top: '-120px', right: '-120px', width: '400px', height: '400px', background: 'rgba(255,255,255,1)' }}></div>
@@ -108,18 +123,18 @@ export default function Login() {
 
           <p className="text-label-sm" style={{ color: 'var(--clr-secondary)', marginBottom: 'var(--sp-sm)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tipo de acceso</p>
           <div className="role-selector" role="group" aria-label="Seleccionar tipo de usuario">
-            <div 
+            <div
               className={`role-btn ${selectedRole === 'estudiante' ? 'selected' : ''}`}
-              onClick={() => setSelectedRole('estudiante')}
+              onClick={() => selectRole('estudiante')}
               role="radio" aria-checked={selectedRole === 'estudiante'} tabIndex={0}
             >
               <span className="material-symbols-outlined icon-filled">school</span>
               <span className="role-label">Estudiante</span>
               <span className="role-desc">Pregrado / Posgrado</span>
             </div>
-            <div 
+            <div
               className={`role-btn ${selectedRole === 'admin' ? 'selected' : ''}`}
-              onClick={() => setSelectedRole('admin')}
+              onClick={() => selectRole('admin')}
               role="radio" aria-checked={selectedRole === 'admin'} tabIndex={0}
             >
               <span className="material-symbols-outlined icon-filled">admin_panel_settings</span>
@@ -133,7 +148,12 @@ export default function Login() {
               <label className="form-label" htmlFor="username">Correo institucional o CUI</label>
               <div className="form-input-icon">
                 <span className="material-symbols-outlined">person</span>
-                <input className="form-input" type="text" id="username" name="username" placeholder="ej. e.rodriguez@unsaac.edu.pe" autoComplete="username" required />
+                <input
+                  className="form-input" type="text" id="username" name="username"
+                  placeholder="ej. e.rodriguez@unsaac.edu.pe" autoComplete="username" required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                />
               </div>
             </div>
 
@@ -144,9 +164,21 @@ export default function Login() {
               </div>
               <div className="form-input-icon">
                 <span className="material-symbols-outlined">lock</span>
-                <input className="form-input" type="password" id="password" name="password" placeholder="••••••••" autoComplete="current-password" required />
+                <input
+                  className="form-input" type="password" id="password" name="password"
+                  placeholder="••••••••" autoComplete="current-password" required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
             </div>
+
+            {error && (
+              <div className="alert alert-error" role="alert">
+                <span className="material-symbols-outlined">error</span>
+                <div>{error}</div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-sm)' }}>
               <label className="form-check" htmlFor="remember">

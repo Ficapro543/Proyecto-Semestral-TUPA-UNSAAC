@@ -1,7 +1,37 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../lib/api';
+import { formatSoles } from '../../lib/estados';
 import './LandingPage.css';
 
+/** Ícono por categoría para las tarjetas destacadas. */
+const ICONO_CATEGORIA = {
+  'Certificados y Constancias': 'verified',
+  'Matrícula': 'school',
+  'Grados y Títulos': 'workspace_premium',
+  'Movilidad Estudiantil': 'swap_horiz',
+  'Bienestar Universitario': 'restaurant',
+};
+
 export default function LandingPage() {
+  // Los trámites destacados y el conteo salen del catálogo real, no de una
+  // lista fija: antes la portada anunciaba 103 procedimientos inexistentes.
+  const [tramites, setTramites] = useState([]);
+
+  useEffect(() => {
+    let cancelado = false;
+    api
+      .listProcedures({ limit: 100 })
+      .then((r) => !cancelado && setTramites(r.data || []))
+      .catch(() => {
+        /* la portada es informativa: si la API no responde, se muestra sin cifras */
+      });
+    return () => { cancelado = true; };
+  }, []);
+
+  const totalTramites = tramites.length;
+  const destacados = tramites.slice(0, 4);
+
   return (
     <>
       {/* ── HERO ─────────────────────────────────── */}
@@ -36,7 +66,7 @@ export default function LandingPage() {
               </div>
               <div className="hero-stats" aria-label="Estadísticas del portal">
                 <div className="hero-stat-item">
-                  <div className="num">103+</div>
+                  <div className="num">{totalTramites || '—'}</div>
                   <div className="lbl">Procedimientos</div>
                 </div>
                 <div className="hero-stat-item">
@@ -54,14 +84,10 @@ export default function LandingPage() {
               <Link to="/seguimiento" className="hero-card">
                 <div className="hero-card-head">
                   <div className="hero-card-icon"><span className="material-symbols-outlined">timeline</span></div>
-                  <div className="hero-card-title">EXP-2024-8902 · Diploma de Bachiller</div>
-                  <span className="hero-card-badge badge-in-review badge">En Revisión</span>
+                  <div className="hero-card-title">Consulta tu expediente</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.15)', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: '62%', background: 'var(--clr-tertiary-fixed)', borderRadius: '4px' }}></div>
-                  </div>
-                  <div style={{ fontSize: '12px', opacity: 0.6 }}>Paso 4/6 — Revisión administrativa</div>
+                <div style={{ fontSize: '12px', opacity: 0.6 }}>
+                  Ingresa tu número EXP y sigue el estado de tu trámite en vivo.
                 </div>
               </Link>
               
@@ -133,47 +159,34 @@ export default function LandingPage() {
           <h2 className="section-title" id="procs-heading">Lo que más buscan los estudiantes</h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--sp-md)', marginBottom: 'var(--sp-xl)' }}>
-            <Link to="/catalogo" className="proc-highlight-card animate-on-load">
-              <div className="proc-highlight-icon"><span className="material-symbols-outlined">workspace_premium</span></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Diploma de Bachiller</div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px' }}>Acad. · S/. 120 · 15 días hábiles</div>
-              </div>
-              <span className="material-symbols-outlined" style={{ color: 'var(--clr-outline)' }}>chevron_right</span>
-            </Link>
-            
-            <Link to="/catalogo" className="proc-highlight-card animate-on-load stagger-1">
-              <div className="proc-highlight-icon"><span className="material-symbols-outlined">school</span></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Certificado de Matrícula</div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px' }}>Acad. · Gratuito · 2 días hábiles</div>
-              </div>
-              <span className="material-symbols-outlined" style={{ color: 'var(--clr-outline)' }}>chevron_right</span>
-            </Link>
-            
-            <Link to="/catalogo" className="proc-highlight-card animate-on-load stagger-2">
-              <div className="proc-highlight-icon"><span className="material-symbols-outlined">description</span></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Constancia de Egresado</div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px' }}>Acad. · S/. 30 · 3 días hábiles</div>
-              </div>
-              <span className="material-symbols-outlined" style={{ color: 'var(--clr-outline)' }}>chevron_right</span>
-            </Link>
-            
-            <Link to="/catalogo" className="proc-highlight-card animate-on-load stagger-3">
-              <div className="proc-highlight-icon"><span className="material-symbols-outlined">receipt_long</span></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Récord Académico</div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px' }}>Acad. · S/. 15 · 1 día hábil</div>
-              </div>
-              <span className="material-symbols-outlined" style={{ color: 'var(--clr-outline)' }}>chevron_right</span>
-            </Link>
+            {destacados.map((t, i) => (
+              <Link
+                key={t.cod_tramite}
+                to="/catalogo"
+                className={`proc-highlight-card animate-on-load${i > 0 ? ` stagger-${i}` : ''}`}
+              >
+                <div className="proc-highlight-icon">
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    {ICONO_CATEGORIA[t.nombre_categoria] || 'description'}
+                  </span>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>
+                    {t.nombre_tramite}
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginTop: '2px' }}>
+                    {formatSoles(t.precio)} · {t.dias_habiles} días hábiles
+                  </div>
+                </div>
+                <span className="material-symbols-outlined" style={{ color: 'var(--clr-outline)' }} aria-hidden="true">chevron_right</span>
+              </Link>
+            ))}
           </div>
 
           <div style={{ textAlign: 'center' }}>
             <Link to="/catalogo" className="btn btn-primary btn-lg">
               <span className="material-symbols-outlined">menu_book</span>
-              Ver catálogo completo (103 procedimientos)
+              Ver catálogo completo{totalTramites ? ` (${totalTramites} procedimientos)` : ''}
             </Link>
           </div>
         </div>
