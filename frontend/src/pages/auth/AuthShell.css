@@ -1,0 +1,168 @@
+/* Marco compartido de las pantallas de autenticación.
+   Todas las reglas van bajo .auth-shell: nada de selectores globales que
+   se filtren al resto de la aplicación. */
+
+.auth-shell {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--clr-background);
+}
+
+/* ── Panel institucional (se oculta en pantallas angostas) ── */
+.auth-shell-aside {
+  display: none;
+  width: 42%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  padding: var(--sp-2xl) var(--sp-xl);
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(150deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%);
+  color: var(--clr-on-primary);
+}
+@media (min-width: 900px) {
+  .auth-shell-aside { display: flex; }
+}
+
+.auth-orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.auth-shell-brand {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: var(--sp-md);
+  text-decoration: none; color: inherit;
+}
+.auth-brand-logo {
+  width: 48px; height: 48px; flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-brand-logo .material-symbols-outlined { color: var(--clr-tertiary-fixed); font-size: 26px; }
+.auth-brand-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 18px; font-weight: 700; }
+.auth-brand-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+.auth-shell-copy { position: relative; z-index: 1; }
+.auth-shell-copy h2 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 800; line-height: 1.2; margin-bottom: var(--sp-md);
+}
+.auth-shell-copy p { font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.65; max-width: 42ch; }
+
+.auth-shell-foot {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: rgba(255,255,255,0.7);
+}
+.auth-shell-foot .material-symbols-outlined { font-size: 18px; color: var(--clr-tertiary-fixed); }
+
+/* ── Columna del formulario ── */
+.auth-shell-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-xl) var(--sp-lg);
+  /* La columna scrollea sola: los formularios largos (registro) no deben
+     empujar el panel lateral ni romper el alto de 100vh. */
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--clr-surface-container-lowest);
+  border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-2xl);
+  padding: var(--sp-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card-head { text-align: center; margin-bottom: var(--sp-xl); }
+.auth-card-icon {
+  width: 56px; height: 56px; margin: 0 auto var(--sp-md);
+  background: var(--clr-primary);
+  border-radius: var(--radius-xl);
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-card-icon .material-symbols-outlined { color: var(--clr-tertiary-fixed); font-size: 30px; }
+.auth-card-head h1 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 24px; font-weight: 700; color: var(--clr-primary);
+  margin-bottom: var(--sp-xs);
+}
+.auth-card-head p { font-size: 14px; color: var(--clr-secondary); line-height: 1.55; }
+
+.auth-card-back { text-align: center; margin-top: var(--sp-lg); }
+.auth-card-back a { font-size: 12px; color: var(--clr-outline); text-decoration: none; }
+.auth-card-back a:hover { color: var(--clr-primary); text-decoration: underline; }
+
+/* ── Formularios ── */
+.auth-form { display: flex; flex-direction: column; gap: var(--sp-md); }
+.auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-md); }
+@media (max-width: 520px) { .auth-row { grid-template-columns: 1fr; } }
+
+/* ── Lista de requisitos de contraseña ── */
+.auth-reglas {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 4px;
+  margin-top: var(--sp-xs);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--clr-surface-container-low);
+  border-radius: var(--radius-lg);
+}
+.auth-regla {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--clr-secondary);
+  transition: color var(--transition-fast);
+}
+.auth-regla .material-symbols-outlined { font-size: 15px; }
+.auth-regla.ok { color: #065f46; font-weight: 600; }
+
+/* ── Casillas del código de 6 dígitos ── */
+.auth-codigo {
+  display: flex; gap: var(--sp-sm); justify-content: center;
+  margin: var(--sp-md) 0;
+}
+.auth-codigo input {
+  width: 48px; height: 58px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 700; color: var(--clr-primary);
+  border: 2px solid var(--clr-outline-variant);
+  border-radius: var(--radius-lg);
+  background: var(--clr-surface-container-lowest);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.auth-codigo input:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(0,32,69,0.12);
+}
+@media (max-width: 420px) {
+  .auth-codigo { gap: 6px; }
+  .auth-codigo input { width: 40px; height: 50px; font-size: 20px; }
+}
+
+/* ── Indicador de pasos ── */
+.auth-pasos {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--sp-xs); margin-bottom: var(--sp-lg);
+}
+.auth-paso {
+  width: 28px; height: 4px; border-radius: 9999px;
+  background: var(--clr-outline-variant);
+  transition: background var(--transition-base);
+}
+.auth-paso.activo { background: var(--clr-primary); }
+.auth-paso.hecho { background: var(--clr-tertiary-container); }

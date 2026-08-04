@@ -8,6 +8,10 @@
  * El paso 2 es lo que hace que la demo funcione entre dos máquinas sin
  * reconfigurar nada: si la máquina B abre http://192.168.1.50:5173, la API
  * se resuelve sola a http://192.168.1.50:3000/api.
+ *
+ * El access token dura 15 minutos; cuando vence, este módulo lo renueva solo
+ * con el refresh token y reintenta la petición. Las peticiones que fallen
+ * mientras se renueva quedan en cola para no disparar varios refresh a la vez.
  */
 
 const DEFAULT_API_PORT = 3000;
@@ -25,16 +29,22 @@ export const API_BASE_URL = resolveBaseUrl();
 /** Origen del backend sin el sufijo /api — para construir URLs de /uploads. */
 export const API_ORIGIN = API_BASE_URL.replace(/\/api$/, '');
 
-const TOKEN_KEY = 'tupa_token';
+const ACCESS_KEY = 'tupa_access_token';
+const REFRESH_KEY = 'tupa_refresh_token';
 const USER_KEY = 'tupa_user';
 
 export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(ACCESS_KEY);
 }
 
-export function setSession(token, user) {
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+export function getRefreshToken() {
+  return localStorage.getItem(REFRESH_KEY);
+}
+
+export function setSession({ accessToken, refreshToken, user }) {
+  if (accessToken) localStorage.setItem(ACCESS_KEY, accessToken);
+  if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken);
+  if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function getStoredUser() {
@@ -48,11 +58,13 @@ export function getStoredUser() {
 }
 
 export function clearSession() {
-  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(ACCESS_KEY);
+  localStorage.removeItem(REFRESH_KEY);
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem('tupa_wizard');
 }
 
-/** Error con el status HTTP adjunto, para que las pantallas puedan distinguir 404 de 500. */
+/** Error con el status HTTP adjunto, para que las pantallas distingan 404 de 500. */
 export class ApiError extends Error {
   constructor(message, status, body) {
     super(message);
@@ -62,7 +74,49 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path, { method = 'GET', body, isFormData = false, signal } = {}) {
+// ── Renovación de sesión ──────────────────────────────────────────────
+
+let renovando = null;
+/** Avisa a la app cuando la sesión muere de verdad, para redirigir al login. */
+let alExpirarSesion = () => {};
+
+export function onSessionExpired(handler) {
+  alExpirarSesion = handler;
+}
+
+async function renovarSesion() {
+  // Un solo refresh en vuelo: el resto de llamadas espera esta promesa.
+  if (renovando) return renovando;
+
+  renovando = (async () => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new ApiError('Sesión expirada', 401, null);
+
+    const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!res.ok) throw new ApiError('Sesión expirada', 401, null);
+
+    const data = await res.json();
+    setSession(data);
+    return data.accessToken;
+  })();
+
+  try {
+    return await renovando;
+  } finally {
+    renovando = null;
+  }
+}
+
+// Rutas que nunca deben disparar un refresh: si fallan con 401 es porque las
+// credenciales son incorrectas, no porque la sesión haya vencido.
+const SIN_REINTENTO = ['/auth/login', '/auth/refresh', '/auth/register', '/auth/logout'];
+
+async function request(path, { method = 'GET', body, isFormData = false, signal, _reintento } = {}) {
   const headers = {};
   const token = getToken();
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -85,7 +139,18 @@ async function request(path, { method = 'GET', body, isFormData = false, signal 
     );
   }
 
-  // 204 y respuestas sin cuerpo
+  // Access token vencido: renovar una vez y reintentar.
+  if (response.status === 401 && !_reintento && !SIN_REINTENTO.some((r) => path.startsWith(r))) {
+    try {
+      await renovarSesion();
+      return request(path, { method, body, isFormData, signal, _reintento: true });
+    } catch {
+      clearSession();
+      alExpirarSesion();
+      throw new ApiError('Tu sesión expiró. Vuelve a iniciar sesión.', 401, null);
+    }
+  }
+
   const text = await response.text();
   let payload = null;
   if (text) {
@@ -98,7 +163,7 @@ async function request(path, { method = 'GET', body, isFormData = false, signal 
 
   if (!response.ok) {
     const message =
-      (payload && typeof payload === 'object' && payload.error) ||
+      (payload && typeof payload === 'object' && (payload.error || payload.message)) ||
       `Error ${response.status} en ${method} ${path}`;
     throw new ApiError(message, response.status, payload);
   }
@@ -107,9 +172,20 @@ async function request(path, { method = 'GET', body, isFormData = false, signal 
 }
 
 export const api = {
-  // ── Auth ────────────────────────────────────────────────────
+  // ── Autenticación ───────────────────────────────────────────
   login: (identifier, password, role) =>
     request('/auth/login', { method: 'POST', body: { identifier, password, role } }),
+  register: (datos) => request('/auth/register', { method: 'POST', body: datos }),
+  activarCuenta: (token) => request(`/auth/activate/${token}`, { method: 'POST' }),
+  reenviarActivacion: (email) =>
+    request('/auth/resend-activation', { method: 'POST', body: { email } }),
+  logout: (refreshToken) => request('/auth/logout', { method: 'POST', body: { refreshToken } }),
+
+  forgotPassword: (email) => request('/auth/forgot-password', { method: 'POST', body: { email } }),
+  resendCode: (email) => request('/auth/resend-code', { method: 'POST', body: { email } }),
+  verifyCode: (email, code) => request('/auth/verify-code', { method: 'POST', body: { email, code } }),
+  resetPassword: (resetToken, password) =>
+    request('/auth/reset-password', { method: 'POST', body: { resetToken, password } }),
 
   // ── Perfil ──────────────────────────────────────────────────
   getProfile: (opts = {}) => request('/users/profile', opts),
@@ -121,12 +197,13 @@ export const api = {
     }),
 
   // ── Catálogo público ────────────────────────────────────────
-  listProcedures: (params = {}) => {
+  listProcedures: (params = {}, opts = {}) => {
     const qs = new URLSearchParams(params).toString();
-    return request(`/procedures${qs ? `?${qs}` : ''}`);
+    return request(`/procedures${qs ? `?${qs}` : ''}`, opts);
   },
-  getProcedure: (codTramite) => request(`/procedures/${encodeURIComponent(codTramite)}`),
-  getCategories: () => request('/procedures/categories'),
+  getProcedure: (codTramite, opts = {}) =>
+    request(`/procedures/${encodeURIComponent(codTramite)}`, opts),
+  getCategories: (opts = {}) => request('/procedures/categories', opts),
 
   // ── Solicitudes (estudiante) ────────────────────────────────
   createRequest: (cod_tramite) => request('/requests', { method: 'POST', body: { cod_tramite } }),
@@ -166,9 +243,9 @@ export const api = {
   getAdminRequest: (id, opts = {}) => request(`/admin/requests/${id}`, opts),
   processDecision: (id, decision) =>
     request(`/admin/requests/${id}/decision`, { method: 'POST', body: decision }),
-  listUsers: (params = {}) => {
+  listUsers: (params = {}, opts = {}) => {
     const qs = new URLSearchParams(params).toString();
-    return request(`/admin/users${qs ? `?${qs}` : ''}`);
+    return request(`/admin/users${qs ? `?${qs}` : ''}`, opts);
   },
   toggleUser: (id) => request(`/admin/users/${id}/toggle`, { method: 'PATCH' }),
   createProcedure: (data) => request('/admin/procedures', { method: 'POST', body: data }),

@@ -272,24 +272,155 @@ async function processDecision(rawRequestId, adminId, decisionData = {}) {
   }
 }
 
-async function createProcedure(data) {
-  const { cod_tramite, id_categoria, nombre_tramite, descripcion, base_legal, precio, dias_habiles, unidad_responsable } = data;
+/**
+ * Da de alta un TIPO de trámite en el catálogo TUPA (no una solicitud).
+ *
+ * Crea la fila en `tramite` y, en la misma transacción, sus `requisito`.
+ * Acepta `nombre_categoria` para crear la categoría al vuelo si aún no
+ * existe, de modo que el admin no tenga que darla de alta aparte.
+ */
+async function createProcedure(data = {}) {
+  const {
+    cod_tramite,
+    id_categoria,
+    nombre_categoria,
+    nombre_tramite,
+    descripcion,
+    base_legal,
+    precio,
+    dias_habiles,
+    unidad_responsable,
+    requisitos,
+  } = data;
 
-  if (!cod_tramite || !nombre_tramite) {
-    const error = new Error('Código de trámite y nombre son requeridos');
-    error.statusCode = 400;
+  if (!cod_tramite || !String(cod_tramite).trim()) {
+    throw badRequest('El código de trámite es requerido');
+  }
+  if (!nombre_tramite || !String(nombre_tramite).trim()) {
+    throw badRequest('El nombre del trámite es requerido');
+  }
+
+  const codigo = String(cod_tramite).trim().toUpperCase();
+  if (codigo.length > 20) {
+    throw badRequest('El código de trámite no puede exceder 20 caracteres');
+  }
+  if (String(nombre_tramite).trim().length > 200) {
+    throw badRequest('El nombre del trámite no puede exceder 200 caracteres');
+  }
+
+  const precioNum = precio === undefined || precio === '' ? 0 : Number(precio);
+  if (Number.isNaN(precioNum) || precioNum < 0) {
+    throw badRequest('El precio debe ser un número mayor o igual a 0');
+  }
+
+  const diasNum = dias_habiles === undefined || dias_habiles === '' ? 1 : Number(dias_habiles);
+  if (!Number.isInteger(diasNum) || diasNum < 1) {
+    throw badRequest('Los días hábiles deben ser un entero mayor o igual a 1');
+  }
+
+  const listaRequisitos = Array.isArray(requisitos) ? requisitos : [];
+  for (const r of listaRequisitos) {
+    const texto = typeof r === 'string' ? r : r?.descripcion_requisito;
+    if (!texto || !String(texto).trim()) {
+      throw badRequest('Cada requisito necesita una descripción');
+    }
+    if (String(texto).trim().length > 400) {
+      throw badRequest('Cada requisito no puede exceder 400 caracteres');
+    }
+  }
+
+  const existe = await pool.query('SELECT cod_tramite FROM tramite WHERE cod_tramite = $1', [codigo]);
+  if (existe.rows.length > 0) {
+    const error = new Error(`Ya existe un trámite con el código ${codigo}`);
+    error.statusCode = 409;
     throw error;
   }
 
-  const query = `
-    INSERT INTO tramite (cod_tramite, id_categoria, nombre_tramite, descripcion, base_legal, precio, dias_habiles, unidad_responsable, vigente)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
-    RETURNING *;
-  `;
-  const { rows } = await pool.query(query, [
-    cod_tramite, id_categoria, nombre_tramite, descripcion, base_legal, precio || 0, dias_habiles || 1, unidad_responsable
-  ]);
-  return rows[0];
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Resolver la categoría: por id, por nombre existente, o creándola.
+    let categoriaId = id_categoria ? Number(id_categoria) : null;
+
+    if (!categoriaId && nombre_categoria && String(nombre_categoria).trim()) {
+      const nombreCat = String(nombre_categoria).trim();
+      const encontrada = await client.query(
+        'SELECT id_categoria FROM categoria WHERE LOWER(nombre_categoria) = LOWER($1)',
+        [nombreCat]
+      );
+      if (encontrada.rows.length > 0) {
+        categoriaId = encontrada.rows[0].id_categoria;
+      } else {
+        const creada = await client.query(
+          `INSERT INTO categoria (nombre_categoria, icono, activo)
+           VALUES ($1, 'description', true) RETURNING id_categoria`,
+          [nombreCat]
+        );
+        categoriaId = creada.rows[0].id_categoria;
+      }
+    }
+
+    if (categoriaId) {
+      const cat = await client.query('SELECT id_categoria FROM categoria WHERE id_categoria = $1', [
+        categoriaId,
+      ]);
+      if (cat.rows.length === 0) {
+        throw httpErrorLocal(`No existe la categoría ${categoriaId}`, 404);
+      }
+    }
+
+    const insertTramite = await client.query(
+      `INSERT INTO tramite
+         (cod_tramite, id_categoria, nombre_tramite, descripcion, base_legal,
+          precio, dias_habiles, unidad_responsable, vigente)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true)
+       RETURNING *`,
+      [
+        codigo,
+        categoriaId,
+        String(nombre_tramite).trim(),
+        descripcion?.trim() || null,
+        base_legal?.trim() || null,
+        precioNum,
+        diasNum,
+        unidad_responsable?.trim() || null,
+      ]
+    );
+
+    const creados = [];
+    let orden = 1;
+    for (const r of listaRequisitos) {
+      const texto = typeof r === 'string' ? r : r.descripcion_requisito;
+      const obligatorio = typeof r === 'string' ? true : r.es_obligatorio !== false;
+
+      const ins = await client.query(
+        `INSERT INTO requisito (cod_tramite, descripcion_requisito, es_obligatorio, orden)
+         VALUES ($1,$2,$3,$4)
+         RETURNING id_requisito, descripcion_requisito, es_obligatorio, orden`,
+        [codigo, String(texto).trim(), obligatorio, orden]
+      );
+      creados.push(ins.rows[0]);
+      orden += 1;
+    }
+
+    await client.query('COMMIT');
+
+    const tramite = insertTramite.rows[0];
+    tramite.requisitos = creados;
+    return tramite;
+  } catch (e) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw e;
+  } finally {
+    client.release();
+  }
+}
+
+function httpErrorLocal(message, statusCode) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
 }
 
 async function toggleProcedure(cod_tramite) {
