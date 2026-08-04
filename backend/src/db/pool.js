@@ -4,13 +4,21 @@ require('dotenv').config();
 const connectionString = process.env.DATABASE_URL;
 
 const config = connectionString
-  ? { connectionString }
+  ? {
+      connectionString,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    }
   : {
       host: process.env.PGHOST || 'localhost',
       port: process.env.PGPORT || 5432,
       database: process.env.PGDATABASE || 'tupa_db',
       user: process.env.PGUSER || 'postgres',
       password: process.env.PGPASSWORD || 'postgres',
+      ssl: {
+        rejectUnauthorized: false,
+      },
     };
 
 const pool = new Pool(config);
