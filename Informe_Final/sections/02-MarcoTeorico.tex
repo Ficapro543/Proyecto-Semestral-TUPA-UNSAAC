@@ -1,0 +1,72 @@
+% ── Marco Teórico ────────────────────────────────────────────────────────────
+\section{Marco Teórico}
+
+\subsection{Arquitectura Cliente-Servidor y API REST}
+El sistema sigue una arquitectura cliente-servidor desacoplada, en la que el
+cliente (frontend) y el servidor (backend) se comunican exclusivamente a
+través de una interfaz de programación de aplicaciones (API) que expone
+recursos mediante el protocolo HTTP siguiendo los principios REST
+(Representational State Transfer): uso de verbos HTTP (\texttt{GET},
+\texttt{POST}, \texttt{PUT}, \texttt{PATCH}, \texttt{DELETE}) sobre recursos
+identificados por rutas, intercambio de datos en formato JSON y ausencia de
+estado en el servidor entre peticiones, delegando la sesión del usuario al
+token enviado en cada solicitud.
+
+\subsection{Node.js y Express}
+Node.js es un entorno de ejecución de JavaScript del lado del servidor basado
+en el motor V8, orientado a operaciones de entrada/salida no bloqueantes.
+Express es un framework minimalista para Node.js que provee un sistema de
+enrutamiento y de middlewares para construir APIs HTTP \parencite{expressdocs}.
+En el presente proyecto, Express se utiliza para definir los módulos de rutas,
+controladores y middlewares que conforman la API REST del backend.
+
+\subsection{PostgreSQL}
+PostgreSQL es un sistema de gestión de bases de datos relacionales de código
+abierto que implementa el estándar SQL con soporte para transacciones ACID,
+llaves foráneas, restricciones de verificación (\texttt{CHECK}) e índices
+\parencite{postgresqldocs}. El modelo de datos del sistema se apoya en estas
+características para garantizar la integridad referencial entre solicitudes,
+usuarios, trámites y documentos.
+
+\subsection{React y Vite}
+React es una biblioteca de JavaScript para la construcción de interfaces de
+usuario basada en componentes reutilizables y un modelo declarativo de
+renderizado \parencite{reactdocs}. Vite es la herramienta de compilación y
+servidor de desarrollo utilizada para el proyecto frontend, que ofrece
+recarga en caliente y un empaquetado optimizado para producción.
+
+\subsection{Autenticación basada en JSON Web Tokens (JWT)}
+JWT es un estándar abierto (RFC 7519) que define un formato compacto y
+autocontenido para transmitir información entre dos partes como un objeto
+JSON firmado digitalmente \parencite{rfc7519}. En el sistema, el token JWT se
+emite tras un inicio de sesión exitoso y contiene el identificador del
+usuario y su rol, permitiendo validar cada solicitud subsecuente sin
+necesidad de mantener sesiones en el servidor.
+
+\subsection{Hash de Contraseñas}
+Para el almacenamiento seguro de credenciales, las contraseñas no se guardan
+en texto plano, sino como el resultado de una función de hash con salteo
+(\emph{salt}) mediante el algoritmo \texttt{bcrypt}, diseñado específicamente
+para dificultar ataques de fuerza bruta mediante un factor de costo
+configurable.
+
+\subsection{Metodología de Desarrollo}
+El desarrollo del proyecto se organizó de forma iterativa e incremental,
+construyendo primero el modelo de datos, luego la capa de API y finalmente la
+integración con la interfaz de usuario. La evidencia verificable en el
+repositorio corresponde a una estructura modular de trabajo por carpetas
+(\texttt{backend/} y \texttt{frontend/}), con definición formal de rutas y
+servicios y con un flujo de validación local mediante ejecución del servidor y
+pruebas automatizadas. No se encuentra evidencia comprobable en el proyecto de
+un tablero Kanban o de una herramienta de gestión de sprints distinta a la
+organización académica y de entrega del curso, por lo que el enfoque se
+describe como una metodología de desarrollo ágil informal, apoyada en la
+implementación continua y en pruebas de integración HTTP.
+
+\subsection{Multer y gestión de archivos}
+La carga de documentos y comprobantes de pago se implementa en el backend
+mediante la librería \texttt{multer}, un middleware de Express para la
+recepción de archivos multipart/form-data \\parencite{multerdocs}. En el
+repositorio, esta capa se configura con almacenamiento en disco y validación de
+tipo de archivo para aceptar únicamente PDF, JPG y PNG, con límite de tamaño de
+5 MB por carga.

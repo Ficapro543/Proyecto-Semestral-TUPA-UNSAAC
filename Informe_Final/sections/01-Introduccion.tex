@@ -1,0 +1,66 @@
+% ── Introducción ─────────────────────────────────────────────────────────────
+\section{Introducción}
+
+\subsection{Antecedentes}
+El Texto Único de Procedimientos Administrativos (TUPA) constituye el marco
+normativo que concentra los procedimientos administrativos de la UNSAAC.
+Dentro de este marco, los estudiantes y egresados deben gestionar trámites
+como constancias, convalidaciones, grados y títulos, entre otros, siguiendo
+requisitos, costos y plazos definidos por la institución. En la práctica, la
+solicitud y la revisión de estos procesos están asociadas a flujos
+administrativos documento-centricos, donde la evidencia de pago, los requisitos
+y la observación del expediente se registran y validan de manera manual y
+distribuida entre dependencias universitarias.
+
+\subsection{Planteamiento del Problema}
+La gestión del TUPA en la universidad presenta una brecha entre el marco
+normativo institucional y la experiencia de atención digital. A partir de la
+documentación del proyecto y de la estructura del repositorio, el problema
+central se observa en la falta de trazabilidad, la dependencia de validaciones
+manuales y la dispersión de la información sobre requisitos, estado y
+observaciones de cada trámite. Esto obliga a estudiantes y personal
+administrativo a coordinar procesos de forma menos eficiente, con mayor riesgo
+mínimo de errores de seguimiento y de demora en la atención.
+
+\subsection{Justificación}
+El desarrollo de una plataforma digital para la gestión del TUPA permite
+centralizar el catálogo de procedimientos, automatizar el seguimiento del
+estado de cada solicitud y reducir la dependencia de documentación física,
+beneficiando tanto a los estudiantes solicitantes como al personal
+administrativo encargado de la validación.
+
+\subsection{Alcance}
+El alcance del presente proyecto corresponde a una \textbf{demostración
+funcional (demo)} del sistema, orientada a validar el flujo completo de un
+trámite: desde la consulta del catálogo público, la creación y llenado de una
+solicitud mediante un asistente guiado, la carga de documentos y el pago, hasta
+la revisión y decisión por parte del personal administrativo. En la versión
+implementada del repositorio, el flujo de pago se modela como la carga de un
+comprobante de pago en el backend, pero no existe integración con un proveedor
+de pagos real ni con la autenticación institucional de la UNSAAC. Asimismo, la
+ruta \texttt{/api/auth/google} queda como un stub con respuesta 501, por lo
+que la autenticación con Google está fuera del alcance de la demo entregada.
+
+\subsection{Objetivos}
+
+\subsubsection{Objetivo General}
+Desarrollar una plataforma web para la gestión digital de procedimientos
+administrativos del TUPA de la UNSAAC, que permita a los estudiantes iniciar,
+dar seguimiento y completar sus trámites en línea, y al personal administrativo
+validarlos de forma centralizada.
+
+\subsubsection{Objetivos Específicos}
+\begin{enumerate}
+    \item Diseñar un modelo de base de datos relacional que represente los
+    procedimientos del TUPA, sus requisitos, las solicitudes de los
+    estudiantes y su historial de seguimiento.
+    \item Implementar una API REST en Node.js/Express que exponga las
+    operaciones necesarias para el catálogo de trámites, la gestión de
+    solicitudes, la carga de documentos y la administración de usuarios.
+    \item Implementar una interfaz web en React que permita a los estudiantes
+    completar un asistente de trámite paso a paso y a los administradores
+    gestionar la cola de solicitudes pendientes.
+    \item Incorporar mecanismos de autenticación y autorización basados en
+    JWT que diferencien el acceso entre el rol de estudiante y el rol
+    administrativo.
+\end{enumerate}

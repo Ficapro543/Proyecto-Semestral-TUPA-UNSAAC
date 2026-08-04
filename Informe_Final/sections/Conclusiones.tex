@@ -1,0 +1,44 @@
+% ── Conclusiones ─────────────────────────────────────────────────────────────
+\section{Conclusiones}
+
+\subsection{Resultados}
+% TODO(agente): Marcar con [Logrado] / [Parcial] / [No logrado] cada objetivo
+% específico listado en la Introducción, según lo que esté realmente
+% implementado y verificable en el código al momento de generar el informe.
+% No declarar un objetivo como logrado si no hay evidencia en el repositorio.
+\begin{itemize}
+    \item[] Diseño del modelo de base de datos relacional: \_\_\_\_\_\_\_\_\_\_.
+    \item[] Implementación de la API REST: \_\_\_\_\_\_\_\_\_\_.
+    \item[] Implementación de la interfaz web (asistente de trámite y panel administrativo): \_\_\_\_\_\_\_\_\_\_.
+    \item[] Mecanismos de autenticación y autorización: \_\_\_\_\_\_\_\_\_\_.
+\end{itemize}
+
+\subsection{Conclusiones}
+% TODO(agente): Redactar entre 3 y 5 conclusiones basadas únicamente en lo
+% efectivamente construido y verificado, evitando afirmaciones generales no
+% respaldadas por el sistema implementado.
+\begin{enumerate}
+    \item El uso de una arquitectura desacoplada entre el frontend en React
+    y el backend en Express permitió desarrollar y probar ambas capas de
+    forma independiente, comunicándose únicamente a través de contratos de
+    API bien definidos.
+    \item El modelo de datos relacional en PostgreSQL, con restricciones
+    \texttt{CHECK} sobre los campos de estado, permitió delegar parte de la
+    validación del flujo del trámite a la propia base de datos, reduciendo
+    la posibilidad de estados inconsistentes.
+    \item[] % TODO(agente): agregar conclusiones adicionales específicas del
+    % resultado de las pruebas realizadas.
+\end{enumerate}
+
+\subsection{Recomendaciones}
+\begin{enumerate}
+    \item Para una versión posterior al alcance de demo, se recomienda
+    incorporar pruebas automatizadas (unitarias y de integración) sobre los
+    servicios de la API, particularmente sobre la lógica de cambio de
+    estado de una solicitud.
+    \item Se recomienda evaluar la integración con un proveedor de pagos
+    real y con el sistema de autenticación institucional de la UNSAAC para
+    una eventual puesta en producción.
+    \item[] % TODO(agente): agregar recomendaciones adicionales pertinentes
+    % al estado real del proyecto.
+\end{enumerate}
