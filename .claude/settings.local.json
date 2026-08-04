@@ -21,7 +21,10 @@
       "Bash(grep -c \"backend/.env$\")",
       "Bash(xargs -I{} echo \"rastreado en git: {}\")",
       "Bash(ip -4 addr show eth0)",
-      "Bash(awk '{print $2}')"
+      "Bash(awk '{print $2}')",
+      "Bash(awk '/CREATE TABLE.*\\(activation_tokens|password_reset_tokens|refresh_tokens|pending_users|users\\)/,/\\\\\\);/' create_tables.sql)",
+      "Bash(npm pkg *)",
+      "Bash(timeout 60 node scripts/migrate-auth.js)"
     ]
   }
 }
