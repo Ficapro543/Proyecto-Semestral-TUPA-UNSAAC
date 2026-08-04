@@ -21,20 +21,20 @@ INSERT INTO especialidad (cod_especialidad, nombre_especialidad, facultad) VALUE
 -- ============================================================
 INSERT INTO usuario_general
 (dni, nombres, ap_paterno, ap_materno, email_institucional, email_personal, telefono, password_hash, cod_especialidad, codigo_universitario, semestre_actual, avatar_url, activo) VALUES
-('70123456', 'Amilcar', 'Estrada', 'Quispe', 'amilcar.estrada@unsaac.edu.pe', 'amilcar.eq@gmail.com', '984123456', '$2b$10$examplehash0000000000000000000000000000000000000001', '001', '20201234', '8', NULL, TRUE),
-('71234567', 'Maria', 'Huamani', 'Condori', 'maria.huamani@unsaac.edu.pe', 'maria.hc@gmail.com', '984234567', '$2b$10$examplehash0000000000000000000000000000000000000002', '002', '20191122', '10', NULL, TRUE),
-('72345678', 'Jose', 'Mamani', 'Ttito', 'jose.mamani@unsaac.edu.pe', NULL, '984345678', '$2b$10$examplehash0000000000000000000000000000000000000003', '003', '20221001', '4', NULL, TRUE),
-('73456789', 'Lucia', 'Quispe', 'Flores', 'lucia.quispe@unsaac.edu.pe', 'lucia.qf@gmail.com', '984456789', '$2b$10$examplehash0000000000000000000000000000000000000004', '004', '20180567', '12', NULL, FALSE),
-('74567890', 'Carlos', 'Ccahuana', 'Puma', 'carlos.ccahuana@unsaac.edu.pe', NULL, '984567890', '$2b$10$examplehash0000000000000000000000000000000000000005', '001', '20211890', '6', NULL, TRUE);
+('70123456', 'Amilcar', 'Estrada', 'Quispe', 'amilcar.estrada@unsaac.edu.pe', 'amilcar.eq@gmail.com', '984123456', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', '001', '20201234', '8', NULL, TRUE),
+('71234567', 'Maria', 'Huamani', 'Condori', 'maria.huamani@unsaac.edu.pe', 'maria.hc@gmail.com', '984234567', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', '002', '20191122', '10', NULL, TRUE),
+('72345678', 'Jose', 'Mamani', 'Ttito', 'jose.mamani@unsaac.edu.pe', NULL, '984345678', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', '003', '20221001', '4', NULL, TRUE),
+('73456789', 'Lucia', 'Quispe', 'Flores', 'lucia.quispe@unsaac.edu.pe', 'lucia.qf@gmail.com', '984456789', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', '004', '20180567', '12', NULL, FALSE),
+('74567890', 'Carlos', 'Ccahuana', 'Puma', 'carlos.ccahuana@unsaac.edu.pe', NULL, '984567890', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', '001', '20211890', '6', NULL, TRUE);
 
 -- ============================================================
 --  3. USUARIO ADMIN
 -- ============================================================
 INSERT INTO usuario_admin
 (dni, nombres, ap_paterno, ap_materno, email_institucional, telefono, password_hash, codigo_trabajador, rol_admin, avatar_url, activo) VALUES
-('40111222', 'Rosa', 'Palomino', 'Vargas', 'rosa.palomino@unsaac.edu.pe', '984111222', '$2b$10$examplehash0000000000000000000000000000000000000006', 'TRB-0001', 'SUPER_ADMIN', NULL, TRUE),
-('40222333', 'Edwin', 'Choque', 'Sullca', 'edwin.choque@unsaac.edu.pe', '984222333', '$2b$10$examplehash0000000000000000000000000000000000000007', 'TRB-0002', 'ADMIN', NULL, TRUE),
-('40333444', 'Silvia', 'Aragon', 'Delgado', 'silvia.aragon@unsaac.edu.pe', '984333444', '$2b$10$examplehash0000000000000000000000000000000000000008', 'TRB-0003', 'ADMIN', NULL, TRUE);
+('40111222', 'Rosa', 'Palomino', 'Vargas', 'rosa.palomino@unsaac.edu.pe', '984111222', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', 'TRB-0001', 'SUPER_ADMIN', NULL, TRUE),
+('40222333', 'Edwin', 'Choque', 'Sullca', 'edwin.choque@unsaac.edu.pe', '984222333', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', 'TRB-0002', 'ADMIN', NULL, TRUE),
+('40333444', 'Silvia', 'Aragon', 'Delgado', 'silvia.aragon@unsaac.edu.pe', '984333444', '$2b$10$oHJLT9pp/kCo0IPcmOS8Yeh9za3sDaJmT//9BkGGPMkeshyQUSRw6', 'TRB-0003', 'ADMIN', NULL, TRUE);
 
 -- ============================================================
 --  4. CATEGORIA
