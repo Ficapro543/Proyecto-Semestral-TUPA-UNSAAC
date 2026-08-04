@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api, { API_ORIGIN } from '../../lib/api';
+import api from '../../lib/api';
 import usePolling from '../../hooks/usePolling';
 import { Loading, ErrorState, LiveBadge } from '../../components/ui/AsyncState';
+import DocumentViewer from '../../components/ui/DocumentViewer';
 import { estadoInfo, esCerrado, formatFecha, formatSoles, nombreCompleto } from '../../lib/estados';
 
 const POLL_MS = 4000;
@@ -28,6 +29,7 @@ export default function AdminRequestDetail() {
   const [enviando, setEnviando] = useState(false);
   const [errorDecision, setErrorDecision] = useState(null);
   const [exito, setExito] = useState(null);
+  const [docEnVisor, setDocEnVisor] = useState(null);
 
   const cerrado = solicitud ? esCerrado(solicitud.estado) : false;
 
@@ -150,15 +152,14 @@ export default function AdminRequestDetail() {
               <div>
                 <div className="detail-label">Comprobante</div>
                 {voucher ? (
-                  <a
+                  <button
+                    type="button"
                     className="btn btn-outline btn-sm"
-                    href={`${API_ORIGIN}${voucher.ruta_archivo}`}
-                    target="_blank"
-                    rel="noreferrer"
+                    onClick={() => setDocEnVisor(voucher)}
                     style={{ marginTop: '4px' }}
                   >
                     <span className="material-symbols-outlined icon-sm">open_in_new</span> Ver voucher
-                  </a>
+                  </button>
                 ) : (
                   <div style={{ color: 'var(--clr-secondary)' }}>No adjuntado</div>
                 )}
@@ -200,9 +201,14 @@ export default function AdminRequestDetail() {
 
                       {doc ? (
                         <div style={{ fontSize: '12px', color: 'var(--clr-secondary)', marginTop: '4px', display: 'flex', gap: 'var(--sp-md)', flexWrap: 'wrap', alignItems: 'center' }}>
-                          <a href={`${API_ORIGIN}${doc.ruta_archivo}`} target="_blank" rel="noreferrer" style={{ color: 'var(--clr-primary)', fontWeight: 600 }}>
+                          <button
+                            type="button"
+                            className="btn-link"
+                            onClick={() => setDocEnVisor(doc)}
+                            style={{ color: 'var(--clr-primary)', fontWeight: 600, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          >
                             <span className="material-symbols-outlined icon-sm" style={{ verticalAlign: 'middle' }}>description</span> {doc.nombre_archivo}
-                          </a>
+                          </button>
                           <span>{formatFecha(doc.fecha_subida)}</span>
                           <span className={`badge ${doc.estado_validacion === 'APROBADO' ? 'badge-success' : doc.estado_validacion === 'RECHAZADO' ? 'badge-error' : 'badge-neutral'}`} style={{ fontSize: '10px' }}>
                             {doc.estado_validacion}
@@ -380,6 +386,14 @@ export default function AdminRequestDetail() {
           </Link>
         </div>
       </div>
+
+      {docEnVisor && (
+        <DocumentViewer
+          idDocumento={docEnVisor.id_documento}
+          nombreArchivo={docEnVisor.nombre_archivo}
+          onClose={() => setDocEnVisor(null)}
+        />
+      )}
     </>
   );
 }

@@ -180,6 +180,7 @@ CREATE TABLE documento (
     nombre_archivo      VARCHAR(200)   NOT NULL,
     ruta_archivo        VARCHAR(300)   NOT NULL,
     tamano_bytes        BIGINT,
+    mime_type           VARCHAR(100),
     estado_validacion   VARCHAR(20)    NOT NULL DEFAULT 'PENDIENTE'
                         CHECK (estado_validacion IN (
                             'PENDIENTE',

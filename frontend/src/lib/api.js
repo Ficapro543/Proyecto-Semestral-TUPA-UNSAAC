@@ -171,6 +171,30 @@ async function request(path, { method = 'GET', body, isFormData = false, signal,
   return payload;
 }
 
+/**
+ * Descarga un archivo protegido (requiere el header Authorization, así que
+ * no se puede usar un <a href> plano) y lo entrega como blob para mostrarlo
+ * en un <img>/<iframe> u ofrecerlo para descarga.
+ */
+async function requestBlob(path) {
+  const token = getToken();
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}${path}`, { headers });
+
+  if (!response.ok) {
+    let message = `Error ${response.status} al obtener el archivo`;
+    try {
+      const body = await response.json();
+      message = body?.error || body?.message || message;
+    } catch {
+      // La respuesta no era JSON (probablemente el archivo mismo); se conserva el mensaje genérico.
+    }
+    throw new ApiError(message, response.status, null);
+  }
+
+  return response.blob();
+}
+
 export const api = {
   // ── Autenticación ───────────────────────────────────────────
   login: (identifier, password, role) =>
@@ -228,6 +252,11 @@ export const api = {
 
   // ── Documentos ──────────────────────────────────────────────
   deleteDocument: (idDocumento) => request(`/documents/${idDocumento}`, { method: 'DELETE' }),
+  getDocumentBlob: (idDocumento) => requestBlob(`/documents/${idDocumento}/view`),
+
+  // ── Perfil: avatar ──────────────────────────────────────────
+  uploadAvatar: (formData) =>
+    request('/users/profile/avatar', { method: 'POST', body: formData, isFormData: true }),
 
   // ── Notificaciones ──────────────────────────────────────────
   getNotifications: (opts = {}) => request('/notifications', opts),

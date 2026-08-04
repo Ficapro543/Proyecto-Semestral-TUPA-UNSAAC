@@ -212,11 +212,11 @@ async function uploadVoucher(rawRequestId, userId, { file, nro_recibo, monto_tot
 
     // Insertar voucher en tabla documento (sin id_requisito)
     const insertDoc = `
-      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion)
-      VALUES ($1, NULL, $2, $3, $4, 'PENDIENTE')
+      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, mime_type, estado_validacion)
+      VALUES ($1, NULL, $2, $3, $4, $5, 'PENDIENTE')
       RETURNING id_documento, nombre_archivo, ruta_archivo, estado_validacion;
     `;
-    const resDoc = await client.query(insertDoc, [requestId, file.originalname, relativePath, file.size]);
+    const resDoc = await client.query(insertDoc, [requestId, file.originalname, relativePath, file.size, file.mimetype]);
 
     await client.query('COMMIT');
 
@@ -265,21 +265,22 @@ async function uploadDocument(rawRequestId, userId, id_requisito, file) {
       SET nombre_archivo = $1,
           ruta_archivo = $2,
           tamano_bytes = $3,
+          mime_type = $4,
           estado_validacion = 'PENDIENTE',
           fecha_subida = NOW()
-      WHERE id_documento = $4
+      WHERE id_documento = $5
       RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion, fecha_subida;
     `;
-    const { rows } = await pool.query(updateQuery, [file.originalname, relativePath, file.size, existingRes.rows[0].id_documento]);
+    const { rows } = await pool.query(updateQuery, [file.originalname, relativePath, file.size, file.mimetype, existingRes.rows[0].id_documento]);
     return rows[0];
   } else {
     // Insertar nuevo
     const insertQuery = `
-      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion)
-      VALUES ($1, $2, $3, $4, $5, 'PENDIENTE')
+      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, mime_type, estado_validacion)
+      VALUES ($1, $2, $3, $4, $5, $6, 'PENDIENTE')
       RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion, fecha_subida;
     `;
-    const { rows } = await pool.query(insertQuery, [requestId, reqIdNum, file.originalname, relativePath, file.size]);
+    const { rows } = await pool.query(insertQuery, [requestId, reqIdNum, file.originalname, relativePath, file.size, file.mimetype]);
     return rows[0];
   }
 }

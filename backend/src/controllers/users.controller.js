@@ -19,8 +19,17 @@ const changePassword = asyncHandler(async (req, res) => {
   res.json(result);
 });
 
+const uploadAvatar = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se recibió ningún archivo' });
+  }
+  const result = await usersService.updateAvatar(req.user.id, req.user.role, req.file);
+  res.json({ message: 'Avatar actualizado exitosamente', ...result });
+});
+
 module.exports = {
   getProfile,
   updateProfile,
+  uploadAvatar,
   changePassword,
 };

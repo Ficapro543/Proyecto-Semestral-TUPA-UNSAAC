@@ -1,8 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api, { API_ORIGIN } from '../../lib/api';
+import api from '../../lib/api';
 import usePolling from '../../hooks/usePolling';
 import { Loading, ErrorState, LiveBadge } from '../../components/ui/AsyncState';
+import DocumentViewer from '../../components/ui/DocumentViewer';
 import { estadoInfo, formatFecha, formatSoles } from '../../lib/estados';
 
 const POLL_MS = 4000;
@@ -21,6 +22,7 @@ export default function StudentRequestDetail() {
     intervalMs: POLL_MS,
     deps: [id],
   });
+  const [docEnVisor, setDocEnVisor] = useState(null);
 
   if (loading) return <Loading label="Cargando solicitud…" />;
   if (error) {
@@ -124,13 +126,13 @@ export default function StudentRequestDetail() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: 600 }}>{req.descripcion_requisito}</div>
                       {doc ? (
-                        <a
-                          href={`${API_ORIGIN}${doc.ruta_archivo}`}
-                          target="_blank" rel="noreferrer"
-                          style={{ fontSize: '12px', color: 'var(--clr-primary)', fontWeight: 600 }}
+                        <button
+                          type="button"
+                          onClick={() => setDocEnVisor(doc)}
+                          style={{ fontSize: '12px', color: 'var(--clr-primary)', fontWeight: 600, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                         >
                           {doc.nombre_archivo}
-                        </a>
+                        </button>
                       ) : (
                         <div style={{ fontSize: '12px', color: 'var(--clr-secondary)' }}>No adjuntado</div>
                       )}
@@ -178,6 +180,14 @@ export default function StudentRequestDetail() {
           </div>
         </div>
       </div>
+
+      {docEnVisor && (
+        <DocumentViewer
+          idDocumento={docEnVisor.id_documento}
+          nombreArchivo={docEnVisor.nombre_archivo}
+          onClose={() => setDocEnVisor(null)}
+        />
+      )}
     </>
   );
 }

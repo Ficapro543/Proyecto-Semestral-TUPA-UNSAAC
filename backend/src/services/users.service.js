@@ -1,5 +1,7 @@
 const pool = require('../db/pool');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 
 async function getProfile(userId, role) {
   if (role === 'ADMIN') {
@@ -110,6 +112,43 @@ async function updateProfile(userId, role, data) {
   }
 }
 
+/**
+ * Reemplaza el avatar_url por el archivo que multer acaba de guardar en
+ * /uploads y borra el archivo anterior, si era uno subido por este mismo
+ * endpoint (no toca avatares que sean una URL externa).
+ */
+async function updateAvatar(userId, role, file) {
+  const table = role === 'ADMIN' ? 'usuario_admin' : 'usuario_general';
+  const idCol = role === 'ADMIN' ? 'id_admin' : 'id_usuario';
+  const relativePath = `/uploads/${file.filename}`;
+
+  const { rows } = await pool.query(
+    `SELECT avatar_url FROM ${table} WHERE ${idCol} = $1`,
+    [userId]
+  );
+  if (rows.length === 0) {
+    const error = new Error('Usuario no encontrado');
+    error.statusCode = 404;
+    throw error;
+  }
+  const anterior = rows[0].avatar_url;
+
+  await pool.query(`UPDATE ${table} SET avatar_url = $1 WHERE ${idCol} = $2`, [relativePath, userId]);
+
+  if (anterior && anterior.startsWith('/uploads/')) {
+    const fullPath = path.join(__dirname, '../../', anterior);
+    if (fs.existsSync(fullPath)) {
+      try {
+        fs.unlinkSync(fullPath);
+      } catch (err) {
+        console.error('Error al eliminar avatar anterior:', err);
+      }
+    }
+  }
+
+  return { avatar_url: relativePath };
+}
+
 async function changePassword(userId, role, { currentPassword, newPassword }) {
   if (!currentPassword || !newPassword) {
     const error = new Error('Contraseña actual y nueva son requeridas');
@@ -146,5 +185,6 @@ async function changePassword(userId, role, { currentPassword, newPassword }) {
 module.exports = {
   getProfile,
   updateProfile,
+  updateAvatar,
   changePassword,
 };
