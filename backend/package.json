@@ -4,9 +4,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "test": "jest",
     "dev": "nodemon src/server.js",
     "db:init": "node scripts/init-db.js",
-    "db:seed": "node scripts/init-db.js --seed"
+    "db:seed": "node scripts/init-db.js --seed",
+    "db:auth": "node scripts/migrate-auth.js"
   },
   "keywords": [],
   "author": "UNSAAC",
@@ -19,9 +21,12 @@
     "express": "^5.0.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^9.0.3",
     "pg": "^8.11.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.2.2"
   }
 }

@@ -1,0 +1,61 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{formato}
+
+%% =====================================================
+%% CONFIGURACIÓN DE LOS DATOS DEL DOCUMENTO
+%% =====================================================
+\documenttitle{Informe Final -- Portal Digital TUPA UNSAAC}
+\subject{Desarrollo de Software I}
+\advisor{Mg. Luis Alvaro Monzón Condori}
+\semester{2026 - I}
+
+%% =====================================================
+%% REGISTRO DE AUTORES/ESTUDIANTES
+%% =====================================================
+\addauthor{Castro Pari, Rayneld Fidel}{231865}
+\addauthor{Estacio Medrano, Amilcar}{200822}
+\addauthor{Florez Vega, Yamir Wagner}{231442}
+\addauthor{Merma Ccarhuarupay, Adel Alejandro}{231446}
+
+%% =====================================================
+%% INICIO DEL DOCUMENTO
+%% =====================================================
+\begin{document}
+
+%% =====================================================
+%% PORTADA
+%% =====================================================
+\thispagestyle{empty}
+\makeatletter
+\input{portada}
+\makeatother
+
+%% =====================================================
+%% SECCIONES PRELIMINARES CON NUMERACIÓN ROMANA
+%% =====================================================
+\startpreliminary
+\clearpage
+
+
+%% =====================================================
+%% TABLA DE CONTENIDOS
+%% =====================================================
+\tableofcontents
+\clearpage
+
+%% =====================================================
+%% CONTENIDO PRINCIPAL CON NUMERACIÓN ARÁBIGA
+%% =====================================================
+\startmain
+
+\input{sections/01-Introduccion}
+\input{sections/02-MarcoTeorico}
+\input{sections/03-Desarrollo}
+\input{sections/Conclusiones}
+
+%% =====================================================
+%% BIBLIOGRAFÍA
+%% =====================================================
+\printreferences[Referencias Bibliográficas]
+
+\end{document}

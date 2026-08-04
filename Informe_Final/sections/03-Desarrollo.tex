@@ -1,0 +1,282 @@
+% ── Desarrollo ───────────────────────────────────────────────────────────────
+\section{Desarrollo}
+
+\subsection{Descripción General del Sistema}
+El sistema, denominado Portal Digital TUPA - UNSAAC, está compuesto por tres
+capas: una aplicación cliente construida en React que consume una API REST
+desarrollada en Node.js/Express, la cual a su vez persiste la información en
+una base de datos relacional PostgreSQL. El sistema contempla dos tipos de
+usuario con necesidades y permisos distintos.
+
+\subsubsection{Usuarios y Roles}
+\begin{itemize}
+    \item \textbf{Estudiante} (tabla \texttt{usuario\_general}): puede
+    consultar el catálogo público de trámites, iniciar una solicitud
+    mediante un asistente guiado de varios pasos, cargar los documentos
+    requeridos, realizar el pago, dar seguimiento a sus expedientes y recibir
+    notificaciones sobre el estado de estos.
+    \item \textbf{Administrador} (tabla \texttt{usuario\_admin}): puede
+    revisar la cola de solicitudes pendientes, validar o rechazar los
+    documentos cargados, registrar observaciones y decisiones sobre cada
+    expediente, y gestionar el catálogo de trámites y los usuarios del
+    sistema. Un administrador puede tener el rol \texttt{ADMIN} o
+    \texttt{SUPER\_ADMIN}.
+\end{itemize}
+
+\subsection{Requerimientos}
+
+\subsubsection{Requerimientos Funcionales}
+\apatable{%
+\begin{tabular}{@{}p{1.2cm}p{8.5cm}p{2.4cm}@{}}
+\toprule
+\textbf{Código} & \textbf{Descripción} & \textbf{Estado} \\
+\midrule
+RF-01 & Consulta pública del catálogo de trámites, con filtros por búsqueda, categoría, costo y plazos. & Implementado \\
+RF-02 & Inicio de sesión de estudiantes y administradores mediante credenciales del sistema. & Implementado \\
+RF-03 & Creación de una solicitud en borrador y avance del wizard por pasos 1 a 6. & Implementado \\
+RF-04 & Carga de comprobante de pago y documentos requeridos por requisito. & Implementado en demo \\
+RF-05 & Generación automática de número de expediente al confirmar el envío. & Implementado \\
+RF-06 & Rastreo público por número de expediente. & Implementado \\
+RF-07 & Notificaciones de estado y observaciones para el usuario. & Implementado \\
+RF-08 & Cola administrativa de solicitudes pendientes con revisión por expediente. & Implementado \\
+RF-09 & Decisión administrativa sobre validación de documentos y estado de la solicitud. & Implementado \\
+RF-10 & Gestión del catálogo y activación/desactivación de usuarios y trámites. & Implementado \\
+\bottomrule
+\end{tabular}%
+}{Requerimientos funcionales del sistema y su estado de implementación.}{tab:rf}
+
+La tabla anterior se valida directamente con las rutas expuestas por el backend
+(\texttt{/api/procedures}, \texttt{/api/requests}, \texttt{/api/admin}) y con
+los componentes de navegación definidos en \texttt{frontend/src/App.jsx}. El
+único componente que queda fuera del alcance de la demo es la integración con
+un proveedor de pagos real y la autenticación de Google, ambos presentados como
+stubs o funcionalidades no implementadas en la versión entregada.
+
+\subsubsection{Requerimientos No Funcionales}
+\apatable{%
+\begin{tabular}{@{}p{1.2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Código} & \textbf{Descripción} \\
+\midrule
+RNF-01 & Las contraseñas de los usuarios deben almacenarse cifradas mediante una función de hash (\texttt{bcrypt}), nunca en texto plano. \\
+RNF-02 & El acceso a los recursos protegidos de la API debe requerir un token JWT válido en la cabecera \texttt{Authorization}. \\
+RNF-03 & Las rutas administrativas deben restringirse mediante verificación de rol (\texttt{admin} / \texttt{super\_admin}). \\
+RNF-04 & Todas las consultas a la base de datos deben usar sentencias parametrizadas para prevenir inyección SQL. \\
+RNF-05 & La interfaz debe ser consumible desde un navegador web moderno, comunicándose con el backend mediante peticiones HTTP habilitadas por CORS. \\
+\bottomrule
+\end{tabular}%
+}{Requerimientos no funcionales del sistema.}{tab:rnf}
+
+\subsection{Arquitectura del Sistema}
+
+\subsubsection{Arquitectura General}
+La Figura~\ref{fig:arquitectura} presenta la arquitectura general del
+sistema, organizada en tres capas desacopladas que se comunican mediante
+peticiones HTTP/JSON.
+
+\apafigure{%
+\begin{tikzpicture}[node distance=1.6cm and 2.4cm]
+    \node[bloque] (cliente) {Cliente Web\\(React + Vite)};
+    \node[bloque, right=of cliente] (api) {API REST\\(Node.js + Express)};
+    \node[bloque, right=of api] (bd) {Base de Datos\\(PostgreSQL)};
+
+    \draw[flecha] (cliente) -- node[above, font=\footnotesize]{HTTP/JSON} (api);
+    \draw[flecha] (api) -- node[above, font=\footnotesize]{SQL} (bd);
+\end{tikzpicture}%
+}{Arquitectura general del sistema en tres capas.}{fig:arquitectura}
+
+\subsubsection{Arquitectura del Backend}
+La organización real del backend en el repositorio es consistente con un
+patrón Rutas--Controladores--Servicios, pero además incorpora utilidades y
+miembros adicionales de infraestructura:
+
+\begin{itemize}
+    \item \texttt{routes/}: define los prefijos de la API
+    (\texttt{/api/auth}, \texttt{/api/users}, \texttt{/api/procedures},
+    \texttt{/api/requests}, \texttt{/api/documents},
+    \texttt{/api/notifications} y \texttt{/api/admin}) y enlaza cada ruta
+    con su controlador.
+    \item \texttt{controllers/}: reciben la solicitud HTTP, delegan la
+    lógica a los servicios y responden con JSON.
+    \item \texttt{services/}: contienen la lógica de negocio y las
+    consultas parametrizadas sobre PostgreSQL, incluidas la creación de
+    solicitudes, la generación del expediente, la validación documental y la
+    gestión de usuarios y trámites.
+    \item \texttt{middleware/}: implementa la autenticación JWT,
+    autorización por rol, manejo de errores y carga de archivos mediante
+    \texttt{multer}.
+    \item \texttt{db/}: centraliza el \emph{pool} de conexiones a PostgreSQL.
+    \item \texttt{utils/}: contiene utilidades como la generación de el
+    número de expediente y la firma/verificación de tokens JWT.
+\end{itemize}
+
+\subsubsection{Arquitectura del Frontend}
+La organización real del frontend presenta una división funcional por tipo de
+vista, pero con una estructura más detallada que la descrita de forma general:
+
+\begin{itemize}
+    \item \texttt{pages/public}: páginas de acceso público como landing,
+    catálogo, búsqueda y rastreo de expedientes.
+    \item \texttt{pages/auth}: flujo de autenticación.
+    \item \texttt{pages/student}: panel del estudiante, perfil, notificaciones,
+    trámites propios y detalle de solicitudes.
+    \item \texttt{pages/student/wizard}: asistentes del flujo de solicitud
+    en seis pasos.
+    \item \texttt{pages/admin}: panel administrativo, cola de pendientes,
+    validación documental, gestión de procedimientos y usuarios.
+    \item \texttt{components/}, \texttt{context/}, \texttt{hooks/},
+    \texttt{lib/} y \texttt{styles/}: capas de reutilización de interfaz,
+    estado global de sesión y estilos compartidos.
+\end{itemize}
+
+\subsection{Modelo de Base de Datos}
+
+\subsubsection{Diccionario de Datos}
+El modelo relacional está compuesto por once entidades. La
+Tabla~\ref{tab:diccionario} resume su propósito dentro del sistema.
+
+\apatable{%
+\begin{tabular}{@{}p{2.8cm}p{9.7cm}@{}}
+\toprule
+\textbf{Entidad} & \textbf{Descripción} \\
+\midrule
+\texttt{especialidad} & Catálogo de especialidades/facultades a las que puede pertenecer un estudiante. \\
+\texttt{usuario\_general} & Estudiantes que solicitan trámites; incluye datos institucionales y de contacto. \\
+\texttt{usuario\_admin} & Personal administrativo del sistema, con rol \texttt{ADMIN} o \texttt{SUPER\_ADMIN}. \\
+\texttt{categoria} & Agrupación temática de los trámites del catálogo (p. ej. Certificados, Matrícula). \\
+\texttt{tramite} & Catálogo oficial de procedimientos del TUPA: costo, plazo, base legal y vigencia. \\
+\texttt{requisito} & Requisitos documentales obligatorios u opcionales asociados a cada trámite. \\
+\texttt{solicitud} & Expediente creado por un estudiante para un trámite: estado, prioridad, número de expediente. \\
+\texttt{documento} & Archivo digital cargado por el estudiante para cumplir un requisito específico. \\
+\texttt{observacion} & Observación registrada por un administrador sobre un documento o solicitud. \\
+\texttt{seguimiento} & Bitácora histórica de cambios de estado de una solicitud. \\
+\texttt{notificacion} & Alerta generada hacia un estudiante ante un evento relevante de su solicitud. \\
+\bottomrule
+\end{tabular}%
+}{Diccionario de datos del modelo relacional.}{tab:diccionario}
+
+\subsubsection{Relaciones Principales}
+Un \texttt{usuario\_general} puede tener múltiples \texttt{solicitud} (una
+por trámite iniciado); cada \texttt{solicitud} referencia un
+\texttt{tramite} del catálogo. Cada \texttt{tramite} define uno o más
+\texttt{requisito}, y cada \texttt{documento} cargado por el estudiante se
+asocia opcionalmente a un \texttt{requisito} específico dentro de una
+\texttt{solicitud}. Las tablas \texttt{observacion} y \texttt{seguimiento}
+registran, respectivamente, las incidencias y el historial de cambios de
+estado de una \texttt{solicitud}, ambas vinculadas al
+\texttt{usuario\_admin} que las generó.
+
+\subsubsection{Restricciones de Integridad}
+El modelo aplica restricciones \texttt{CHECK} para limitar los valores
+válidos de los campos de estado, evitando así estados inconsistentes a nivel
+de base de datos:
+\begin{itemize}
+    \item \texttt{solicitud.estado} $\in$ \{\texttt{BORRADOR},
+    \texttt{SOLICITADO}, \texttt{VERIFICANDO\_PAGO}, \texttt{PAGADO},
+    \texttt{EN PROCESO}, \texttt{SUBSANACION}, \texttt{OBSERVADO},
+    \texttt{COMPLETADO}, \texttt{ANULADO}, \texttt{RECHAZADO}\}.
+    \item \texttt{documento.estado\_validacion} $\in$ \{\texttt{PENDIENTE},
+    \texttt{APROBADO}, \texttt{RECHAZADO}\}.
+    \item \texttt{observacion.estado} $\in$ \{\texttt{PENDIENTE},
+    \texttt{SUBSANADO}, \texttt{CERRADO}\}.
+\end{itemize}
+El script de creación completo se encuentra en el esquema SQL del proyecto y
+se mantiene como referencia técnica del respaldo relacional del sistema.
+
+\subsection{Diseño de la API REST}
+La API se organiza en siete módulos funcionales, cada uno bajo su propio
+prefijo de ruta. La Tabla~\ref{tab:api} resume los módulos implementados y su
+conjunto de operaciones definido en la capa de rutas del backend.
+
+\apatable{%
+\begin{tabular}{@{}p{2.7cm}p{2.1cm}p{7.4cm}@{}}
+\toprule
+\textbf{Módulo} & \textbf{Ruta} & \textbf{Endpoints implementados} \\
+\midrule
+Autenticación & \texttt{/api/auth} & \texttt{POST /login}, \texttt{POST /google} (stub no implementado). \\
+Perfil de usuario & \texttt{/api/users} & \texttt{GET /profile}, \texttt{PUT /profile}, \texttt{PUT /profile/password}. \\
+Catálogo de trámites & \texttt{/api/procedures} & \texttt{GET /}, \texttt{GET /categories}, \texttt{GET /:cod\_tramite}. \\
+Solicitudes & \texttt{/api/requests} & \texttt{POST /}, \texttt{GET /}, \texttt{GET /:id}, \texttt{PATCH /:id/step}, \texttt{POST /:id/voucher}, \texttt{POST /:id/document/:id\_requisito}, \texttt{POST /:id/submit}, \texttt{GET /track/:numero\_expediente}. \\
+Documentos & \texttt{/api/documents} & \texttt{DELETE /:id\_documento}. \\
+Notificaciones & \texttt{/api/notifications} & \texttt{GET /}, \texttt{POST /read-all}, \texttt{PATCH /:id/read}. \\
+Administración & \texttt{/api/admin} & \texttt{GET /stats}, \texttt{GET /requests}, \texttt{GET /requests/:id}, \texttt{POST /requests/:id/decision}, \texttt{POST /procedures}, \texttt{PATCH /procedures/:cod\_tramite/toggle}, \texttt{GET /users}, \texttt{PATCH /users/:id/toggle}. \\
+\bottomrule
+\end{tabular}%
+}{Endpoints principales de la API REST del backend.}{tab:api}
+
+\subsection{Diseño de Interfaces}
+El frontend implementado en React y Vite expone rutas para los principales
+escenarios del sistema. A partir de la estructura de navegación en
+\texttt{frontend/src/App.jsx} y de los archivos presentes en
+\texttt{frontend/src/pages/}, la interfaz está organizada en los siguientes
+bloques:
+
+\subsubsection{Portal Público}
+La navegación pública incluye la landing page, el catálogo de trámites, la
+búsqueda de expediente y la vista de seguimiento público a través de los
+componentes \texttt{LandingPage.jsx}, \texttt{Catalog.jsx},
+\texttt{TrackingSearch.jsx} y \texttt{TrackingResults.jsx}. Estas vistas
+coinciden con el acceso descrito por las rutas \texttt{/}, \texttt{/catalogo},
+\texttt{/seguimiento} y \texttt{/seguimiento/resultados}.
+
+\subsubsection{Portal del Estudiante}
+El portal del estudiante incorpora el dashboard principal, el perfil, el
+centro de notificaciones, el listado de trámites y solicitudes, y el wizard de
+compra y envío de documentos bajo los pasos 1 a 6. En la estructura del
+frontend, estos módulos se materializan en \texttt{Dashboard.jsx},
+\texttt{MyProfile.jsx}, \texttt{Notifications.jsx}, \texttt{MyProcedures.jsx},
+\texttt{MyRequests.jsx}, \texttt{RequestDetail.jsx} y las vistas de
+\texttt{wizard/Step1.jsx} a \texttt{Step6.jsx}.
+
+\subsubsection{Portal Administrativo}
+El portal administrativo implementado incluye el dashboard de gestión,
+la cola de solicitudes pendientes, la validación documental, la gestión del
+catálogo de procedimientos y la administración de usuarios. Estas vistas se
+encuentran en \texttt{AdminDashboard.jsx}, \texttt{PendingQueue.jsx},
+\texttt{DocumentValidation.jsx}, \texttt{ProcedureManagement.jsx} y
+\texttt{UserManagement.jsx} dentro de \texttt{frontend/src/pages/admin/}.
+
+\subsection{Seguridad}
+El sistema implementa los siguientes mecanismos de seguridad a nivel de
+API:
+\begin{itemize}
+    \item \textbf{Autenticación:} un middleware \texttt{authenticateToken}
+    intercepta las rutas protegidas, valida el token JWT recibido en la
+    cabecera \texttt{Authorization: Bearer <token>} y adjunta la identidad
+    del usuario a la petición.
+    \item \textbf{Autorización por rol:} un middleware
+    \texttt{requireRole} restringe el acceso a las rutas bajo
+    \texttt{/api/admin} únicamente a usuarios con rol \texttt{admin} o
+    \texttt{super\_admin}.
+    \item \textbf{Cifrado de contraseñas:} las contraseñas se almacenan
+    como \emph{hash} mediante \texttt{bcrypt}, nunca en texto plano.
+    \item \textbf{Prevención de inyección SQL:} todas las consultas a la
+    base de datos se ejecutan mediante sentencias parametrizadas.
+    \item \textbf{CORS:} el backend habilita el origen del frontend de
+    desarrollo (\texttt{http://localhost:5173}) para permitir las
+    peticiones entre dominios distintos durante el desarrollo.
+\end{itemize}
+
+\subsection{Despliegue}
+La versión disponible en el repositorio se ejecuta en entorno local para la
+presentación de la demo. El backend corre con Node.js y Express sobre el puerto
+\texttt{3000}, mientras que el frontend se sirve con Vite sobre
+\texttt{localhost:5173}. Las variables de entorno necesarias se registran en
+\texttt{.env} del backend y incluyen la cadena de conexión a PostgreSQL,
+\texttt{JWT\_SECRET}, el puerto HTTP y las credenciales de acceso a la
+base de datos. No existe evidencia de un despliegue productivo en un servicio
+en la nube o en un host externo; por lo tanto, el despliegue verificado es
+local y orientado a demostración académica.
+
+\subsection{Pruebas}
+La verificación del sistema se realizó con pruebas automatizadas de integración
+HTTP mediante Jest y Supertest sobre la aplicación Express. En la ejecución
+real del repositorio, la suite reportó \textbf{4 suites} y \textbf{30 tests}
+correctos, cubriendo el health check, login, perfil, catálogo, wizard de
+solicitudes, gestión documental, notificaciones y endpoints administrativos.
+Además, el recorrido de prueba de humo validado en el flujo del sistema incluye
+la creación de un borrador de solicitud, la actualización del proceso en pasos,
+la carga de comprobante y documentos, y el envío final con generación de
+expediente. Estos resultados confirman que la API expuesta por el backend
+responde con los códigos y mensajes esperados en los escenarios principales de
+la demo.
