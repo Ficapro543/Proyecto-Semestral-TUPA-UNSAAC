@@ -41,6 +41,8 @@ CREATE TABLE usuario_general (
     telefono             VARCHAR(15),
     semestre_actual      VARCHAR(30),
     avatar_url           VARCHAR(300),
+    avatar_contenido     BYTEA,
+    avatar_mime_type     VARCHAR(100),
     password_hash        VARCHAR(200)  NOT NULL,
     cod_especialidad     VARCHAR(3)    REFERENCES especialidad(cod_especialidad),
     activo               BOOLEAN       NOT NULL DEFAULT TRUE,
@@ -61,6 +63,8 @@ CREATE TABLE usuario_admin (
     telefono             VARCHAR(15),
     rol_admin            VARCHAR(20)   NOT NULL DEFAULT 'ADMIN' CHECK (rol_admin IN ('ADMIN', 'SUPER_ADMIN')),
     avatar_url           VARCHAR(300),
+    avatar_contenido     BYTEA,
+    avatar_mime_type     VARCHAR(100),
     password_hash        VARCHAR(200)  NOT NULL,
     activo               BOOLEAN       NOT NULL DEFAULT TRUE,
     created_at           TIMESTAMP     NOT NULL DEFAULT NOW()
@@ -178,9 +182,10 @@ CREATE TABLE documento (
     id_solicitud        INT            NOT NULL REFERENCES solicitud(id_solicitud),
     id_requisito        INT            REFERENCES requisito(id_requisito),
     nombre_archivo      VARCHAR(200)   NOT NULL,
-    ruta_archivo        VARCHAR(300)   NOT NULL,
+    ruta_archivo        VARCHAR(300),
     tamano_bytes        BIGINT,
     mime_type           VARCHAR(100),
+    contenido           BYTEA,
     estado_validacion   VARCHAR(20)    NOT NULL DEFAULT 'PENDIENTE'
                         CHECK (estado_validacion IN (
                             'PENDIENTE',

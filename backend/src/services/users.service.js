@@ -1,7 +1,6 @@
 const pool = require('../db/pool');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
-const path = require('path');
+const { parseId } = require('../utils/validate');
 
 async function getProfile(userId, role) {
   if (role === 'ADMIN') {
@@ -113,40 +112,51 @@ async function updateProfile(userId, role, data) {
 }
 
 /**
- * Reemplaza el avatar_url por el archivo que multer acaba de guardar en
- * /uploads y borra el archivo anterior, si era uno subido por este mismo
- * endpoint (no toca avatares que sean una URL externa).
+ * Guarda el avatar como bytes en la propia fila del usuario (columna
+ * avatar_contenido) y apunta avatar_url al endpoint que los sirve. El
+ * backend corre serverless (Vercel): un archivo en disco no sobrevive entre
+ * invocaciones, así que la base de datos es la única capa persistente.
  */
 async function updateAvatar(userId, role, file) {
   const table = role === 'ADMIN' ? 'usuario_admin' : 'usuario_general';
   const idCol = role === 'ADMIN' ? 'id_admin' : 'id_usuario';
-  const relativePath = `/uploads/${file.filename}`;
+  const rolePath = role === 'ADMIN' ? 'admin' : 'general';
+  const avatarUrl = `/api/users/avatar/${rolePath}/${userId}`;
 
   const { rows } = await pool.query(
-    `SELECT avatar_url FROM ${table} WHERE ${idCol} = $1`,
-    [userId]
+    `UPDATE ${table}
+     SET avatar_contenido = $1, avatar_mime_type = $2, avatar_url = $3
+     WHERE ${idCol} = $4
+     RETURNING avatar_url`,
+    [file.buffer, file.mimetype, avatarUrl, userId]
   );
   if (rows.length === 0) {
     const error = new Error('Usuario no encontrado');
     error.statusCode = 404;
     throw error;
   }
-  const anterior = rows[0].avatar_url;
 
-  await pool.query(`UPDATE ${table} SET avatar_url = $1 WHERE ${idCol} = $2`, [relativePath, userId]);
+  return { avatar_url: rows[0].avatar_url };
+}
 
-  if (anterior && anterior.startsWith('/uploads/')) {
-    const fullPath = path.join(__dirname, '../../', anterior);
-    if (fs.existsSync(fullPath)) {
-      try {
-        fs.unlinkSync(fullPath);
-      } catch (err) {
-        console.error('Error al eliminar avatar anterior:', err);
-      }
-    }
+/** Bytes del avatar para el endpoint público GET /api/users/avatar/:role/:id. */
+async function getAvatar(role, rawUserId) {
+  const table = role === 'admin' ? 'usuario_admin' : 'usuario_general';
+  const idCol = role === 'admin' ? 'id_admin' : 'id_usuario';
+  const userId = parseId(rawUserId, 'id');
+
+  const { rows } = await pool.query(
+    `SELECT avatar_contenido, avatar_mime_type FROM ${table} WHERE ${idCol} = $1`,
+    [userId]
+  );
+
+  if (rows.length === 0 || !rows[0].avatar_contenido) {
+    const error = new Error('Avatar no encontrado');
+    error.statusCode = 404;
+    throw error;
   }
 
-  return { avatar_url: relativePath };
+  return { contenido: rows[0].avatar_contenido, mime_type: rows[0].avatar_mime_type };
 }
 
 async function changePassword(userId, role, { currentPassword, newPassword }) {
@@ -186,5 +196,6 @@ module.exports = {
   getProfile,
   updateProfile,
   updateAvatar,
+  getAvatar,
   changePassword,
 };

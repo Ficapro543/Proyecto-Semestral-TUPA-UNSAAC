@@ -109,9 +109,11 @@ async function getRequestDetail(rawRequestId, userId = null, isAdmin = false) {
     throw httpError('Acceso denegado a esta solicitud', 403);
   }
 
-  // Obtener documentos subidos
+  // Obtener documentos subidos (sin `contenido`: son los bytes del archivo,
+  // no tienen nada que hacer en una respuesta JSON — se sirven aparte desde
+  // GET /api/documents/:id_documento/view).
   const docsQuery = `
-    SELECT d.id_documento, d.id_requisito, d.nombre_archivo, d.ruta_archivo, 
+    SELECT d.id_documento, d.id_requisito, d.nombre_archivo,
            d.tamano_bytes, d.estado_validacion, d.fecha_subida,
            r.descripcion_requisito, r.es_obligatorio
     FROM documento d
@@ -192,8 +194,6 @@ async function uploadVoucher(rawRequestId, userId, { file, nro_recibo, monto_tot
     }
   }
 
-  const relativePath = `/uploads/${file.filename}`;
-
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -210,13 +210,14 @@ async function uploadVoucher(rawRequestId, userId, { file, nro_recibo, monto_tot
     `;
     const resSol = await client.query(updateSol, [nro_recibo, monto_total, requestId]);
 
-    // Insertar voucher en tabla documento (sin id_requisito)
+    // Insertar voucher en tabla documento (sin id_requisito). El contenido
+    // va como Buffer (multer usa memoryStorage) directo a la columna BYTEA.
     const insertDoc = `
-      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, mime_type, estado_validacion)
+      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, tamano_bytes, mime_type, contenido, estado_validacion)
       VALUES ($1, NULL, $2, $3, $4, $5, 'PENDIENTE')
-      RETURNING id_documento, nombre_archivo, ruta_archivo, estado_validacion;
+      RETURNING id_documento, nombre_archivo, estado_validacion;
     `;
-    const resDoc = await client.query(insertDoc, [requestId, file.originalname, relativePath, file.size, file.mimetype]);
+    const resDoc = await client.query(insertDoc, [requestId, file.originalname, file.size, file.mimetype, file.buffer]);
 
     await client.query('COMMIT');
 
@@ -256,31 +257,29 @@ async function uploadDocument(rawRequestId, userId, id_requisito, file) {
   const existingDocQuery = `SELECT id_documento FROM documento WHERE id_solicitud = $1 AND id_requisito = $2`;
   const existingRes = await pool.query(existingDocQuery, [requestId, reqIdNum]);
 
-  const relativePath = `/uploads/${file.filename}`;
-
   if (existingRes.rows.length > 0) {
     // Reemplazar / Actualizar
     const updateQuery = `
       UPDATE documento
       SET nombre_archivo = $1,
-          ruta_archivo = $2,
-          tamano_bytes = $3,
-          mime_type = $4,
+          tamano_bytes = $2,
+          mime_type = $3,
+          contenido = $4,
           estado_validacion = 'PENDIENTE',
           fecha_subida = NOW()
       WHERE id_documento = $5
-      RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion, fecha_subida;
+      RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, tamano_bytes, estado_validacion, fecha_subida;
     `;
-    const { rows } = await pool.query(updateQuery, [file.originalname, relativePath, file.size, file.mimetype, existingRes.rows[0].id_documento]);
+    const { rows } = await pool.query(updateQuery, [file.originalname, file.size, file.mimetype, file.buffer, existingRes.rows[0].id_documento]);
     return rows[0];
   } else {
     // Insertar nuevo
     const insertQuery = `
-      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, mime_type, estado_validacion)
+      INSERT INTO documento (id_solicitud, id_requisito, nombre_archivo, tamano_bytes, mime_type, contenido, estado_validacion)
       VALUES ($1, $2, $3, $4, $5, $6, 'PENDIENTE')
-      RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, ruta_archivo, tamano_bytes, estado_validacion, fecha_subida;
+      RETURNING id_documento, id_solicitud, id_requisito, nombre_archivo, tamano_bytes, estado_validacion, fecha_subida;
     `;
-    const { rows } = await pool.query(insertQuery, [requestId, reqIdNum, file.originalname, relativePath, file.size, file.mimetype]);
+    const { rows } = await pool.query(insertQuery, [requestId, reqIdNum, file.originalname, file.size, file.mimetype, file.buffer]);
     return rows[0];
   }
 }

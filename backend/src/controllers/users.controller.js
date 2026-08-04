@@ -27,9 +27,21 @@ const uploadAvatar = asyncHandler(async (req, res) => {
   res.json({ message: 'Avatar actualizado exitosamente', ...result });
 });
 
+const getAvatar = asyncHandler(async (req, res) => {
+  const { role, id } = req.params;
+  if (!['admin', 'general'].includes(role)) {
+    return res.status(400).json({ error: "El parámetro 'role' debe ser 'admin' o 'general'" });
+  }
+  const avatar = await usersService.getAvatar(role, id);
+  if (avatar.mime_type) res.type(avatar.mime_type);
+  res.setHeader('Cache-Control', 'private, max-age=300');
+  res.send(avatar.contenido);
+});
+
 module.exports = {
   getProfile,
   updateProfile,
   uploadAvatar,
+  getAvatar,
   changePassword,
 };

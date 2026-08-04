@@ -9,4 +9,7 @@ router.put('/profile', authenticateToken, usersController.updateProfile);
 router.put('/profile/password', authenticateToken, usersController.changePassword);
 router.post('/profile/avatar', authenticateToken, upload.single('avatar'), usersController.uploadAvatar);
 
+// Pública (como antes lo era /uploads/*): una foto de perfil no es un dato sensible.
+router.get('/avatar/:role/:id', usersController.getAvatar);
+
 module.exports = router;

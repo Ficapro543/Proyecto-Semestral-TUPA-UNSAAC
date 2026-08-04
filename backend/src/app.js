@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const errorHandler = require('./middleware/error.middleware');
 
 const authRoutes = require('./routes/auth.routes');
@@ -31,8 +30,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos subidos (comprobantes, documentos)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Ya no se sirven archivos desde /uploads: el backend corre serverless
+// (Vercel) y su disco es efímero. Voucher/documentos/avatares se guardan y
+// se sirven desde Postgres (ver GET /api/documents/:id/view y
+// GET /api/users/avatar/:role/:id).
 
 // Health check
 app.get('/api/health', (req, res) => {
