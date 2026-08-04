@@ -24,7 +24,10 @@ const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Formato de archivo no permitido. Solo se aceptan PDF, JPG, JPEG y PNG.'), false);
+    // Sin statusCode explícito este error terminaba como un 500 genérico.
+    const error = new Error('Formato de archivo no permitido. Solo se aceptan PDF, JPG, JPEG y PNG.');
+    error.statusCode = 400;
+    cb(error, false);
   }
 };
 

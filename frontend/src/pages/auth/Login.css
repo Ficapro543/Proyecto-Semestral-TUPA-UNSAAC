@@ -1,5 +1,10 @@
-body {
+/* Estas reglas apuntaban a `body`. Vite inyecta el CSS de cada página en el
+   documento y no lo retira al desmontarla, así que `body { overflow: hidden }`
+   sobrevivía al login y dejaba toda la aplicación sin scroll de rueda.
+   Acotadas al contenedor propio del login. */
+.login-shell {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: stretch;
   overflow: hidden;

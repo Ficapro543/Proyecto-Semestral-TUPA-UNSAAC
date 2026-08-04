@@ -1,144 +1,132 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
+import usePolling from '../../hooks/usePolling';
+import { Loading, ErrorState, EmptyState, LiveBadge } from '../../components/ui/AsyncState';
+import { estadoInfo, formatFecha, formatSoles } from '../../lib/estados';
 import './MyRequests.css';
 
-const enviadas = [
-  { exp:'EXP-2024-8902', title:'Diploma de Bachiller', status:'En Revisión', sc:'badge-in-review', date:'12 Oct 2024' },
-  { exp:'EXP-2024-1102', title:'Certificado de Matrícula', status:'Verificando pago', sc:'badge-warning', date:'15 Sep 2024' },
-  { exp:'EXP-2024-0891', title:'Récord Académico', status:'Pendiente', sc:'badge-neutral', date:'20 Ago 2024' },
-  { exp:'EXP-2024-0442', title:'Constancia de Egresado', status:'Observado', sc:'badge-error', date:'05 Jul 2024' },
-  { exp:'EXP-2024-0201', title:'Reserva de Matrícula', status:'En cola', sc:'badge-neutral', date:'10 Jun 2024' },
+const POLL_MS = 4000;
+
+const TABS = [
+  { key: 'borrador', label: 'Borradores', filtra: (s) => s.estado === 'BORRADOR' },
+  {
+    key: 'enviadas',
+    label: 'En curso',
+    filtra: (s) => !['BORRADOR', 'COMPLETADO', 'RECHAZADO', 'ANULADO'].includes(s.estado),
+  },
+  {
+    key: 'completadas',
+    label: 'Finalizadas',
+    filtra: (s) => ['COMPLETADO', 'RECHAZADO', 'ANULADO'].includes(s.estado),
+  },
 ];
 
-const completadas = [
-  { exp:'EXP-2023-8841', title:'Carné Universitario', status:'Aprobado', sc:'badge-success', date:'14 Dic 2023' },
-  { exp:'EXP-2023-7720', title:'Constancia de Notas', status:'Aprobado', sc:'badge-success', date:'05 Nov 2023' },
-  { exp:'EXP-2023-6601', title:'Duplicado de Carné', status:'Aprobado', sc:'badge-success', date:'22 Sep 2023' },
-];
-
+/**
+ * Listado de solicitudes del estudiante. Con polling activo, el cambio de
+ * estado que hace el administrador aparece aquí sin recargar.
+ */
 export default function MyRequests() {
-  const [activeTab, setActiveTab] = useState('borrador');
+  const navigate = useNavigate();
+  const [tab, setTab] = useState('enviadas');
+
+  const fetcher = useCallback((opts) => api.listMyRequests({ limit: 100 }, opts), []);
+  const { data, error, loading, refresh } = usePolling(fetcher, { intervalMs: POLL_MS });
+
+  const solicitudes = data || [];
+  const tabActual = TABS.find((t) => t.key === tab);
+  const visibles = solicitudes.filter(tabActual.filtra);
 
   return (
     <>
-      <nav className="breadcrumb" aria-label="Ruta de navegación"></nav>
-
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-md)', marginBottom: 'var(--sp-xl)' }}>
         <div>
           <h1 className="text-display-md" style={{ color: 'var(--clr-primary)' }}>Mis Solicitudes</h1>
-          <p className="text-body-md" style={{ color: 'var(--clr-secondary)', marginTop: '4px' }}>Borradores y solicitudes en curso que aún no han sido enviadas</p>
+          <p className="text-body-md" style={{ color: 'var(--clr-secondary)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: 'var(--sp-md)', flexWrap: 'wrap' }}>
+            <span>Estado de todos tus expedientes</span>
+            <LiveBadge intervalMs={POLL_MS} />
+          </p>
         </div>
-        <Link to="/tramite/nuevo" className="btn btn-primary">
-          <span className="material-symbols-outlined">add</span>
-          Nueva Solicitud
+        <Link to="/tramite/paso1" className="btn btn-primary">
+          <span className="material-symbols-outlined">add</span> Nueva Solicitud
         </Link>
       </div>
 
-      {/* Tab selector */}
       <div className="tabs" style={{ marginBottom: 'var(--sp-xl)' }}>
-        <div className={`tab-item ${activeTab === 'borrador' ? 'active' : ''}`} onClick={() => setActiveTab('borrador')}>Borradores (2)</div>
-        <div className={`tab-item ${activeTab === 'enviadas' ? 'active' : ''}`} onClick={() => setActiveTab('enviadas')}>Enviadas (5)</div>
-        <div className={`tab-item ${activeTab === 'completadas' ? 'active' : ''}`} onClick={() => setActiveTab('completadas')}>Completadas (12)</div>
+        {TABS.map((t) => (
+          <div
+            key={t.key}
+            className={`tab-item ${tab === t.key ? 'active' : ''}`}
+            onClick={() => setTab(t.key)}
+          >
+            {t.label} ({solicitudes.filter(t.filtra).length})
+          </div>
+        ))}
       </div>
 
-      {/* Borrador cards */}
-      {activeTab === 'borrador' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--sp-lg)' }}>
-          <div className="card animate-on-load" style={{ borderLeft: '4px solid var(--clr-secondary)' }}>
-            <div className="card-body">
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--sp-md)' }}>
-                <div>
-                  <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Diploma de Bachiller</div>
-                  <span className="badge badge-neutral" style={{ marginTop: '4px' }}>Borrador</span>
-                </div>
-                <div style={{ width: '48px', height: '48px', background: 'var(--clr-surface-container)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span className="material-symbols-outlined icon-filled" style={{ fontSize: '24px', color: 'var(--clr-secondary)' }}>draft</span>
-                </div>
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginBottom: 'var(--sp-md)' }}>
-                Guardado: hace 3 días · Completado al 60%
-              </div>
-              <div className="progress" style={{ height: '6px', marginBottom: 'var(--sp-lg)' }}>
-                <div className="progress-bar" style={{ width: '60%' }}></div>
-              </div>
-              <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
-                <Link to="/tramite/paso3" className="btn btn-primary flex-1" style={{ textDecoration: 'none' }}>
-                  <span className="material-symbols-outlined">edit</span>
-                  Continuar
-                </Link>
-                <button className="btn btn-ghost">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
+      {error && <ErrorState error={error} onRetry={refresh} />}
 
-          <div className="card animate-on-load stagger-1" style={{ borderLeft: '4px solid var(--clr-secondary)' }}>
-            <div className="card-body">
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--sp-md)' }}>
-                <div>
-                  <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>Traslado Externo</div>
-                  <span className="badge badge-neutral" style={{ marginTop: '4px' }}>Borrador</span>
-                </div>
-                <div style={{ width: '48px', height: '48px', background: 'var(--clr-surface-container)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span className="material-symbols-outlined icon-filled" style={{ fontSize: '24px', color: 'var(--clr-secondary)' }}>draft</span>
-                </div>
-              </div>
-              <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', marginBottom: 'var(--sp-md)' }}>
-                Guardado: hace 1 semana · Completado al 20%
-              </div>
-              <div className="progress" style={{ height: '6px', marginBottom: 'var(--sp-lg)' }}>
-                <div className="progress-bar" style={{ width: '20%' }}></div>
-              </div>
-              <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
-                <Link to="/tramite/paso1" className="btn btn-primary flex-1" style={{ textDecoration: 'none' }}>
-                  <span className="material-symbols-outlined">edit</span>
-                  Continuar
-                </Link>
-                <button className="btn btn-ghost">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Enviadas */}
-      {activeTab === 'enviadas' && (
-        <div className="card animate-on-load">
-          <div className="request-row" style={{ background: 'var(--clr-surface-container-low)', fontSize: '12px', fontWeight: 700, color: 'var(--clr-secondary)', textTransform: 'uppercase', letterSpacing: '.06em', cursor: 'default' }}>
-            <div>Trámite</div><div>Estado</div><div>Fecha</div>
-          </div>
-          {enviadas.map((i, index) => (
-            <Link to="/seguimiento" key={index} className="request-row">
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--clr-on-surface)' }}>{i.title}</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--clr-secondary)' }}>{i.exp}</div>
-              </div>
-              <div><span className={`badge ${i.sc}`}>{i.status}</span></div>
-              <div style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>{i.date}</div>
+      {loading ? (
+        <Loading label="Cargando solicitudes…" />
+      ) : visibles.length === 0 ? (
+        <EmptyState
+          icon="assignment"
+          title="No hay solicitudes en esta pestaña"
+          description="Cuando inicies un trámite lo verás aquí."
+          action={
+            <Link to="/tramite/paso1" className="btn btn-primary" style={{ marginTop: 'var(--sp-md)' }}>
+              <span className="material-symbols-outlined">add</span> Iniciar un trámite
             </Link>
-          ))}
-        </div>
-      )}
+          }
+        />
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--sp-lg)' }}>
+          {visibles.map((s) => {
+            const info = estadoInfo(s.estado);
+            const esBorrador = s.estado === 'BORRADOR';
 
-      {/* Completadas */}
-      {activeTab === 'completadas' && (
-        <div className="card animate-on-load">
-          <div className="request-row" style={{ background: 'var(--clr-surface-container-low)', fontSize: '12px', fontWeight: 700, color: 'var(--clr-secondary)', textTransform: 'uppercase', letterSpacing: '.06em', cursor: 'default' }}>
-            <div>Trámite</div><div>Estado</div><div>Fecha</div>
-          </div>
-          {completadas.map((i, index) => (
-            <Link to="/seguimiento" key={index} className="request-row">
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--clr-on-surface)' }}>{i.title}</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--clr-secondary)' }}>{i.exp}</div>
+            return (
+              <div
+                key={s.id_solicitud}
+                className="card"
+                style={{ borderLeft: `4px solid ${esBorrador ? 'var(--clr-secondary)' : 'var(--clr-primary)'}`, cursor: 'pointer' }}
+                onClick={() => navigate(esBorrador ? '/tramite/paso1' : `/estudiante/solicitudes/${s.id_solicitud}`)}
+              >
+                <div className="card-body">
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--sp-md)', marginBottom: 'var(--sp-md)' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '16px', fontWeight: 700, color: 'var(--clr-primary)' }}>
+                        {s.nombre_tramite}
+                      </div>
+                      <span className={`badge ${info.badge}`} style={{ marginTop: '6px' }}>
+                        <span className="material-symbols-outlined icon-sm">{info.icon}</span>
+                        {info.label}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '13px', color: 'var(--clr-secondary)', display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: 'var(--sp-md)' }}>
+                    <div className="text-mono-sm">
+                      {s.numero_expediente || `Borrador #${s.id_solicitud}`}
+                    </div>
+                    <div>{s.etapa_visible || '—'} · {formatFecha(s.fecha_solicitud)}</div>
+                    <div>{formatSoles(s.monto_total)}</div>
+                  </div>
+
+                  <button
+                    className="btn btn-outline btn-sm w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(esBorrador ? '/tramite/paso1' : `/estudiante/solicitudes/${s.id_solicitud}`);
+                    }}
+                  >
+                    {esBorrador ? 'Continuar borrador' : 'Ver detalle'}
+                    <span className="material-symbols-outlined icon-sm">chevron_right</span>
+                  </button>
+                </div>
               </div>
-              <div><span className={`badge ${i.sc}`}>{i.status}</span></div>
-              <div style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>{i.date}</div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

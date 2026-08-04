@@ -14,8 +14,17 @@ const adminRoutes = require('./routes/admin.routes');
 const app = express();
 
 // Middlewares
+// La demo corre en dos máquinas: el navegador de la máquina B llega con un
+// Origin distinto (http://<ip-lan>:5173), así que un origen fijo lo bloqueaba.
+// CLIENT_ORIGIN acepta una lista separada por comas; sin ella se permite
+// cualquier origen, que es lo apropiado para una API de demo en LAN.
+const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  origin: allowedOrigins.length > 0 ? allowedOrigins : true,
   credentials: true,
 }));
 

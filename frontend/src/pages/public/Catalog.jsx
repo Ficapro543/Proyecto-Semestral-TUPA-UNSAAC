@@ -1,26 +1,74 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../lib/api';
 import ProcedureCard from '../../components/ui/ProcedureCard';
+import { Loading, ErrorState, EmptyState } from '../../components/ui/AsyncState';
+import { formatSoles } from '../../lib/estados';
 import './Catalog.css';
 
-const procedures = [
-  { id:'P001', title:'Diploma de Bachiller', category:'Académico', description:'Solicitud de diploma acreditativo de grado de bachiller otorgado por la UNSAAC.', cost:'S/. 120.00', time:'15 días hábiles', badge:'Frecuente' },
-  { id:'P002', title:'Certificado de Matrícula', category:'Académico', description:'Constancia oficial que acredita el estado de matrícula del estudiante en el semestre actual.', cost:'Gratuito', time:'2 días hábiles' },
-  { id:'P003', title:'Constancia de Egresado', category:'Académico', description:'Documento que certifica que el alumno ha concluido satisfactoriamente el plan de estudios.', cost:'S/. 30.00', time:'3 días hábiles' },
-  { id:'P004', title:'Récord Académico', category:'Académico', description:'Certificado con el historial completo de notas y créditos del estudiante.', cost:'S/. 15.00', time:'1 día hábil', badge:'Popular' },
-  { id:'P005', title:'Título Profesional', category:'Académico', description:'Otorgamiento del título profesional con modalidad de tesis o suficiencia profesional.', cost:'S/. 250.00', time:'30 días hábiles' },
-  { id:'P006', title:'Homologación de Notas', category:'Académico', description:'Reconocimiento y equivalencia de asignaturas cursadas en otra universidad.', cost:'S/. 45.00', time:'7 días hábiles' },
-  { id:'P007', title:'Traslado Externo', category:'Administrativo', description:'Proceso de admisión por traslado desde otra universidad al tercio superior.', cost:'S/. 180.00', time:'20 días hábiles' },
-  { id:'P008', title:'Cambio de Especialidad', category:'Administrativo', description:'Solicitud de cambio de programa o especialidad dentro de la misma facultad.', cost:'S/. 60.00', time:'10 días hábiles' },
-  { id:'P009', title:'Duplicado de Carné Universitario', category:'Administrativo', description:'Reposición del carné universitario por pérdida, robo o deterioro.', cost:'S/. 25.00', time:'3 días hábiles' },
-  { id:'P010', title:'Beca Comedor Universitario', category:'Bienestar', description:'Solicitud de beca parcial o total para el servicio de comedor de la UNSAAC.', cost:'Gratuito', time:'5 días hábiles', badge:'Nuevo' },
-  { id:'P011', title:'Reserva de Matrícula', category:'Académico', description:'Suspensión temporal de la matrícula hasta por cuatro semestres académicos.', cost:'S/. 20.00', time:'2 días hábiles' },
-  { id:'P012', title:'Convalidación de Cursos', category:'Académico', description:'Validación de asignaturas aprobadas en programas de intercambio o posgrado.', cost:'S/. 35.00', time:'5 días hábiles' },
+const RANGOS_COSTO = [
+  { key: 'todos', label: 'Todos', test: () => true },
+  { key: 'gratis', label: 'Gratuito', test: (p) => Number(p.precio) === 0 },
+  { key: 'bajo', label: 'S/. 1 – S/. 50', test: (p) => Number(p.precio) > 0 && Number(p.precio) <= 50 },
+  { key: 'medio', label: 'S/. 50 – S/. 200', test: (p) => Number(p.precio) > 50 && Number(p.precio) <= 200 },
+  { key: 'alto', label: 'Más de S/. 200', test: (p) => Number(p.precio) > 200 },
 ];
 
 export default function Catalog() {
-  const [activeTab, setActiveTab] = useState('todos');
-  const [activeView, setActiveView] = useState('grid');
+  const [tramites, setTramites] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [categoria, setCategoria] = useState('todos');
+  const [costo, setCosto] = useState('todos');
+  const [search, setSearch] = useState('');
+  const [orden, setOrden] = useState('nombre');
+
+  const cargar = async () => {
+    setCargando(true);
+    setError(null);
+    try {
+      const [lista, cats] = await Promise.all([
+        api.listProcedures({ limit: 200 }),
+        api.getCategories(),
+      ]);
+      setTramites(lista.data || []);
+      setCategorias(cats || []);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  const visibles = useMemo(() => {
+    const rango = RANGOS_COSTO.find((r) => r.key === costo) || RANGOS_COSTO[0];
+    const q = search.trim().toLowerCase();
+
+    const lista = tramites.filter((t) => {
+      const okCat = categoria === 'todos' || t.nombre_categoria === categoria;
+      const okCosto = rango.test(t);
+      const okBusqueda =
+        !q ||
+        t.nombre_tramite.toLowerCase().includes(q) ||
+        (t.descripcion || '').toLowerCase().includes(q) ||
+        t.cod_tramite.toLowerCase().includes(q);
+      return okCat && okCosto && okBusqueda;
+    });
+
+    const ordenado = [...lista];
+    if (orden === 'nombre') ordenado.sort((a, b) => a.nombre_tramite.localeCompare(b.nombre_tramite));
+    if (orden === 'costo') ordenado.sort((a, b) => Number(a.precio) - Number(b.precio));
+    if (orden === 'rapidez') ordenado.sort((a, b) => a.dias_habiles - b.dias_habiles);
+    return ordenado;
+  }, [tramites, categoria, costo, search, orden]);
+
+  const conteoPorCategoria = (nombre) => tramites.filter((t) => t.nombre_categoria === nombre).length;
 
   return (
     <>
@@ -35,120 +83,127 @@ export default function Catalog() {
                 Catálogo de Procedimientos<br />Administrativos
               </h1>
               <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', maxWidth: '520px' }}>
-                103 procedimientos vigentes clasificados por facultad, área y tipo de trámite.
+                {cargando
+                  ? 'Cargando procedimientos vigentes…'
+                  : `${tramites.length} procedimiento${tramites.length === 1 ? '' : 's'} vigente${tramites.length === 1 ? '' : 's'} en el TUPA.`}
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)' }}>
-              <div className="view-toggle" role="group" aria-label="Cambiar vista">
-                <button className={`view-btn ${activeView === 'grid' ? 'active' : ''}`} onClick={() => setActiveView('grid')} title="Vista cuadrícula">
-                  <span className="material-symbols-outlined">grid_view</span>
-                </button>
-                <button className={`view-btn ${activeView === 'list' ? 'active' : ''}`} onClick={() => setActiveView('list')} title="Vista lista">
-                  <span className="material-symbols-outlined">view_list</span>
-                </button>
-                <button className={`view-btn ${activeView === 'accordion' ? 'active' : ''}`} onClick={() => setActiveView('accordion')} title="Vista acordeón">
-                  <span className="material-symbols-outlined">view_agenda</span>
-                </button>
-              </div>
-              <Link to="/login" className="btn btn-teal">
-                <span className="material-symbols-outlined">login</span>
-                Iniciar trámite
-              </Link>
-            </div>
+            <Link to="/login" className="btn btn-teal">
+              <span className="material-symbols-outlined" aria-hidden="true">login</span> Iniciar trámite
+            </Link>
           </div>
 
-          {/* Search in hero */}
           <div style={{ position: 'relative', marginTop: 'var(--sp-xl)', maxWidth: '600px' }}>
-            <span className="material-symbols-outlined" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', color: 'var(--clr-outline)' }}>search</span>
-            <input type="text" placeholder="Buscar procedimiento... ej: diploma, matrícula, constancia"
-                   style={{ width: '100%', height: '50px', padding: '0 var(--sp-md) 0 46px', border: 'none', borderRadius: 'var(--radius-xl)', fontSize: '15px', outline: 'none', boxShadow: 'var(--shadow-lg)' }}
-                   aria-label="Buscar procedimientos" />
+            <span className="material-symbols-outlined" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', color: 'var(--clr-outline)' }} aria-hidden="true">search</span>
+            <input
+              type="text"
+              placeholder="Buscar procedimiento… ej: constancia, matrícula, título"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: '100%', height: '50px', padding: '0 var(--sp-md) 0 46px', border: 'none', borderRadius: 'var(--radius-xl)', fontSize: '15px', outline: 'none', boxShadow: 'var(--shadow-lg)' }}
+              aria-label="Buscar procedimientos"
+            />
           </div>
         </div>
       </section>
 
       <div className="catalog-content">
         <div className="catalog-inner">
-          {/* FILTER PANEL */}
           <aside className="filter-panel" aria-label="Filtros de búsqueda">
             <div className="filter-panel-title">
               Filtros
-              <button className="btn btn-ghost btn-sm" onClick={() => {}}>Limpiar</button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => { setCategoria('todos'); setCosto('todos'); setSearch(''); }}
+              >
+                Limpiar
+              </button>
             </div>
 
             <div className="filter-section">
-              <div className="filter-section-label">Área</div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" defaultChecked /><span>Académica</span></label><span className="filter-count">47</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Administrativa</span></label><span className="filter-count">28</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Bienestar</span></label><span className="filter-count">15</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Investigación</span></label><span className="filter-count">13</span></div>
+              <div className="filter-section-label">Categoría</div>
+              <div className="filter-option">
+                <label className="form-check">
+                  <input type="radio" name="cat" checked={categoria === 'todos'} onChange={() => setCategoria('todos')} />
+                  <span>Todas</span>
+                </label>
+                <span className="filter-count">{tramites.length}</span>
+              </div>
+              {categorias.map((c) => (
+                <div className="filter-option" key={c.id_categoria}>
+                  <label className="form-check">
+                    <input
+                      type="radio" name="cat"
+                      checked={categoria === c.nombre_categoria}
+                      onChange={() => setCategoria(c.nombre_categoria)}
+                    />
+                    <span>{c.nombre_categoria}</span>
+                  </label>
+                  <span className="filter-count">{conteoPorCategoria(c.nombre_categoria)}</span>
+                </div>
+              ))}
             </div>
 
             <div className="filter-section">
               <div className="filter-section-label">Costo</div>
-              <div className="filter-option"><label className="form-check"><input type="radio" name="cost" defaultChecked /><span>Todos</span></label></div>
-              <div className="filter-option"><label className="form-check"><input type="radio" name="cost" /><span>Gratuito</span></label><span className="filter-count">22</span></div>
-              <div className="filter-option"><label className="form-check"><input type="radio" name="cost" /><span>S/. 1 – S/. 50</span></label><span className="filter-count">38</span></div>
-              <div className="filter-option"><label className="form-check"><input type="radio" name="cost" /><span>S/. 50 – S/. 200</span></label><span className="filter-count">31</span></div>
-              <div className="filter-option"><label className="form-check"><input type="radio" name="cost" /><span>Más de S/. 200</span></label><span className="filter-count">12</span></div>
+              {RANGOS_COSTO.map((r) => (
+                <div className="filter-option" key={r.key}>
+                  <label className="form-check">
+                    <input type="radio" name="cost" checked={costo === r.key} onChange={() => setCosto(r.key)} />
+                    <span>{r.label}</span>
+                  </label>
+                  <span className="filter-count">{tramites.filter(r.test).length}</span>
+                </div>
+              ))}
             </div>
-
-            <div className="filter-section">
-              <div className="filter-section-label">Plazo de atención</div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Inmediato (mismo día)</span></label><span className="filter-count">8</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>1–3 días hábiles</span></label><span className="filter-count">34</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>4–10 días hábiles</span></label><span className="filter-count">41</span></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Más de 10 días</span></label><span className="filter-count">20</span></div>
-            </div>
-
-            <div className="filter-section">
-              <div className="filter-section-label">Otros</div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Solo digitales</span></label></div>
-              <div className="filter-option"><label className="form-check"><input type="checkbox" /><span>Con presencia física</span></label></div>
-            </div>
-
-            <button className="btn btn-primary w-full">Aplicar filtros</button>
           </aside>
 
-          {/* CATALOG GRID */}
-          <main>
+          <main style={{ minWidth: 0 }}>
             <div className="catalog-topbar">
-              <div className="catalog-count" aria-live="polite">Mostrando <strong>{procedures.length}</strong> procedimientos académicos</div>
+              <div className="catalog-count" aria-live="polite">
+                Mostrando <strong>{visibles.length}</strong> de {tramites.length} procedimientos
+              </div>
               <div style={{ display: 'flex', gap: 'var(--sp-sm)', alignItems: 'center' }}>
-                <label style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>Ordenar:</label>
-                <select className="form-select" style={{ height: '36px', fontSize: '13px', width: '160px' }} aria-label="Ordenar procedimientos">
-                  <option>Relevancia</option>
-                  <option>Nombre A–Z</option>
-                  <option>Menor costo</option>
-                  <option>Mayor rapidez</option>
+                <label style={{ fontSize: '13px', color: 'var(--clr-secondary)' }} htmlFor="orden">Ordenar:</label>
+                <select
+                  id="orden" className="form-select"
+                  style={{ height: '36px', fontSize: '13px', width: '160px' }}
+                  value={orden}
+                  onChange={(e) => setOrden(e.target.value)}
+                >
+                  <option value="nombre">Nombre A–Z</option>
+                  <option value="costo">Menor costo</option>
+                  <option value="rapidez">Mayor rapidez</option>
                 </select>
               </div>
             </div>
 
-            {/* Category tabs */}
-            <div className="tabs" style={{ marginBottom: 'var(--sp-lg)' }}>
-              <div className={`tab-item ${activeTab === 'todos' ? 'active' : ''}`} onClick={() => setActiveTab('todos')}>Todos (103)</div>
-              <div className={`tab-item ${activeTab === 'academico' ? 'active' : ''}`} onClick={() => setActiveTab('academico')}>Académico (47)</div>
-              <div className={`tab-item ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')}>Administrativo (28)</div>
-              <div className={`tab-item ${activeTab === 'bienestar' ? 'active' : ''}`} onClick={() => setActiveTab('bienestar')}>Bienestar (15)</div>
-              <div className={`tab-item ${activeTab === 'investigacion' ? 'active' : ''}`} onClick={() => setActiveTab('investigacion')}>Investigación (13)</div>
-            </div>
-
-            <div className="catalog-grid">
-              {procedures.map(p => (
-                <ProcedureCard key={p.id} {...p} targetRoute="/catalogo/detalle" />
-              ))}
-            </div>
-
-            <div className="pagination" aria-label="Paginación" style={{ marginTop: 'var(--sp-xl)' }}>
-              <button className="page-btn"><span className="material-symbols-outlined">chevron_left</span></button>
-              <button className="page-btn active">1</button>
-              <button className="page-btn">2</button>
-              <button className="page-btn">3</button>
-              <span style={{ color: 'var(--clr-outline)' }}>…</span>
-              <button className="page-btn">8</button>
-              <button className="page-btn"><span className="material-symbols-outlined">chevron_right</span></button>
-            </div>
+            {cargando ? (
+              <Loading label="Cargando catálogo…" />
+            ) : error ? (
+              <ErrorState error={error} onRetry={cargar} />
+            ) : visibles.length === 0 ? (
+              <EmptyState
+                icon="search_off"
+                title="No se encontraron procedimientos"
+                description="Prueba con otro término o limpia los filtros."
+              />
+            ) : (
+              <div className="catalog-grid">
+                {visibles.map((t) => (
+                  <ProcedureCard
+                    key={t.cod_tramite}
+                    id={t.cod_tramite}
+                    title={t.nombre_tramite}
+                    category={t.nombre_categoria || 'General'}
+                    description={t.descripcion || ''}
+                    cost={formatSoles(t.precio)}
+                    time={`${t.dias_habiles} días hábiles`}
+                    targetRoute="/login"
+                  />
+                ))}
+              </div>
+            )}
           </main>
         </div>
       </div>

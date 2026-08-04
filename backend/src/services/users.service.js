@@ -11,8 +11,9 @@ async function getProfile(userId, role) {
     `;
     const { rows } = await pool.query(query, [userId]);
     if (rows.length === 0) {
-      const error = new Error('Usuario no encontrado');
-      error.statusCode = 44;
+      // Era `44`: un código HTTP inválido que hacía fallar a Express al responder.
+      const error = new Error('Administrador no encontrado');
+      error.statusCode = 404;
       throw error;
     }
     const admin = rows[0];
@@ -40,41 +41,69 @@ async function getProfile(userId, role) {
   }
 }
 
+/**
+ * Campos que cada rol puede modificar de su propio perfil.
+ *
+ * Un estudiante no debe poder reescribir su nombre ni su especialidad: son
+ * datos académicos que administra la universidad. Antes el update aceptaba
+ * `nombres`, `ap_paterno` y `cod_especialidad` desde el cuerpo de la petición.
+ */
+const CAMPOS_EDITABLES = {
+  ADMIN: ['telefono', 'avatar_url'],
+  USER: ['telefono', 'email_personal', 'avatar_url'],
+};
+
+function rechazarCamposNoEditables(data, role) {
+  const permitidos = CAMPOS_EDITABLES[role] || CAMPOS_EDITABLES.USER;
+  const enviados = Object.keys(data || {});
+  const prohibidos = enviados.filter((c) => !permitidos.includes(c));
+
+  if (prohibidos.length > 0) {
+    const error = new Error(
+      `No puedes modificar: ${prohibidos.join(', ')}. Campos editables: ${permitidos.join(', ')}`
+    );
+    error.statusCode = 403;
+    throw error;
+  }
+}
+
 async function updateProfile(userId, role, data) {
+  rechazarCamposNoEditables(data, role);
+
   if (role === 'ADMIN') {
-    const { nombres, ap_paterno, ap_materno, telefono, avatar_url } = data;
+    const { telefono, avatar_url } = data;
     const query = `
       UPDATE usuario_admin
-      SET nombres = COALESCE($1, nombres),
-          ap_paterno = COALESCE($2, ap_paterno),
-          ap_materno = COALESCE($3, ap_materno),
-          telefono = COALESCE($4, telefono),
-          avatar_url = COALESCE($5, avatar_url)
-      WHERE id_admin = $6
+      SET telefono = COALESCE($1, telefono),
+          avatar_url = COALESCE($2, avatar_url)
+      WHERE id_admin = $3
       RETURNING id_admin, dni, codigo_trabajador, nombres, ap_paterno, ap_materno, email_institucional, telefono, rol_admin, avatar_url;
     `;
-    const { rows } = await pool.query(query, [nombres, ap_paterno, ap_materno, telefono, avatar_url, userId]);
+    const { rows } = await pool.query(query, [telefono, avatar_url, userId]);
+    if (rows.length === 0) {
+      const error = new Error('Administrador no encontrado');
+      error.statusCode = 404;
+      throw error;
+    }
     const admin = rows[0];
     admin.role = 'ADMIN';
     return admin;
   } else {
-    const { nombres, ap_paterno, ap_materno, email_personal, telefono, semestre_actual, avatar_url, cod_especialidad } = data;
+    const { email_personal, telefono, avatar_url } = data;
     const query = `
       UPDATE usuario_general
-      SET nombres = COALESCE($1, nombres),
-          ap_paterno = COALESCE($2, ap_paterno),
-          ap_materno = COALESCE($3, ap_materno),
-          email_personal = COALESCE($4, email_personal),
-          telefono = COALESCE($5, telefono),
-          semestre_actual = COALESCE($6, semestre_actual),
-          avatar_url = COALESCE($7, avatar_url),
-          cod_especialidad = COALESCE($8, cod_especialidad)
-      WHERE id_usuario = $9
+      SET email_personal = COALESCE($1, email_personal),
+          telefono = COALESCE($2, telefono),
+          avatar_url = COALESCE($3, avatar_url)
+      WHERE id_usuario = $4
       RETURNING id_usuario, dni, codigo_universitario, nombres, ap_paterno, ap_materno, email_institucional, email_personal, telefono, semestre_actual, avatar_url, cod_especialidad;
     `;
-    const { rows } = await pool.query(query, [
-      nombres, ap_paterno, ap_materno, email_personal, telefono, semestre_actual, avatar_url, cod_especialidad, userId
-    ]);
+    const { rows } = await pool.query(query, [email_personal, telefono, avatar_url, userId]);
+    if (rows.length === 0) {
+      const error = new Error('Usuario no encontrado');
+      error.statusCode = 404;
+      throw error;
+    }
     const user = rows[0];
     user.role = 'USER';
     return user;

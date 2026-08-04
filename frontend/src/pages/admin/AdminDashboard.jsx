@@ -1,211 +1,136 @@
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
+import usePolling from '../../hooks/usePolling';
+import { Loading, ErrorState, EmptyState, LiveBadge } from '../../components/ui/AsyncState';
+import { estadoInfo, formatFecha, formatSoles, nombreCompleto } from '../../lib/estados';
 import './AdminDashboard.css';
 
-const urgentItems = [
-  { id: 1, name: 'Elena Rodríguez', exp: 'EXP-2024-8902', tramite: 'Diploma de Bachiller', date: '12 Oct', status: 'En Revisión', sc: 'badge-in-review' },
-  { id: 2, name: 'Juan Mamani', exp: 'EXP-2024-8891', tramite: 'Título Profesional', date: '10 Oct', status: 'Obs. Pendiente', sc: 'badge-error' },
-  { id: 3, name: 'María Ccoa', exp: 'EXP-2024-8870', tramite: 'Certif. de Matrícula', date: '08 Oct', status: 'Verificando pago', sc: 'badge-warning' },
-  { id: 4, name: 'Carlos Ttito', exp: 'EXP-2024-8844', tramite: 'Constancia de Egresado', date: '06 Oct', status: 'En Revisión', sc: 'badge-in-review' },
-  { id: 5, name: 'Rosa Quispe', exp: 'EXP-2024-8801', tramite: 'Récord Académico', date: '01 Oct', status: 'Pendiente', sc: 'badge-neutral' },
-];
+const POLL_MS = 5000;
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const today = new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const hoy = new Date().toLocaleDateString('es-PE', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  const fetcher = useCallback(
+    (opts) =>
+      Promise.all([
+        api.getAdminStats(opts),
+        api.listAdminRequests({ limit: 8 }, opts),
+      ]).then(([stats, lista]) => ({ stats, lista })),
+    []
+  );
+
+  const { data, error, loading, refresh } = usePolling(fetcher, { intervalMs: POLL_MS });
+
+  const stats = data?.stats;
+  const recientes = data?.lista?.data || [];
+
+  const metricas = [
+    { valor: stats?.pendientes, label: 'Trámites pendientes', icon: 'pending_actions', bg: 'var(--clr-primary-fixed)', color: 'var(--clr-primary)', ruta: '/admin/cola' },
+    { valor: stats?.observadas, label: 'Observadas', icon: 'report_problem', bg: 'var(--clr-error-container)', color: 'var(--clr-error)', ruta: '/admin/cola' },
+    { valor: stats?.completadas, label: 'Completadas', icon: 'check_circle', bg: '#d1fae5', color: '#065f46', ruta: '/admin/cola' },
+    { valor: stats?.total_solicitudes, label: 'Total expedientes', icon: 'inbox', bg: '#fef3c7', color: '#92400e', ruta: '/admin/cola' },
+  ];
 
   return (
     <>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-md)', marginBottom: 'var(--sp-xl)' }}>
         <div>
           <h1 className="text-display-md" style={{ color: 'var(--clr-primary)' }}>Dashboard Administrativo</h1>
-          <p className="text-body-md" style={{ color: 'var(--clr-secondary)', marginTop: '4px' }}>
-            Panel de control · UNSAAC · <span style={{ textTransform: 'capitalize' }}>{today}</span>
+          <p className="text-body-md" style={{ color: 'var(--clr-secondary)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: 'var(--sp-md)', flexWrap: 'wrap' }}>
+            <span style={{ textTransform: 'capitalize' }}>{hoy}</span>
+            <LiveBadge intervalMs={POLL_MS} />
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
+        <div style={{ display: 'flex', gap: 'var(--sp-sm)', flexWrap: 'wrap' }}>
           <button className="btn btn-outline" onClick={() => navigate('/admin/reportes')}>
-            <span className="material-symbols-outlined">bar_chart</span>
-            Generar reporte
+            <span className="material-symbols-outlined" aria-hidden="true">bar_chart</span> Reportes
           </button>
           <button className="btn btn-primary" onClick={() => navigate('/admin/cola')}>
-            <span className="material-symbols-outlined">inbox</span>
-            Cola de pendientes
+            <span className="material-symbols-outlined" aria-hidden="true">inbox</span> Cola de pendientes
           </button>
         </div>
       </div>
 
-      {/* Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--sp-md)', marginBottom: 'var(--sp-xl)' }}>
-        <div className="admin-metric animate-on-load" onClick={() => navigate('/admin/cola')}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="admin-metric-value" style={{ color: 'var(--clr-primary)' }}>47</div>
-              <div className="admin-metric-label">Trámites Pendientes</div>
-            </div>
-            <div style={{ width: '44px', height: '44px', background: 'var(--clr-primary-fixed)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: 'var(--clr-primary)' }}>pending_actions</span>
-            </div>
-          </div>
-          <div className="admin-metric-change" style={{ color: 'var(--clr-error)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_upward</span>
-            +12% esta semana
-          </div>
-        </div>
+      {error && <ErrorState error={error} onRetry={refresh} />}
 
-        <div className="admin-metric animate-on-load stagger-1" onClick={() => navigate('/admin/validacion')}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="admin-metric-value" style={{ color: '#92400e' }}>13</div>
-              <div className="admin-metric-label">Requieren Validación</div>
-            </div>
-            <div style={{ width: '44px', height: '44px', background: '#fef3c7', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: '#92400e' }}>fact_check</span>
-            </div>
-          </div>
-          <div className="admin-metric-change" style={{ color: '#92400e' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>schedule</span>
-            5 con plazo hoy
-          </div>
-        </div>
-
-        <div className="admin-metric animate-on-load stagger-2" onClick={() => navigate('/admin/cola')}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="admin-metric-value" style={{ color: '#065f46' }}>128</div>
-              <div className="admin-metric-label">Aprobados este mes</div>
-            </div>
-            <div style={{ width: '44px', height: '44px', background: '#d1fae5', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: '#065f46' }}>check_circle</span>
-            </div>
-          </div>
-          <div className="admin-metric-change" style={{ color: '#065f46' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_upward</span>
-            +8% vs mes anterior
-          </div>
-        </div>
-
-        <div className="admin-metric animate-on-load stagger-3" onClick={() => navigate('/admin/usuarios')}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="admin-metric-value" style={{ color: 'var(--clr-tertiary-container)' }}>2,341</div>
-              <div className="admin-metric-label">Usuarios activos</div>
-            </div>
-            <div style={{ width: '44px', height: '44px', background: 'rgba(137,245,231,0.2)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: 'var(--clr-tertiary-container)' }}>group</span>
-            </div>
-          </div>
-          <div className="admin-metric-change" style={{ color: 'var(--clr-secondary)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>person_add</span>
-            +34 nuevos hoy
-          </div>
-        </div>
-
-        <div className="admin-metric animate-on-load stagger-4">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="admin-metric-value" style={{ color: 'var(--clr-error)' }}>8</div>
-              <div className="admin-metric-label">Observaciones activas</div>
-            </div>
-            <div style={{ width: '44px', height: '44px', background: 'var(--clr-error-container)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: 'var(--clr-error)' }}>warning</span>
-            </div>
-          </div>
-          <div className="admin-metric-change" style={{ color: 'var(--clr-error)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>priority_high</span>
-            3 con plazo venciendo
-          </div>
-        </div>
-      </div>
-
-      {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'var(--sp-xl)' }}>
-        {/* Queue preview */}
-        <div>
-          <div className="card animate-on-load">
-            <div className="card-header">
-              <span className="card-header-title">Trámites Pendientes — Urgentes</span>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/admin/cola')}>Ver todos</button>
-            </div>
-            <div className="queue-row" style={{ background: 'var(--clr-surface-container-low)', fontSize: '11px', fontWeight: 700, color: 'var(--clr-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'default' }}>
-              <div>Solicitante / Expediente</div>
-              <div>Trámite</div>
-              <div>Fecha</div>
-              <div>Estado</div>
-              <div></div>
-            </div>
-            
-            {urgentItems.map(item => (
-              <div key={item.id} className="queue-row" onClick={() => navigate('/admin/detalle')}>
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: 600 }}>{item.name}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--clr-secondary)' }}>{item.exp}</div>
-                </div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>{item.tramite}</div>
-                <div style={{ fontSize: '13px', color: 'var(--clr-secondary)' }}>{item.date}</div>
-                <div><span className={`badge ${item.sc}`}>{item.status}</span></div>
-                <div>
-                  <button className="btn btn-ghost btn-sm" onClick={(e) => { e.stopPropagation(); navigate('/admin/detalle'); }}>
-                    <span className="material-symbols-outlined icon-sm">open_in_new</span>
-                  </button>
+      {loading ? (
+        <Loading label="Cargando panel…" />
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--sp-md)', marginBottom: 'var(--sp-xl)' }}>
+            {metricas.map((m) => (
+              <div key={m.label} className="admin-metric" onClick={() => navigate(m.ruta)}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--sp-sm)' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="admin-metric-value" style={{ color: 'var(--clr-primary)' }}>
+                      {m.valor ?? '—'}
+                    </div>
+                    <div className="admin-metric-label">{m.label}</div>
+                  </div>
+                  <div style={{ width: '44px', height: '44px', background: m.bg, borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span className="material-symbols-outlined icon-filled" style={{ fontSize: '22px', color: m.color }} aria-hidden="true">
+                      {m.icon}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
-            
-            <div style={{ padding: 'var(--sp-md)', textAlign: 'center' }}>
-              <button className="btn btn-outline btn-sm" onClick={() => navigate('/admin/cola')}>Ver toda la cola de pendientes</button>
-            </div>
           </div>
-        </div>
 
-        {/* Right panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-lg)' }}>
-          {/* Quick actions */}
-          <div className="card animate-on-load stagger-1">
-            <div className="card-header"><span className="card-header-title">Acciones rápidas</span></div>
-            <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-sm)' }}>
-              <button className="btn btn-primary w-full" onClick={() => navigate('/admin/cola')}>
-                <span className="material-symbols-outlined">inbox</span> Cola de pendientes (47)
-              </button>
-              <button className="btn btn-outline w-full" onClick={() => navigate('/admin/validacion')}>
-                <span className="material-symbols-outlined">fact_check</span> Validar documentos (13)
-              </button>
-              <button className="btn btn-ghost w-full" style={{ justifyContent: 'flex-start' }} onClick={() => navigate('/admin/usuarios')}>
-                <span className="material-symbols-outlined">group</span> Gestión de usuarios
-              </button>
-              <button className="btn btn-ghost w-full" style={{ justifyContent: 'flex-start' }} onClick={() => navigate('/admin/reportes')}>
-                <span className="material-symbols-outlined">bar_chart</span> Reportes y estadísticas
-              </button>
-              <button className="btn btn-ghost w-full" style={{ justifyContent: 'flex-start' }} onClick={() => navigate('/admin/procedimientos')}>
-                <span className="material-symbols-outlined">list_alt</span> Gestión de trámites
-              </button>
+          <div className="card" style={{ marginBottom: 'var(--sp-xl)' }}>
+            <div className="card-body" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-md)', flexWrap: 'wrap' }}>
+              <span className="material-symbols-outlined icon-filled" style={{ color: 'var(--clr-primary)', fontSize: '32px' }} aria-hidden="true">payments</span>
+              <div>
+                <div className="detail-label">Total recaudado (pagados, en proceso y completados)</div>
+                <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: '28px', fontWeight: 800, color: 'var(--clr-primary)' }}>
+                  {formatSoles(stats?.total_recaudado)}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* System status */}
-          <div className="card animate-on-load stagger-2">
-            <div className="card-header"><span className="card-header-title">Estado del sistema</span></div>
+          <div className="card">
+            <div className="card-header">
+              <span className="card-header-title">Expedientes recientes</span>
+              <button className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={() => navigate('/admin/cola')}>
+                Ver toda la cola
+              </button>
+            </div>
             <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-sm)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px' }}>Portal estudiantil</span>
-                <span className="badge badge-success">Operativo</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px' }}>Verificación de pagos</span>
-                <span className="badge badge-success">Operativo</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px' }}>Envío de notificaciones</span>
-                <span className="badge badge-warning">Lento</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px' }}>Carga de documentos</span>
-                <span className="badge badge-success">Operativo</span>
-              </div>
+              {recientes.length === 0 ? (
+                <EmptyState icon="inbox" title="No hay expedientes registrados" />
+              ) : (
+                recientes.map((r) => {
+                  const info = estadoInfo(r.estado);
+                  return (
+                    <div
+                      key={r.id_solicitud}
+                      className="doc-review-row"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate(`/admin/solicitudes/${r.id_solicitud}`)}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '14px', fontWeight: 600 }}>{nombreCompleto(r)}</div>
+                        <div className="text-mono-sm" style={{ fontSize: '12px', color: 'var(--clr-secondary)' }}>
+                          {r.numero_expediente || `Borrador #${r.id_solicitud}`} · {r.nombre_tramite}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--clr-secondary)' }}>
+                        {formatFecha(r.fecha_solicitud)}
+                      </div>
+                      <span className={`badge ${info.badge}`}>{info.label}</span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 }

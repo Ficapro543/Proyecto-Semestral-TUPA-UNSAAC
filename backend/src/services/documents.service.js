@@ -1,8 +1,11 @@
 const pool = require('../db/pool');
 const fs = require('fs');
 const path = require('path');
+const { parseId } = require('../utils/validate');
 
-async function deleteDocument(documentId, userId) {
+async function deleteDocument(rawDocumentId, userId) {
+  const documentId = parseId(rawDocumentId, 'id_documento');
+
   const query = `
     SELECT d.id_documento, d.ruta_archivo, s.id_usuario, s.estado
     FROM documento d
@@ -12,7 +15,7 @@ async function deleteDocument(documentId, userId) {
   const { rows } = await pool.query(query, [documentId]);
 
   if (rows.length === 0) {
-    const error = new Error('Documento no encontrado');
+    const error = new Error(`No existe un documento con id ${documentId}`);
     error.statusCode = 404;
     throw error;
   }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
 import './TrackingSearch.css';
 
 export default function TrackingSearch() {
@@ -7,22 +8,33 @@ export default function TrackingSearch() {
   const [code, setCode] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isFound, setIsFound] = useState(false);
+  const [error, setError] = useState(null);
 
-  const isValid = /^EXP-\d{4}-\d{4}$/i.test(code.trim()) || code.trim().length >= 3;
+  const isValid = code.trim().length >= 3;
 
-  const handleSearch = () => {
+  /** Consulta real al endpoint público de seguimiento. */
+  const handleSearch = async () => {
     if (!isValid) return;
     setIsSearching(true);
-    
-    // Simular búsqueda
-    setTimeout(() => {
-      setIsSearching(false);
+    setError(null);
+
+    const expediente = code.trim().toUpperCase();
+
+    try {
+      const data = await api.trackByExpediente(expediente);
       setIsFound(true);
-      
-      setTimeout(() => {
-        navigate(`/seguimiento/resultados`);
-      }, 1000);
-    }, 1500);
+      // El resultado viaja por router state: la pantalla siguiente no
+      // vuelve a consultar y así no se pierde si el usuario refresca.
+      navigate('/seguimiento/resultados', { state: { tracking: data } });
+    } catch (err) {
+      setError(
+        err.status === 404
+          ? `No se encontró ningún expediente con el código ${expediente}.`
+          : err.message
+      );
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -47,11 +59,11 @@ export default function TrackingSearch() {
             <input 
               className="search-hero-input" 
               type="text" 
-              placeholder="Ej. EXP-2024-8902"
+              placeholder="Ej. EXP-2026-000001"
               aria-label="Código de expediente" 
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               disabled={isSearching || isFound}
             />
             <button 
@@ -65,7 +77,7 @@ export default function TrackingSearch() {
             </button>
           </div>
           <div style={{ marginTop: 'var(--sp-md)', fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
-            Formato: EXP-YYYY-NNNN · Ej. EXP-2024-8902
+            Formato: EXP-AAAA-NNNNNN · Ej. EXP-2026-000001
           </div>
         </div>
       </section>
@@ -80,6 +92,13 @@ export default function TrackingSearch() {
             </div>
           )}
 
+          {error && (
+            <div className="alert alert-error animate-fade-in" role="alert" style={{ marginBottom: 'var(--sp-lg)' }}>
+              <span className="material-symbols-outlined" aria-hidden="true">error</span>
+              <div>{error}</div>
+            </div>
+          )}
+
           {isFound && (
             <div className="alert alert-success animate-fade-in" style={{ marginBottom: 'var(--sp-lg)' }}>
               <span className="material-symbols-outlined">check_circle</span>
@@ -87,7 +106,7 @@ export default function TrackingSearch() {
             </div>
           )}
 
-          {!isSearching && !isFound && (
+          {!isSearching && !isFound && !error && (
             <div id="tips-section" className="animate-fade-in">
               <h2 className="text-headline-sm" style={{ color: 'var(--clr-primary)', marginBottom: 'var(--sp-lg)', textAlign: 'center' }}>¿Cómo encontrar tu código de expediente?</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--sp-lg)', marginBottom: 'var(--sp-2xl)' }}>

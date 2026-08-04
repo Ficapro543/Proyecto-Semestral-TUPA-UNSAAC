@@ -1,4 +1,8 @@
 const pool = require('../db/pool');
+const { parsePagination, parseId } = require('../utils/validate');
+
+/** Estados finales: no admiten una nueva decisión administrativa. */
+const ESTADOS_CERRADOS = ['COMPLETADO', 'RECHAZADO', 'ANULADO'];
 
 async function getAdminStats() {
   const totalReqsQuery = `SELECT COUNT(*) as total FROM solicitud`;
@@ -25,7 +29,8 @@ async function getAdminStats() {
 }
 
 async function listAdminRequests(filters = {}) {
-  const { search, estado, cod_tramite, limit = 50, offset = 0 } = filters;
+  const { search, estado, cod_tramite } = filters;
+  const { limit, offset } = parsePagination(filters, { defaultLimit: 50, maxLimit: 200 });
 
   const conditions = [];
   const params = [];
@@ -72,19 +77,33 @@ async function listAdminRequests(filters = {}) {
     ORDER BY s.fecha_solicitud DESC
     LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
   `;
-  params.push(parseInt(limit, 10), parseInt(offset, 10));
+  params.push(limit, offset);
 
   const dataRes = await pool.query(dataQuery, params);
 
   return {
     total,
-    limit: parseInt(limit, 10),
-    offset: parseInt(offset, 10),
+    limit,
+    offset,
     data: dataRes.rows,
   };
 }
 
-async function processDecision(requestId, adminId, decisionData) {
+const ACCIONES_VALIDAS = ['APROBAR', 'OBSERVAR', 'RECHAZAR', 'EN_PROCESO'];
+const VALIDACIONES_DOC_VALIDAS = ['PENDIENTE', 'APROBADO', 'RECHAZADO'];
+
+// solicitud.etapa_visible y seguimiento.etapa_visible son VARCHAR(40).
+const MAX_ETAPA = 40;
+
+function badRequest(message) {
+  const error = new Error(message);
+  error.statusCode = 400;
+  return error;
+}
+
+async function processDecision(rawRequestId, adminId, decisionData = {}) {
+  const requestId = parseId(rawRequestId, 'id');
+
   const {
     accion, // 'APROBAR', 'OBSERVAR', 'RECHAZAR', 'EN_PROCESO'
     etapa_visible,
@@ -92,6 +111,38 @@ async function processDecision(requestId, adminId, decisionData) {
     observaciones_documentos, // array of { id_documento, estado_validacion, observacion }
     fecha_limite_subsanacion,
   } = decisionData;
+
+  // ── Validación de los campos que el admin puede editar ──────────────
+  if (!accion) {
+    throw badRequest(`El campo 'accion' es requerido (${ACCIONES_VALIDAS.join(', ')})`);
+  }
+  if (!ACCIONES_VALIDAS.includes(accion)) {
+    throw badRequest(
+      `Acción '${accion}' no reconocida. Valores permitidos: ${ACCIONES_VALIDAS.join(', ')}`
+    );
+  }
+  // Observar u rechazar sin motivo deja al estudiante sin saber qué corregir.
+  if ((accion === 'OBSERVAR' || accion === 'RECHAZAR') && !String(comentario || '').trim()) {
+    throw badRequest(`Se requiere un comentario para la acción '${accion}'`);
+  }
+  if (etapa_visible !== undefined && etapa_visible !== null) {
+    if (typeof etapa_visible !== 'string') {
+      throw badRequest("El campo 'etapa_visible' debe ser texto");
+    }
+    if (etapa_visible.length > MAX_ETAPA) {
+      throw badRequest(`El campo 'etapa_visible' no puede exceder ${MAX_ETAPA} caracteres`);
+    }
+  }
+  if (observaciones_documentos !== undefined && !Array.isArray(observaciones_documentos)) {
+    throw badRequest("El campo 'observaciones_documentos' debe ser un arreglo");
+  }
+  for (const item of observaciones_documentos || []) {
+    if (item?.estado_validacion && !VALIDACIONES_DOC_VALIDAS.includes(item.estado_validacion)) {
+      throw badRequest(
+        `estado_validacion '${item.estado_validacion}' inválido. Permitidos: ${VALIDACIONES_DOC_VALIDAS.join(', ')}`
+      );
+    }
+  }
 
   const client = await pool.connect();
   try {
@@ -106,13 +157,22 @@ async function processDecision(requestId, adminId, decisionData) {
     `;
     const solRes = await client.query(solQuery, [requestId]);
     if (solRes.rows.length === 0) {
-      const error = new Error('Solicitud no encontrada');
+      const error = new Error(`No existe una solicitud con id ${requestId}`);
       error.statusCode = 404;
       throw error;
     }
 
     const sol = solRes.rows[0];
     const estadoAnterior = sol.estado;
+
+    // Un expediente ya cerrado no admite una nueva decisión.
+    if (ESTADOS_CERRADOS.includes(estadoAnterior)) {
+      const error = new Error(
+        `La solicitud ya está en estado '${estadoAnterior}' y no admite nuevas decisiones`
+      );
+      error.statusCode = 409;
+      throw error;
+    }
 
     // Actualizar estados de validación de los documentos si se pasaron
     if (Array.isArray(observaciones_documentos)) {
@@ -156,7 +216,9 @@ async function processDecision(requestId, adminId, decisionData) {
         nuevaEtapa = 'Finalizado';
       } else {
         estadoNuevo = 'EN PROCESO';
-        nuevaEtapa = etapa_visible || 'Revisión Documentaria Aprobada Parcialmente';
+        // 'Revisión Documentaria Aprobada Parcialmente' son 43 caracteres y la
+        // columna es VARCHAR(40): esta rama reventaba con un 500 de Postgres.
+        nuevaEtapa = etapa_visible || 'Revisión parcial aprobada';
       }
     } else if (accion === 'OBSERVAR') {
       estadoNuevo = 'OBSERVADO';
@@ -246,7 +308,10 @@ async function toggleProcedure(cod_tramite) {
   return rows[0];
 }
 
-async function listUsers({ search, limit = 50, offset = 0 }) {
+async function listUsers(filters = {}) {
+  const { search } = filters;
+  const { limit, offset } = parsePagination(filters, { defaultLimit: 50, maxLimit: 200 });
+
   const conditions = [];
   const params = [];
   let paramIdx = 1;
@@ -266,13 +331,15 @@ async function listUsers({ search, limit = 50, offset = 0 }) {
     ORDER BY created_at DESC
     LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
   `;
-  params.push(parseInt(limit, 10), parseInt(offset, 10));
+  params.push(limit, offset);
 
   const { rows } = await pool.query(query, params);
   return rows;
 }
 
-async function toggleUserActive(userId) {
+async function toggleUserActive(rawUserId) {
+  const userId = parseId(rawUserId, 'id');
+
   const query = `
     UPDATE usuario_general
     SET activo = NOT activo
