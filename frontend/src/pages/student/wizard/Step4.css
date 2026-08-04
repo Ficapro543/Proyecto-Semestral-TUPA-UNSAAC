@@ -1,0 +1,13 @@
+.doc-slot {
+  background: var(--clr-surface-container-lowest);
+  border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-xl); padding: var(--sp-lg);
+  display: flex; flex-direction: column; gap: var(--sp-md);
+  transition: border-color var(--transition-fast);
+}
+.doc-slot.uploaded { border-color: var(--clr-primary); }
+.doc-slot-header { display: flex; align-items: center; gap: var(--sp-md); }
+.doc-slot-num { width: 28px; height: 28px; border-radius: 50%; background: var(--clr-primary); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doc-upload-btn { display: flex; align-items: center; gap: var(--sp-sm); padding: 8px 16px; border: 1.5px dashed var(--clr-outline-variant); border-radius: var(--radius-lg); font-size: 13px; font-weight: 600; color: var(--clr-primary); cursor: pointer; transition: border-color var(--transition-fast), background var(--transition-fast); }
+.doc-upload-btn:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+.doc-upload-btn .material-symbols-outlined { font-size: 18px; }

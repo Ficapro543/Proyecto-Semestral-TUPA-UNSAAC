@@ -1,0 +1,27 @@
+.stepper {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--sp-xl); position: relative;
+  max-width: 800px; margin-left: auto; margin-right: auto;
+}
+.step-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  position: relative; z-index: 2; flex: 1;
+}
+.step-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+  transition: all var(--transition-normal); background: var(--clr-surface-container);
+  color: var(--clr-secondary); border: 2px solid transparent;
+}
+.step-circle.active { background: var(--clr-primary); color: white; box-shadow: 0 0 0 4px rgba(0,32,69,0.1); }
+.step-circle.done { background: #d1fae5; color: #065f46; }
+.step-circle.pending { background: var(--clr-surface-container); color: var(--clr-secondary); }
+.step-label { font-size: 12px; font-weight: 600; text-align: center; color: var(--clr-secondary); }
+.step-label.active { color: var(--clr-primary); }
+.step-label.done { color: #065f46; }
+.step-connector {
+  position: absolute; top: 16px; left: calc(50% + 20px); right: calc(-50% + 20px);
+  height: 2px; background: var(--clr-surface-container); z-index: 1;
+}
+.step-connector.done { background: #d1fae5; }

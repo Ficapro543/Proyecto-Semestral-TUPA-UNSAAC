@@ -1,0 +1,8 @@
+.queue-item {
+  display: grid; grid-template-columns: 36px 1fr 140px 120px 100px 120px;
+  gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+  border-bottom: 1px solid var(--clr-outline-variant); align-items: center;
+  cursor: pointer; transition: background var(--transition-fast);
+}
+.queue-item:hover { background: var(--clr-surface-container-low); }
+.priority-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }

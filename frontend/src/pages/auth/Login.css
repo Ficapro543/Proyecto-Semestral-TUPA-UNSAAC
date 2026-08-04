@@ -1,0 +1,174 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* ── Split layout ── */
+.login-left {
+  display: none;
+  width: 45%;
+  background: linear-gradient(150deg, var(--clr-primary) 0%, var(--clr-primary-container) 100%);
+  color: var(--clr-on-primary);
+  padding: var(--sp-3xl) var(--sp-2xl);
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+@media (min-width: 900px) { .login-left { display: flex; } }
+
+.login-left::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(137,245,231,0.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+.login-left-orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+.login-left-brand {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: var(--sp-md);
+}
+.brand-logo {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-xl);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.brand-logo .material-symbols-outlined { font-size: 30px; color: var(--clr-tertiary-fixed); }
+.brand-text-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 22px; font-weight: 800; }
+.brand-text-sub { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+
+.login-left-content { position: relative; z-index: 1; }
+.login-left-content h2 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--sp-md);
+}
+.login-left-content p { font-size: 16px; opacity: 0.75; line-height: 1.65; max-width: 340px; }
+.login-features { display: flex; flex-direction: column; gap: var(--sp-md); margin-top: var(--sp-xl); }
+.login-feature { display: flex; align-items: center; gap: var(--sp-md); }
+.login-feature-icon {
+  width: 40px; height: 40px;
+  background: rgba(137,245,231,0.15);
+  border: 1px solid rgba(137,245,231,0.25);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.login-feature-icon .material-symbols-outlined { font-size: 20px; color: var(--clr-tertiary-fixed); }
+.login-feature-text .label { font-size: 14px; font-weight: 600; }
+.login-feature-text .sublabel { font-size: 12px; opacity: 0.65; margin-top: 1px; }
+
+.login-left-footer {
+  position: relative; z-index: 1;
+  display: flex; gap: var(--sp-md);
+}
+.left-footer-stat {
+  flex: 1; padding: var(--sp-md);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  text-align: center;
+}
+.left-footer-stat .num { font-family: 'Hanken Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--clr-tertiary-fixed); }
+.left-footer-stat .lbl { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+
+/* ── Right panel (form) ── */
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-xl) var(--sp-lg);
+  background: var(--clr-background);
+  overflow-y: auto;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+}
+.login-card-header {
+  text-align: center;
+  margin-bottom: var(--sp-xl);
+}
+.login-card-icon {
+  width: 64px; height: 64px;
+  background: var(--clr-primary);
+  border-radius: var(--radius-xl);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto var(--sp-lg);
+  box-shadow: 0 8px 24px rgba(0,32,69,0.25);
+}
+.login-card-icon .material-symbols-outlined { font-size: 36px; color: var(--clr-on-primary); }
+.login-card-header h1 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 26px; font-weight: 700;
+  color: var(--clr-primary); letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.login-card-header p { font-size: 14px; color: var(--clr-secondary); }
+
+.login-form { display: flex; flex-direction: column; gap: var(--sp-md); }
+
+.login-divider {
+  display: flex; align-items: center; gap: var(--sp-md);
+  margin: var(--sp-md) 0;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--clr-outline-variant);
+}
+.login-divider span { font-size: 12px; color: var(--clr-secondary); white-space: nowrap; }
+
+.sso-btn {
+  width: 100%; height: 44px;
+  background: var(--clr-surface-container-lowest);
+  border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-md);
+  font-size: 14px; font-weight: 600; color: var(--clr-on-surface);
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.sso-btn:hover { background: var(--clr-surface-container-low); box-shadow: var(--shadow-sm); }
+.sso-btn img { width: 20px; height: 20px; }
+
+.login-footer { text-align: center; margin-top: var(--sp-lg); font-size: 13px; color: var(--clr-secondary); }
+.login-footer a { color: var(--clr-primary); font-weight: 600; text-decoration: none; }
+.login-footer a:hover { text-decoration: underline; }
+
+.security-badges {
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-xl);
+  margin-top: var(--sp-xl); opacity: 0.55;
+}
+.sec-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--clr-secondary); }
+.sec-badge .material-symbols-outlined { font-size: 16px; }
+
+/* Role selector */
+.role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-sm); }
+.role-btn {
+  padding: var(--sp-md);
+  border: 1.5px solid var(--clr-outline-variant);
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  text-align: center;
+}
+.role-btn:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+.role-btn.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+.role-btn .material-symbols-outlined { font-size: 28px; color: var(--clr-primary); }
+.role-btn .role-label { font-size: 13px; font-weight: 600; color: var(--clr-on-surface); }
+.role-btn .role-desc  { font-size: 11px; color: var(--clr-secondary); }

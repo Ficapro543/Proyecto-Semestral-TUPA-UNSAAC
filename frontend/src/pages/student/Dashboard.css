@@ -1,0 +1,45 @@
+.quick-action-card {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: var(--sp-xl);
+  border-radius: var(--radius-xl);
+  min-height: 140px;
+  cursor: pointer;
+  transition: transform var(--transition-spring), box-shadow var(--transition-normal);
+  position: relative; overflow: hidden;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+.quick-action-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.quick-action-card:active { transform: scale(0.97); }
+.quick-action-card .qa-bg-icon {
+  position: absolute; right: -12px; bottom: -12px;
+  font-size: 80px; opacity: 0.08;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  transition: transform 0.4s ease;
+}
+.quick-action-card:hover .qa-bg-icon { transform: scale(1.15) rotate(-5deg); }
+.qa-primary { background: var(--clr-primary); color: var(--clr-on-primary); }
+.qa-white   { background: var(--clr-surface-container-lowest); color: var(--clr-primary); border-color: var(--clr-outline-variant); }
+.qa-white:hover { border-color: var(--clr-primary); }
+.qa-teal    { background: var(--clr-tertiary-container); color: var(--clr-tertiary-fixed); }
+.qa-navy    { background: var(--clr-primary-container); color: var(--clr-primary-fixed-dim); }
+
+.activity-item {
+  display: flex; align-items: flex-start; gap: var(--sp-md);
+  padding: var(--sp-md);
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast);
+  cursor: pointer; text-decoration: none;
+}
+.activity-item:hover { background: var(--clr-surface-container-low); }
+.activity-avatar {
+  width: 42px; height: 42px; border-radius: var(--radius-full);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.activity-avatar .material-symbols-outlined { font-size: 20px; }
+
+.tracking-mini-card { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); padding: var(--sp-lg); box-shadow: var(--shadow-sm); }
+.help-card { background: linear-gradient(135deg, var(--clr-tertiary-container), var(--clr-primary-container)); border-radius: var(--radius-xl); padding: var(--sp-xl); position: relative; overflow: hidden; }
+.help-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 120px; height: 120px; background: rgba(137,245,231,0.1); border-radius: 50%; }
+.help-card::after  { content: ''; position: absolute; bottom: -20px; left: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; }

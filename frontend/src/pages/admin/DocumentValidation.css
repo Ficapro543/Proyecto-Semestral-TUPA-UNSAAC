@@ -1,0 +1,11 @@
+.doc-validate-card {
+  background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-xl); overflow: hidden;
+}
+.doc-validate-header { background: var(--clr-primary); color: white; padding: var(--sp-lg); }
+.doc-item {
+  display: flex; align-items: center; gap: var(--sp-md);
+  padding: var(--sp-md) var(--sp-lg); border-bottom: 1px solid var(--clr-outline-variant);
+}
+.doc-item:last-child { border-bottom: none; }
+.doc-actions { display: flex; gap: var(--sp-xs); margin-left: auto; }

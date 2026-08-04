@@ -1,0 +1,7 @@
+.review-section { background: var(--clr-surface-container-lowest); border: 1px solid var(--clr-outline-variant); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: var(--sp-lg); }
+.review-section-header { padding: var(--sp-md) var(--sp-lg); background: var(--clr-surface-container-low); border-bottom: 1px solid var(--clr-outline-variant); display: flex; align-items: center; justify-content: space-between; }
+.review-section-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--clr-primary); }
+.review-field { display: flex; padding: var(--sp-md) var(--sp-lg); border-bottom: 1px solid var(--clr-outline-variant); }
+.review-field:last-child { border-bottom: none; }
+.review-label { font-size: 13px; color: var(--clr-secondary); width: 200px; flex-shrink: 0; }
+.review-value { font-size: 14px; font-weight: 500; color: var(--clr-on-surface); flex: 1; }

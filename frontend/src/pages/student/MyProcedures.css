@@ -1,0 +1,12 @@
+.procedure-row {
+  display: grid; grid-template-columns: 1fr 140px 120px 120px 100px;
+  gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+  border-bottom: 1px solid var(--clr-outline-variant);
+  align-items: center; cursor: pointer;
+  transition: background var(--transition-fast);
+  text-decoration: none;
+}
+.procedure-row:hover { background: var(--clr-surface-container-low); }
+.procedure-row:last-child { border-bottom: none; }
+.proc-title { font-size: 14px; font-weight: 600; color: var(--clr-on-surface); }
+.proc-exp   { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--clr-secondary); margin-top: 2px; }

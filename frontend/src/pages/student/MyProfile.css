@@ -1,0 +1,43 @@
+.avatar-ring { width: 96px; height: 96px; border-radius: 50%; background: var(--clr-primary); display: flex; align-items: center; justify-content: center; font-family: 'Hanken Grotesk', sans-serif; font-size: 36px; font-weight: 800; color: white; position: relative; }
+.avatar-edit { position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; background: var(--clr-tertiary-fixed); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.avatar-edit .material-symbols-outlined { font-size: 14px; color: var(--clr-on-tertiary-fixed); }
+.info-row { display: flex; padding: var(--sp-md) 0; border-bottom: 1px solid var(--clr-outline-variant); }
+.info-row:last-child { border-bottom: none; }
+.info-label { width: 180px; font-size: 13px; color: var(--clr-secondary); flex-shrink: 0; padding-top: 2px; }
+.info-value { font-size: 14px; font-weight: 500; color: var(--clr-on-surface); flex: 1; }
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--clr-surface-container-highest);
+  transition: .4s;
+  border-radius: 24px;
+}
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+input:checked + .toggle-slider {
+  background-color: var(--clr-primary);
+}
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}

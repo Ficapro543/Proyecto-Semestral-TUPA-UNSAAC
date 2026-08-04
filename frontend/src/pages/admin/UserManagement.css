@@ -1,0 +1,8 @@
+.user-row {
+  display: grid; grid-template-columns: 40px 1fr 120px 120px 100px 80px;
+  gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+  border-bottom: 1px solid var(--clr-outline-variant); align-items: center;
+  transition: background var(--transition-fast);
+}
+.user-row:hover { background: var(--clr-surface-container-low); }
+.user-avatar-sm { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }

@@ -1,0 +1,10 @@
+.request-row {
+  display: grid; grid-template-columns: 1fr 140px 120px;
+  gap: var(--sp-md); padding: var(--sp-md) var(--sp-lg);
+  border-bottom: 1px solid var(--clr-outline-variant);
+  align-items: center; cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.request-row:hover { background: var(--clr-surface-container-low); }
+.request-row:last-child { border-bottom: none; }

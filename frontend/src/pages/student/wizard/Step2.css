@@ -1,0 +1,12 @@
+.req-check-item {
+  display: flex; align-items: center; gap: var(--sp-md);
+  padding: var(--sp-md) var(--sp-lg);
+  background: var(--clr-surface-container-lowest);
+  border: 1px solid var(--clr-outline-variant);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.req-check-item.checked { background: var(--clr-surface-container-low); border-color: var(--clr-primary); }
+.req-check-item .material-symbols-outlined.status { font-size: 22px; transition: color var(--transition-fast); color: var(--clr-outline); }
+.req-check-item.checked .status { color: var(--clr-primary); }

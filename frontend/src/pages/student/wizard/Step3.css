@@ -1,0 +1,22 @@
+.payment-method {
+  padding: var(--sp-lg); border: 2px solid var(--clr-outline-variant); border-radius: var(--radius-xl);
+  cursor: pointer; display: flex; align-items: center; gap: var(--sp-md);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.payment-method:hover { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+.payment-method.selected { border-color: var(--clr-primary); background: var(--clr-surface-container-low); }
+.pay-icon { width: 52px; height: 52px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.file-upload-area {
+  border: 2px dashed var(--clr-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  background: var(--clr-surface-container-lowest);
+}
+.file-upload-area:hover, .file-upload-area.drag-over {
+  border-color: var(--clr-primary);
+  background: var(--clr-surface-container-low);
+}
