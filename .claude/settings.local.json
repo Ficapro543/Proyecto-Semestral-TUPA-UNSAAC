@@ -25,11 +25,19 @@
       "Bash(awk '/CREATE TABLE.*\\(activation_tokens|password_reset_tokens|refresh_tokens|pending_users|users\\)/,/\\\\\\);/' create_tables.sql)",
       "Bash(npm pkg *)",
       "Bash(timeout 60 node scripts/migrate-auth.js)",
-      "Bash(latexmk -pdf -quiet -jobname=Informe main.tex)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git config *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"raiz: %{http_code}\\\\n\" https://proyecto-semestral-tupa-unsaac.vercel.app/)",
+      "Bash(curl -s -w \"\\\\nhealth: %{http_code}\\\\n\" https://proyecto-semestral-tupa-unsaac.vercel.app/api/health)",
+      "Bash(curl -s -o /dev/null -w \"/activar/prueba-123: %{http_code}\\\\n\" https://proyecto-semestral-tupa-unsaac.vercel.app/activar/prueba-123)",
+      "Bash(curl -s -o /dev/null -w \"/tramites: %{http_code}\\\\n\" https://proyecto-semestral-tupa-unsaac.vercel.app/tramites)",
+      "Bash(git ls-remote *)",
+      "WebSearch",
+      "Bash(git rm *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('vercel.json','utf8'\\)\\); console.log\\('JSON válido'\\)\")",
+      "Bash(git commit -q -m ' *)"
     ]
   }
 }
