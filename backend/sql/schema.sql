@@ -1,5 +1,22 @@
 -- ============================================================
---  TUPA UNSAAC  –  v5.1  (PostgreSQL + Auth Tables)
+--  TUPA UNSAAC  –  v5.1  (PostgreSQL + Auth Tables + Almacenamiento BYTEA)
+--
+--  Script consolidado: reemplaza la ejecución secuencial de
+--  schema.sql + auth_tables.sql + multer_storage.sql +
+--  file_storage_bytea.sql. Este archivo ya incluye el resultado
+--  final de esas cuatro migraciones — no hace falta ejecutar
+--  ninguna por separado.
+--
+--  Contexto general de almacenamiento de archivos:
+--  El backend corre como función serverless (Vercel, ver
+--  vercel.json). Su disco es efímero y NO se comparte entre
+--  invocaciones ni entre instancias: un archivo escrito con
+--  multer.diskStorage() en /uploads podía ya no estar disponible
+--  en la siguiente petición. Postgres (Render) sí es persistente
+--  y compartido, así que el contenido de los archivos (documentos
+--  y avatares) vive en columnas BYTEA junto con sus metadatos.
+--  `ruta_archivo` se conserva solo por compatibilidad con filas
+--  antiguas; ya no se llena para filas nuevas.
 -- ============================================================
 
 DROP TABLE IF EXISTS password_reset_token CASCADE;
@@ -30,49 +47,64 @@ CREATE TABLE especialidad (
 --  2. USUARIO GENERAL
 -- ============================================================
 CREATE TABLE usuario_general (
-    id_usuario           SERIAL        PRIMARY KEY,
-    dni                  VARCHAR(10)   NOT NULL UNIQUE,
-    codigo_universitario VARCHAR(20)   UNIQUE,
-    nombres              VARCHAR(50)   NOT NULL,
-    ap_paterno           VARCHAR(50)   NOT NULL,
-    ap_materno           VARCHAR(50),
-    email_institucional  VARCHAR(100)  NOT NULL UNIQUE,
-    email_personal       VARCHAR(100),
-    telefono             VARCHAR(15),
-    semestre_actual      VARCHAR(30),
-    avatar_url           VARCHAR(300),
-    avatar_contenido     BYTEA,
-    avatar_mime_type     VARCHAR(100),
-    password_hash        VARCHAR(200)  NOT NULL,
-    cod_especialidad     VARCHAR(3)    REFERENCES especialidad(cod_especialidad),
-    activo               BOOLEAN       NOT NULL DEFAULT TRUE,
-    created_at           TIMESTAMP     NOT NULL DEFAULT NOW()
+    id_usuario            SERIAL        PRIMARY KEY,
+    dni                   VARCHAR(10)   NOT NULL UNIQUE,
+    codigo_universitario  VARCHAR(20)   UNIQUE,
+    nombres               VARCHAR(50)   NOT NULL,
+    ap_paterno            VARCHAR(50)   NOT NULL,
+    ap_materno            VARCHAR(50),
+    email_institucional   VARCHAR(100)  NOT NULL UNIQUE,
+    email_personal        VARCHAR(100),
+    telefono              VARCHAR(15),
+    semestre_actual       VARCHAR(30),
+    avatar_url            VARCHAR(300),
+    avatar_contenido      BYTEA,
+    avatar_mime_type      VARCHAR(100),
+    password_hash         VARCHAR(200)  NOT NULL,
+    cod_especialidad      VARCHAR(3)    REFERENCES especialidad(cod_especialidad),
+    activo                BOOLEAN       NOT NULL DEFAULT TRUE,
+    created_at            TIMESTAMP     NOT NULL DEFAULT NOW()
 );
+
+COMMENT ON COLUMN usuario_general.avatar_url IS
+  'Apunta a GET /api/users/avatar/general/:id (imagen servida desde avatar_contenido), no a un archivo en disco.';
+COMMENT ON COLUMN usuario_general.avatar_contenido IS
+  'Bytes del avatar (file.buffer de multer). Fuente de verdad de la imagen de perfil.';
 
 -- ============================================================
 --  3. USUARIO ADMIN
 -- ============================================================
 CREATE TABLE usuario_admin (
-    id_admin             SERIAL        PRIMARY KEY,
-    dni                  VARCHAR(10)   NOT NULL UNIQUE,
-    codigo_trabajador    VARCHAR(20)   UNIQUE,
-    nombres              VARCHAR(50)   NOT NULL,
-    ap_paterno           VARCHAR(50)   NOT NULL,
-    ap_materno           VARCHAR(50),
-    email_institucional  VARCHAR(100)  NOT NULL UNIQUE,
-    telefono             VARCHAR(15),
-    rol_admin            VARCHAR(20)   NOT NULL DEFAULT 'ADMIN' CHECK (rol_admin IN ('ADMIN', 'SUPER_ADMIN')),
-    avatar_url           VARCHAR(300),
-    avatar_contenido     BYTEA,
-    avatar_mime_type     VARCHAR(100),
-    password_hash        VARCHAR(200)  NOT NULL,
-    activo               BOOLEAN       NOT NULL DEFAULT TRUE,
-    created_at           TIMESTAMP     NOT NULL DEFAULT NOW()
+    id_admin              SERIAL        PRIMARY KEY,
+    dni                   VARCHAR(10)   NOT NULL UNIQUE,
+    codigo_trabajador     VARCHAR(20)   UNIQUE,
+    nombres               VARCHAR(50)   NOT NULL,
+    ap_paterno            VARCHAR(50)   NOT NULL,
+    ap_materno            VARCHAR(50),
+    email_institucional   VARCHAR(100)  NOT NULL UNIQUE,
+    telefono              VARCHAR(15),
+    rol_admin             VARCHAR(20)   NOT NULL DEFAULT 'ADMIN' CHECK (rol_admin IN ('ADMIN', 'SUPER_ADMIN')),
+    avatar_url            VARCHAR(300),
+    avatar_contenido      BYTEA,
+    avatar_mime_type      VARCHAR(100),
+    password_hash         VARCHAR(200)  NOT NULL,
+    activo                BOOLEAN       NOT NULL DEFAULT TRUE,
+    created_at            TIMESTAMP     NOT NULL DEFAULT NOW()
 );
+
+COMMENT ON COLUMN usuario_admin.avatar_url IS
+  'Apunta a GET /api/users/avatar/admin/:id (imagen servida desde avatar_contenido), no a un archivo en disco.';
+COMMENT ON COLUMN usuario_admin.avatar_contenido IS
+  'Bytes del avatar (file.buffer de multer). Fuente de verdad de la imagen de perfil.';
 
 -- ============================================================
 --  4. TABLAS DE AUTENTICACIÓN (TOKENS)
 -- ============================================================
+
+-- Sesiones: refresh tokens.
+-- El rol se guarda junto al id porque TUPA tiene dos tablas de
+-- usuario (usuario_general / usuario_admin) y los ids se repiten
+-- entre ambas: el par (id_usuario, rol) es lo que identifica.
 CREATE TABLE refresh_token (
     id_refresh      SERIAL        PRIMARY KEY,
     id_usuario      INT           NOT NULL,
@@ -83,6 +115,9 @@ CREATE TABLE refresh_token (
     revoked         BOOLEAN       NOT NULL DEFAULT FALSE
 );
 
+-- Activación de cuenta por correo.
+-- Sólo aplica a usuario_general: las cuentas administrativas las
+-- crea la universidad, no se auto-registran.
 CREATE TABLE activation_token (
     id_activacion   SERIAL        PRIMARY KEY,
     id_usuario      INT           NOT NULL REFERENCES usuario_general(id_usuario) ON DELETE CASCADE,
@@ -93,6 +128,12 @@ CREATE TABLE activation_token (
     used_at         TIMESTAMP
 );
 
+-- Recuperación de contraseña.
+-- `codigo`      -> los 6 dígitos que llegan por correo.
+-- `reset_token` -> se emite recién cuando el código se verifica
+--                  correctamente y es lo único que autoriza el
+--                  cambio de contraseña (evita que cualquiera con
+--                  solo el email pueda resetear la de otro).
 CREATE TABLE password_reset_token (
     id_reset        SERIAL        PRIMARY KEY,
     id_usuario      INT           NOT NULL,
@@ -135,11 +176,11 @@ CREATE TABLE tramite (
 --  7. REQUISITO
 -- ============================================================
 CREATE TABLE requisito (
-    id_requisito         SERIAL        PRIMARY KEY,
-    cod_tramite          VARCHAR(20)   NOT NULL REFERENCES tramite(cod_tramite),
-    descripcion_requisito VARCHAR(400) NOT NULL,
-    es_obligatorio       BOOLEAN       NOT NULL DEFAULT TRUE,
-    orden                INT           NOT NULL DEFAULT 1
+    id_requisito          SERIAL        PRIMARY KEY,
+    cod_tramite           VARCHAR(20)   NOT NULL REFERENCES tramite(cod_tramite),
+    descripcion_requisito VARCHAR(400)  NOT NULL,
+    es_obligatorio        BOOLEAN       NOT NULL DEFAULT TRUE,
+    orden                 INT           NOT NULL DEFAULT 1
 );
 
 -- ============================================================
@@ -194,6 +235,13 @@ CREATE TABLE documento (
                         )),
     fecha_subida        TIMESTAMP      NOT NULL DEFAULT NOW()
 );
+
+COMMENT ON COLUMN documento.mime_type IS
+  'Content-Type reportado por multer (file.mimetype) al subir el archivo. Usado por GET /api/documents/:id_documento/view para el header Content-Type.';
+COMMENT ON COLUMN documento.contenido IS
+  'Bytes del archivo (file.buffer de multer). Fuente de verdad del archivo: se sirve desde GET /api/documents/:id_documento/view.';
+COMMENT ON COLUMN documento.ruta_archivo IS
+  'Heredado de cuando se guardaba en disco (/uploads/...). Ya no se llena para filas nuevas; las filas antiguas con esta ruta no tienen archivo recuperable.';
 
 -- ============================================================
 --  10. OBSERVACION

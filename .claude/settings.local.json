@@ -25,6 +25,7 @@
       "Bash(awk '/CREATE TABLE.*\\(activation_tokens|password_reset_tokens|refresh_tokens|pending_users|users\\)/,/\\\\\\);/' create_tables.sql)",
       "Bash(npm pkg *)",
       "Bash(timeout 60 node scripts/migrate-auth.js)",
+      "Bash(latexmk -pdf -quiet -jobname=Informe main.tex)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git config *)",

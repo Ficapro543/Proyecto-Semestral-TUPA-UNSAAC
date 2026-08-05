@@ -18,7 +18,7 @@
 | `portada.tex` | Portada |
 | `formato.sty` | Paquete LaTeX personalizado — formato, paquetes, colores, estilos TikZ, configuración de bibliografía |
 | `sections/` | Archivos de secciones: `01-Introduccion`, `02-MarcoTeorico`, `03-Desarrollo`, `Conclusiones` |
-| `images/` | Logos: `Logo-UNSAAC.png`, `Logo-Informatica.png` |
+| `images/` | Logos (`Logo-UNSAAC.png`, `Logo-Informatica.png`) y capturas de pantalla de la interfaz usadas en `03-Desarrollo.tex` |
 | `make.bat` | Automatización de compilación |
 
 ## Convenciones

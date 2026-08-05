@@ -24,7 +24,7 @@
 
 -- ------------------------------------------------------------
 --  Documentos de solicitudes (voucher + requisitos)
--- ------------------------------------------------------------
+-- ---------------------------------------- --------------------
 ALTER TABLE documento
 ADD COLUMN IF NOT EXISTS contenido BYTEA;
 

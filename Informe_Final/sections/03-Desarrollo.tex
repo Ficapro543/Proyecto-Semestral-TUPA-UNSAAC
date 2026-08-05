@@ -162,6 +162,18 @@ vista, pero con una estructura más detallada que la descrita de forma general:
 
 \subsection{Modelo de Base de Datos}
 
+\subsubsection{Diagrama Entidad-Relación}
+La Figura~\ref{fig:diagrama-entidad-relacion} presenta el diagrama
+entidad-relación completo del modelo, generado a partir del esquema real de
+PostgreSQL. Incluye las columnas \texttt{BYTEA} (\texttt{contenido},
+\texttt{avatar\_contenido}) donde se almacena el contenido binario de
+documentos y avatares directamente en la base de datos, en lugar de en el
+disco del servidor.
+
+\apafigure[p]{%
+\includegraphics[width=\linewidth]{images/diagrama-entidad-relacion.png}%
+}{Diagrama entidad-relación del modelo de base de datos de TUPA UNSAAC.}{fig:diagrama-entidad-relacion}
+
 \subsubsection{Diccionario de Datos}
 El modelo relacional está compuesto por catorce entidades: once del dominio
 del negocio y tres dedicadas a la gestión de tokens de autenticación. La
@@ -307,6 +319,26 @@ través de los componentes \texttt{LandingPage.jsx}, \texttt{Catalog.jsx},
 \apafigure{\includegraphics[width=0.95\textwidth]{images/capt-seguimiento-resultados.png}}%
 {Resultado de la consulta pública, con el nombre del solicitante abreviado (ruta \texttt{/seguimiento/resultados}).}{fig:seguimiento-resultados}
 
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/portal-inicio.png}%
+}{Página de inicio del portal público, con acceso al catálogo, al seguimiento de expedientes y al ingreso al sistema.}{fig:portal-inicio}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/catalogo-tramites.png}%
+}{Catálogo de procedimientos administrativos, con buscador y filtros por categoría, costo y plazo.}{fig:catalogo-tramites}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/catalogo-filtros.png}%
+}{Listado de trámites del catálogo filtrado por categoría y rango de costo.}{fig:catalogo-filtros}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/rastreo-expediente.png}%
+}{Vista pública de rastreo de expediente por número de código.}{fig:rastreo-expediente}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/login.png}%
+}{Pantalla de inicio de sesión, con selección de tipo de acceso (estudiante o administrativo).}{fig:login}
+
 \subsubsection{Portal del Estudiante}
 El portal del estudiante incorpora el tablero principal, el perfil, el centro
 de notificaciones, el listado de trámites y solicitudes y el detalle de cada
@@ -357,6 +389,26 @@ final y confirmación de envío.
 \apafigure{\includegraphics[width=0.95\textwidth]{images/capt-wizard-paso6.png}}%
 {Paso 6 del asistente: confirmación de envío con el número de expediente generado.}{fig:wizard6}
 
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/estudiante-dashboard.png}%
+}{Dashboard del estudiante, con el resumen de expedientes en curso, observados y completados.}{fig:estudiante-dashboard}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/estudiante-mis-tramites.png}%
+}{Listado tabular de \emph{Mis Trámites} del estudiante, con etapa, monto y estado por expediente.}{fig:estudiante-mis-tramites}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/estudiante-mis-solicitudes.png}%
+}{Vista de \emph{Mis Solicitudes} organizada por pestañas de borradores, en curso y finalizadas.}{fig:estudiante-mis-solicitudes}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/estudiante-notificaciones.png}%
+}{Centro de notificaciones del estudiante, con alertas de registro y cambios de estado de sus solicitudes.}{fig:estudiante-notificaciones}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/estudiante-perfil.png}%
+}{Pantalla \emph{Mi Perfil}, con datos institucionales de solo lectura, datos de contacto editables y carga de foto de perfil.}{fig:estudiante-perfil}
+
 \subsubsection{Portal Administrativo}
 El portal administrativo incluye el tablero de gestión con indicadores, la
 cola de solicitudes pendientes, la validación documental, el detalle de
@@ -397,6 +449,30 @@ elemento pendiente de integración: la funcionalidad equivalente sí está
 resuelta y conectada en el detalle de expediente del estudiante
 (Figura~\ref{fig:est-solicitud-detalle}) y en el resultado de la consulta
 pública (Figura~\ref{fig:seguimiento-resultados}).
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-dashboard.png}%
+}{Dashboard administrativo, con indicadores de trámites pendientes, observados, completados y monto total recaudado.}{fig:admin-dashboard}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-cola-pendientes.png}%
+}{Cola de pendientes administrativa, con filtros por estado y acceso directo a la revisión de cada expediente.}{fig:admin-cola-pendientes}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-validar-documentos.png}%
+}{Vista de validación documental, con los expedientes agrupados por etapa a la espera de revisión.}{fig:admin-validar-documentos}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-gestion-tramites.png}%
+}{Gestión del catálogo de trámites, con activación/desactivación de procedimientos vigentes.}{fig:admin-gestion-tramites}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-usuarios.png}%
+}{Administración de usuarios registrados, con activación y desactivación de cuentas.}{fig:admin-usuarios}
+
+\apafigure{%
+\includegraphics[width=0.95\linewidth]{images/admin-reportes.png}%
+}{Panel de reportes y estadísticas, con expedientes por estado y por tipo de trámite.}{fig:admin-reportes}
 
 \subsection{Seguridad}
 El sistema implementa los siguientes mecanismos de seguridad a nivel de API:
