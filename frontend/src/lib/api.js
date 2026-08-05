@@ -3,25 +3,35 @@
  *
  * Resolución de la URL base (en este orden):
  *   1. VITE_API_URL, si está definida en el .env del frontend.
- *   2. El mismo host desde el que se sirve el frontend, puerto 3000.
+ *   2. En desarrollo: el mismo host que sirve el frontend, puerto 3000.
+ *   3. En producción: el mismo origen, ruta /api.
  *
  * El paso 2 es lo que hace que la demo funcione entre dos máquinas sin
  * reconfigurar nada: si la máquina B abre http://192.168.1.50:5173, la API
  * se resuelve sola a http://192.168.1.50:3000/api.
+ *
+ * El paso 3 es imprescindible en el despliegue: allí el frontend y el backend
+ * viven bajo el mismo dominio y es la reescritura de /api definida en
+ * vercel.json la que enruta al backend. Añadir el puerto 3000 apuntaría a un
+ * puerto que no está publicado y la conexión fallaría.
  *
  * El access token dura 15 minutos; cuando vence, este módulo lo renueva solo
  * con el refresh token y reintenta la petición. Las peticiones que fallen
  * mientras se renueva quedan en cola para no disparar varios refresh a la vez.
  */
 
-const DEFAULT_API_PORT = 3000;
+const DEV_API_PORT = 3000;
 
 function resolveBaseUrl() {
   const fromEnv = import.meta.env?.VITE_API_URL;
   if (fromEnv) return fromEnv.replace(/\/$/, '');
 
-  const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}:${DEFAULT_API_PORT}/api`;
+  if (import.meta.env?.DEV) {
+    const { protocol, hostname } = window.location;
+    return `${protocol}//${hostname}:${DEV_API_PORT}/api`;
+  }
+
+  return '/api';
 }
 
 export const API_BASE_URL = resolveBaseUrl();
