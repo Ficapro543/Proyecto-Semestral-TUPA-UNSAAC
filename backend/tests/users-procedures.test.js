@@ -9,6 +9,8 @@ jest.mock('../src/services/users.service', () => ({
   getProfile: jest.fn(),
   updateProfile: jest.fn(),
   changePassword: jest.fn(),
+  updateAvatar: jest.fn(),
+  getAvatar: jest.fn(),
 }));
 
 jest.mock('../src/services/procedures.service', () => ({
@@ -243,5 +245,316 @@ describe('User, procedures and request endpoints', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Solicitud enviada exitosamente');
+  });
+});
+
+describe('Profile editing rules', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const conStatus = (message, statusCode) => Object.assign(new Error(message), { statusCode });
+
+  test('rejects editing fields the university administers', async () => {
+    usersService.updateProfile.mockRejectedValue(
+      conStatus(
+        'No puedes modificar: nombres, cod_especialidad. Campos editables: telefono, email_personal, avatar_url',
+        403
+      )
+    );
+
+    const response = await request(app)
+      .put('/api/users/profile')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({ nombres: 'Otro', cod_especialidad: '999' });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error).toMatch(/No puedes modificar/);
+  });
+
+  test('rejects a password change with the wrong current password', async () => {
+    usersService.changePassword.mockRejectedValue(
+      conStatus('La contraseña actual es incorrecta', 400)
+    );
+
+    const response = await request(app)
+      .put('/api/users/profile/password')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({ currentPassword: 'equivocada', newPassword: 'Clave123.' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/contraseña actual es incorrecta/i);
+  });
+
+  test('requires both passwords to change the credential', async () => {
+    usersService.changePassword.mockRejectedValue(
+      conStatus('Contraseña actual y nueva son requeridas', 400)
+    );
+
+    const response = await request(app)
+      .put('/api/users/profile/password')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({ currentPassword: '123456' });
+
+    expect(response.status).toBe(400);
+  });
+
+  test('the profile is resolved from the token identity and role', async () => {
+    usersService.getProfile.mockResolvedValue({ id_usuario: 1, role: 'USER' });
+
+    await request(app).get('/api/users/profile').set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(usersService.getProfile).toHaveBeenCalledWith(1, 'USER');
+  });
+
+  test('POST /api/users/profile/avatar returns 400 without a file', async () => {
+    const response = await request(app)
+      .post('/api/users/profile/avatar')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/no se recibió ningún archivo/i);
+  });
+
+  test('POST /api/users/profile/avatar stores an accepted image', async () => {
+    usersService.updateAvatar.mockResolvedValue({ avatar_url: '/api/users/avatar/general/1' });
+
+    const response = await request(app)
+      .post('/api/users/profile/avatar')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .attach('avatar', Buffer.from('\x89PNG'), {
+        filename: 'foto.png',
+        contentType: 'image/png',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.avatar_url).toBe('/api/users/avatar/general/1');
+  });
+
+  test('GET /api/users/avatar/:role/:id rejects an unknown role with 400', async () => {
+    const response = await request(app).get('/api/users/avatar/superuser/1');
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/'role' debe ser 'admin' o 'general'/);
+    expect(usersService.getAvatar).not.toHaveBeenCalled();
+  });
+
+  test('GET /api/users/avatar/:role/:id is public and serves the stored bytes', async () => {
+    usersService.getAvatar.mockResolvedValue({
+      contenido: Buffer.from('\x89PNG'),
+      mime_type: 'image/png',
+    });
+
+    const response = await request(app).get('/api/users/avatar/general/1');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/image\/png/);
+    expect(response.headers['cache-control']).toMatch(/private/);
+  });
+});
+
+describe('Request ownership and wizard rules', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const conStatus = (message, statusCode) => Object.assign(new Error(message), { statusCode });
+
+  test.each([
+    ['post', '/api/requests'],
+    ['get', '/api/requests'],
+    ['get', '/api/requests/1'],
+    ['patch', '/api/requests/1/step'],
+    ['post', '/api/requests/1/submit'],
+  ])('%s %s requires a session', async (metodo, ruta) => {
+    const response = await request(app)[metodo](ruta);
+
+    expect(response.status).toBe(401);
+  });
+
+  test('the tracking endpoint stays public', async () => {
+    requestsService.trackByExpediente.mockResolvedValue({
+      numero_expediente: 'EXP-2026-000013',
+      solicitante: 'Amilcar E.',
+      historial: [],
+    });
+
+    const response = await request(app).get('/api/requests/track/EXP-2026-000013');
+
+    expect(response.status).toBe(200);
+    // La consulta pública sólo expone el nombre abreviado del solicitante.
+    expect(response.body.solicitante).toBe('Amilcar E.');
+    expect(response.body.nombres).toBeUndefined();
+    expect(response.body.dni).toBeUndefined();
+  });
+
+  test('returns 404 for an unknown expediente', async () => {
+    requestsService.trackByExpediente.mockRejectedValue(
+      conStatus('Expediente no encontrado', 404)
+    );
+
+    const response = await request(app).get('/api/requests/track/EXP-2026-999999');
+
+    expect(response.status).toBe(404);
+  });
+
+  test("returns 403 when reading another user's request", async () => {
+    requestsService.getRequestDetail.mockRejectedValue(
+      conStatus('Acceso denegado a esta solicitud', 403)
+    );
+
+    const response = await request(app)
+      .get('/api/requests/99')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  test('returns 404 for a request that does not exist', async () => {
+    requestsService.getRequestDetail.mockRejectedValue(
+      conStatus('No existe una solicitud con id 9999', 404)
+    );
+
+    const response = await request(app)
+      .get('/api/requests/9999')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  test('rejects a step outside the 1..6 range', async () => {
+    requestsService.updateStep.mockRejectedValue(
+      conStatus('El paso_actual debe ser un número entero entre 1 y 6', 400)
+    );
+
+    const response = await request(app)
+      .patch('/api/requests/1/step')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({ paso_actual: 9 });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/entre 1 y 6/);
+  });
+
+  test('rejects creating a request without cod_tramite', async () => {
+    requestsService.createRequest.mockRejectedValue(conStatus('cod_tramite es requerido', 400));
+
+    const response = await request(app)
+      .post('/api/requests')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({});
+
+    expect(response.status).toBe(400);
+  });
+
+  test('rejects creating a request for an inactive procedure', async () => {
+    requestsService.createRequest.mockRejectedValue(
+      conStatus('Trámite no encontrado o inactivo', 404)
+    );
+
+    const response = await request(app)
+      .post('/api/requests')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .send({ cod_tramite: 'TR-999' });
+
+    expect(response.status).toBe(404);
+  });
+
+  test('blocks the submission when mandatory documents are missing', async () => {
+    requestsService.submitRequest.mockRejectedValue(
+      conStatus(
+        'Faltan documentos obligatorios por adjuntar: Ficha socioeconómica; Constancia de matrícula vigente',
+        400
+      )
+    );
+
+    const response = await request(app)
+      .post('/api/requests/1/submit')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/Faltan documentos obligatorios/);
+  });
+
+  test('returns 409 when submitting a request that was already sent', async () => {
+    requestsService.submitRequest.mockRejectedValue(
+      conStatus('La solicitud ya fue enviada (estado actual: SOLICITADO)', 409)
+    );
+
+    const response = await request(app)
+      .post('/api/requests/1/submit')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(response.status).toBe(409);
+    expect(response.body.error).toMatch(/ya fue enviada/);
+  });
+
+  test('rejects a document uploaded against a requirement of another procedure', async () => {
+    requestsService.uploadDocument.mockRejectedValue(
+      conStatus('El requisito 7 no existe o no corresponde al trámite TR-005', 404)
+    );
+
+    const response = await request(app)
+      .post('/api/requests/1/document/7')
+      .set('Authorization', `Bearer ${makeUserToken()}`)
+      .attach('archivo', Buffer.from('%PDF-1.4'), {
+        filename: 'doc.pdf',
+        contentType: 'application/pdf',
+      });
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toMatch(/no corresponde al trámite/);
+  });
+
+  test('the request list is scoped to the authenticated user', async () => {
+    requestsService.getUserRequests.mockResolvedValue([]);
+
+    await request(app)
+      .get('/api/requests?estado=BORRADOR')
+      .set('Authorization', `Bearer ${makeUserToken()}`);
+
+    expect(requestsService.getUserRequests).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({ estado: 'BORRADOR' })
+    );
+  });
+});
+
+describe('Procedure catalogue filters', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('the catalogue is public', async () => {
+    proceduresService.listProcedures.mockResolvedValue({ total: 0, data: [] });
+
+    const response = await request(app).get('/api/procedures');
+
+    expect(response.status).toBe(200);
+  });
+
+  test('forwards search, category and cost filters', async () => {
+    proceduresService.listProcedures.mockResolvedValue({ total: 0, data: [] });
+
+    await request(app).get('/api/procedures?search=beca&category=2&cost_max=50&days_max=10');
+
+    expect(proceduresService.listProcedures).toHaveBeenCalledWith(
+      expect.objectContaining({
+        search: 'beca',
+        category: '2',
+        cost_max: '50',
+        days_max: '10',
+      })
+    );
+  });
+
+  test('returns 404 for an unknown procedure code', async () => {
+    proceduresService.getProcedureById.mockRejectedValue(
+      Object.assign(new Error('Trámite no encontrado'), { statusCode: 404 })
+    );
+
+    const response = await request(app).get('/api/procedures/TR-999');
+
+    expect(response.status).toBe(404);
   });
 });

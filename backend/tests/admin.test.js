@@ -116,4 +116,183 @@ describe('Admin endpoints', () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toContain('inactivo');
   });
+
+  test('PATCH /api/admin/users/:id/toggle reports the activation too', async () => {
+    adminService.toggleUserActive.mockResolvedValue({ id_usuario: 1, activo: true });
+
+    const response = await request(app)
+      .patch('/api/admin/users/1/toggle')
+      .set('Authorization', `Bearer ${makeAdminToken()}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toContain('activo');
+  });
+
+  test('GET /api/admin/requests forwards the search filters to the service', async () => {
+    adminService.listAdminRequests.mockResolvedValue({ total: 0, data: [] });
+
+    await request(app)
+      .get('/api/admin/requests?estado=OBSERVADO&search=Amilcar&limit=10')
+      .set('Authorization', `Bearer ${makeAdminToken()}`);
+
+    expect(adminService.listAdminRequests).toHaveBeenCalledWith(
+      expect.objectContaining({ estado: 'OBSERVADO', search: 'Amilcar', limit: '10' })
+    );
+  });
+
+  test('GET /api/admin/requests/:id asks for the detail with admin privileges', async () => {
+    requestsService.getRequestDetail.mockResolvedValue({ id_solicitud: 2 });
+
+    await request(app)
+      .get('/api/admin/requests/2')
+      .set('Authorization', `Bearer ${makeAdminToken()}`);
+
+    // El tercer argumento es el indicador de administrador: sin él, el
+    // servicio aplicaría la comprobación de pertenencia y devolvería 403.
+    expect(requestsService.getRequestDetail).toHaveBeenCalledWith('2', null, true);
+  });
+
+  test('POST /api/admin/requests/:id/decision attributes the decision to the signed in admin', async () => {
+    adminService.processDecision.mockResolvedValue({ id_solicitud: 2, estado: 'EN PROCESO' });
+
+    await request(app)
+      .post('/api/admin/requests/2/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ accion: 'EN_PROCESO' });
+
+    // El id del admin sale del token, no del cuerpo de la petición.
+    expect(adminService.processDecision).toHaveBeenCalledWith(
+      '2',
+      2,
+      expect.objectContaining({ accion: 'EN_PROCESO' })
+    );
+  });
+});
+
+describe('Admin validation and conflict paths', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const conStatus = (message, statusCode) =>
+    Object.assign(new Error(message), { statusCode });
+
+  test('rejects a decision without action with 400', async () => {
+    adminService.processDecision.mockRejectedValue(
+      conStatus("El campo 'accion' es requerido (APROBAR, OBSERVAR, RECHAZAR, EN_PROCESO)", 400)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/requests/2/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ comentario: 'sin acción' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/'accion' es requerido/);
+  });
+
+  test('rejects an unknown action with 400', async () => {
+    adminService.processDecision.mockRejectedValue(
+      conStatus("Acción 'BORRAR' no reconocida. Valores permitidos: APROBAR, OBSERVAR, RECHAZAR, EN_PROCESO", 400)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/requests/2/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ accion: 'BORRAR' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/no reconocida/);
+  });
+
+  test('requires a comment when observing a request', async () => {
+    adminService.processDecision.mockRejectedValue(
+      conStatus("Se requiere un comentario para la acción 'OBSERVAR'", 400)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/requests/2/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ accion: 'OBSERVAR' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/comentario/i);
+  });
+
+  test('returns 409 when the request is already in a terminal state', async () => {
+    adminService.processDecision.mockRejectedValue(
+      conStatus("La solicitud ya está en estado 'COMPLETADO' y no admite nuevas decisiones", 409)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/requests/2/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ accion: 'APROBAR' });
+
+    expect(response.status).toBe(409);
+    expect(response.body.error).toMatch(/no admite nuevas decisiones/);
+  });
+
+  test('returns 404 for a decision on a non existent request', async () => {
+    adminService.processDecision.mockRejectedValue(
+      conStatus('No existe una solicitud con id 9999', 404)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/requests/9999/decision')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ accion: 'EN_PROCESO' });
+
+    expect(response.status).toBe(404);
+  });
+
+  test('returns 409 when creating a procedure with an existing code', async () => {
+    adminService.createProcedure.mockRejectedValue(
+      conStatus('Ya existe un trámite con el código TR-001', 409)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/procedures')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ cod_tramite: 'TR-001', nombre_tramite: 'Duplicado' });
+
+    expect(response.status).toBe(409);
+    expect(response.body.error).toMatch(/Ya existe un trámite/);
+  });
+
+  test('returns 400 when the procedure code is missing', async () => {
+    adminService.createProcedure.mockRejectedValue(
+      conStatus('El código de trámite es requerido', 400)
+    );
+
+    const response = await request(app)
+      .post('/api/admin/procedures')
+      .set('Authorization', `Bearer ${makeAdminToken()}`)
+      .send({ nombre_tramite: 'Sin código' });
+
+    expect(response.status).toBe(400);
+  });
+
+  test('returns 404 when toggling a procedure that does not exist', async () => {
+    adminService.toggleProcedure.mockRejectedValue(conStatus('Trámite no encontrado', 404));
+
+    const response = await request(app)
+      .patch('/api/admin/procedures/TR-999/toggle')
+      .set('Authorization', `Bearer ${makeAdminToken()}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  test('returns 400 when the user id is not a positive integer', async () => {
+    adminService.toggleUserActive.mockRejectedValue(
+      conStatus("El parámetro 'id' debe ser un entero positivo", 400)
+    );
+
+    const response = await request(app)
+      .patch('/api/admin/users/abc/toggle')
+      .set('Authorization', `Bearer ${makeAdminToken()}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/entero positivo/);
+  });
 });
